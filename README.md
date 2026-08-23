@@ -2,7 +2,7 @@
 
 This project is rebuilding the online services used by the PAL release of *Resident Evil
 Outbreak File #2* (`SLES_533.19`). It combines a Node.js private server with an evidence-backed
-reverse-engineering corpus for Sony's SN@P middleware and the game's lobby protocol.
+reverse-engineering corpus for Sega's SN@P middleware and the game's lobby protocol.
 
 The official service closed in 2007, and the PAL release did not have a working online service
 outside the Japanese Bioserver ecosystem. The aim here is to reproduce the server side closely
@@ -11,6 +11,8 @@ its DNS configuration.
 
 That constraint is firm: fixes belong in the server, protocol implementation, or research tooling.
 The project does not patch the game, modify an ISO, or require a modchip or homebrew client.
+
+The goal is to create a working game, I own the PAL version however both the PAL and NTSC version use SN@P.
 
 ## Current status
 
@@ -94,11 +96,6 @@ original hardware. The join state machine, room protocol, and gameplay networkin
 work; the v2 server has testable vertical slices for implementation work; and reliable two-console
 testing on real PS2s is particularly valuable.
 
-Before starting, check [`GOALS.md`](GOALS.md) for an open problem and [`FACTS.md`](FACTS.md) for the
-current model. Keep observations separate from interpretations, tie protocol claims to captures,
-runtime memory, disassembly, or reproducible tests, and do not treat PCSX2 results as proof of real
-PS2 behaviour. Most importantly, keep changes server-side: a result that requires a modified client
-is outside this project's scope.
 
 ## Acknowledgements
 
