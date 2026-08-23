@@ -96,6 +96,16 @@ original hardware. The join state machine, room protocol, and gameplay networkin
 work; the v2 server has testable vertical slices for implementation work; and reliable two-console
 testing on real PS2s is particularly valuable.
 
+### DNS Records
+
+| Hostname | Type | Value | TTL |
+  |---|---|---|---|
+  | `gate1.eu.dnas.playstation.org` | A | `<your-server-ip>` | Auto |
+  | `app01.reo.capcom.sf.yav4.com` | A | `<your-server-ip>` | Auto |
+  | `snap01.capcom.client.sf.yav4.com` | A | `<your-server-ip>` | Auto |
+  | `*.yav4.com` | A | `<your-server-ip>` | Auto |
+  | `stage6.sega.com` | A | `<your-server-ip>` | Auto |
+  | `regweb.reo.capcom.sf.yav4.com` | A | `<your-server-ip>` | Auto |****
 
 ## Acknowledgements
 
