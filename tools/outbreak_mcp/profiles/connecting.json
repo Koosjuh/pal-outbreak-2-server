@@ -1,0 +1,12 @@
+{
+  "name": "connecting",
+  "description": "Minimal connection/lobby investigation profile. Loading this profile does not set breakpoints unless a debugger backend is available.",
+  "breakpoints": [
+    "sub_5bc430",
+    "sub_5bc4a8"
+  ],
+  "evidence_policy": {
+    "savestates": "Convenience only; never protocol proof.",
+    "required_primary_evidence": "PCAP packet timeline"
+  }
+}

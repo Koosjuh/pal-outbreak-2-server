@@ -1,0 +1,312 @@
+[
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x005ac400",
+  "name": "menu_state3_step",
+  "subsystem": "menus",
+  "summary": "Top-state 3 step machine; drives substate fab through init/poll (FUN_00605fa0) with net-glue calls, then frame-commit 618c30.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x005ac4c0",
+  "name": "menu_confirm_dialog_step",
+  "subsystem": "menus",
+  "summary": "Top-state 0x17 step: countdown via fab/timer then reads pad bitmask (0x10,0x200) to branch and draws 3 text lines.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x005ac810",
+  "name": "menu_state0_step",
+  "subsystem": "menus",
+  "summary": "Top-state 0 step: initial substate arms libgfx, next substate sets a 0xe10 timer and calls FUN_00608670 then clears 0x701e10.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x005aca20",
+  "name": "menu_state1_render_wrap",
+  "subsystem": "menus",
+  "summary": "Top-state 1 step: brackets the in-lobby screen dispatch (FUN_005acab0) with render begin/end thunks.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x005aca50",
+  "name": "menu_state4_enter",
+  "subsystem": "menus",
+  "summary": "Top-state 4 handler: tears down then transitions to state 5 (fab=0, faa=5), clears 874f7c.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x006063c0",
+  "name": "lobby_conn_state_dispatch",
+  "subsystem": "session",
+  "summary": "Top-level lobby-connection dispatcher: switches on sRam0070cdc8 (0..6, 99) to the corresponding step handler (init/connect-retry/await/post-connect/handshake/advance/error-reset), returning done when state 6 hits the re-init thunk.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x00606af0",
+  "name": "session_login_state_machine",
+  "subsystem": "session",
+  "summary": "6-case session/login driver (cRam006c4b9e): issues reliable requests via FUN_005b8cf0 (offsets -0x63, 0x50), waits on async completion (FUN_00606a70), advances on specific result codes (cRam0070cd80 == -0x14d / -0x11), and re-fires (FUN_00606c80) on error, pumping the frame each step (FUN_00618c30).",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x00606cb0",
+  "name": "dispatch_by_conn_mode",
+  "subsystem": "menus",
+  "summary": "Branches to FUN_005f4550 or FUN_006082e0 depending on connection-mode flag 3c8a80.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x00606cf0",
+  "name": "roomlist_screen_tick",
+  "subsystem": "rooms",
+  "summary": "Per-frame state-machine dispatcher: switch(0070cdb8) states 0-5 into the room-query/select screen handlers, then render tick FUN_00618c30.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x00608300",
+  "name": "login_connect_state_machine",
+  "subsystem": "session",
+  "summary": "Multi-phase connect/login state machine on cRam0070cda8 (0,1,2,'c',3,4,5,6): sprintf request into 0x701e20 from format strings by conn-mode, drives connect/poll (005c80a0/005c8810), branches on results (-100/-1/1/2).",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005ac8a0 menu_top_dispatch",
+  "state_var": "0x6c4faa (top screen)",
+  "group": "top-menu",
+  "handler": "0x006088b0",
+  "name": "reconnect_state_machine",
+  "subsystem": "session",
+  "summary": "Connect/reconnect state machine on cRam0070cd98 (0-4): sprintf request into 0x701e20, connect/poll (005c80a0/005c8810), branches on results, on failure sets status 0070cd80=0x85 and returns via FUN_00606ac0.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005acda0",
+  "name": "screen_obj_init_substate3",
+  "subsystem": "menus",
+  "summary": "Initializes a screen-object struct: tag=1, [0xe]=3, [0xf]/[0x10]=0, stores param into 0x6c45f8.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005ade20",
+  "name": "screen7_session_sm",
+  "subsystem": "session",
+  "summary": "Lobby screen-7 state machine (+0xe): runs the session/connect sequence, snapshots a 0x1d0-byte table 0x870f10->0x6ca090, diffs it (memcmp), and on change pushes it via 5bea90 (cb 0x5ae0b0), driving the ae130 sub-sequence.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005aec70",
+  "name": "menu_item_action_dispatch",
+  "subsystem": "menus",
+  "summary": "Per-widget action dispatcher: gated by enable byte +0x45a, routes on pending-action (+0x991) then on the item TYPE byte (*param_1 = 0x0e/0x04/0x03/0x02) plus edge flags (+0x45b..45d) to type-specific handlers.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005aedc0",
+  "name": "menu_transition_timeout",
+  "subsystem": "menus",
+  "summary": "Per-frame menu transition/timeout driver: decrements timers (+0x558/+0x55c/+0x560), on input flags (+0x56a) or expiry sets the done latch cRam00701e10 and fires FUN_005f6970(n) to trigger the next screen.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005af4d0",
+  "name": "screen_build_title_menu",
+  "subsystem": "menus",
+  "summary": "Builds a title/session menu screen: FSM on +0xe allocates widgets via widget_alloc (0x618ba0), assigns sprite/asset ids and callback labels, then lays out a column of text labels via ui_draw_text from a string-pointer block (0x638860+).",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005b1a00",
+  "name": "run_menu_task_if_active",
+  "subsystem": "menus",
+  "summary": "Thin guard: if the task-active flag at +0x438 is set, run the dialog/task dispatcher 0x5b1a30.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005b1d10",
+  "name": "clear_task_busy_flag",
+  "subsystem": "menus",
+  "summary": "One-liner: clears the modal-task busy flag at struct+0x42c.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005b1d20",
+  "name": "spawn_namelist_widget",
+  "subsystem": "roster",
+  "summary": "Allocates two UI elements and installs 0x5b1b10 as their callback to spawn the name-selection list, gated on ready flags +0x45a/+0x992/+0x434 and a button press.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005b24e0",
+  "name": "lobby_menu_state_dispatch",
+  "subsystem": "lobby",
+  "summary": "Top-level lobby/menu screen state machine: switches on screen id +0xe (0-9) to the per-screen handlers (init, connect, entry, room-list, char-select, etc.).",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005be330",
+  "name": "overlay_frame_driver",
+  "subsystem": "session",
+  "summary": "Master per-frame overlay tick: guarded by iRam006ca950, drives session poll (FUN_005c7d40/FUN_005bf1e0), runs scenario/cast-lock countdowns that flip cRam006ff2b1 to 3 and cRam006ff2b2 stages, capacity-checks room member count at 0x6cfa2c, and pumps task slots via FUN_005be270.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005f6aa0",
+  "name": "connect_flow_router",
+  "subsystem": "session",
+  "summary": "Top-level router: dispatches on the mode byte *(param+0x10) — modes 0-2 to FUN_005f6b00, modes 3-7 to FUN_005f6d20 (the two connect/join flow state machines).",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005f76f0",
+  "name": "lobby_screen_dispatch",
+  "subsystem": "lobby",
+  "summary": "Per-frame dispatcher (gated by busy-check FUN_005aec70) routing on screen-id *(param+1): 0->room page router FUN_005f7800, 1/2/3/9/0xa to area/scenario/room handlers.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005f8d40",
+  "name": "roomlist_screen_dispatch",
+  "subsystem": "rooms",
+  "summary": "Per-frame dispatcher for the room-list screen (busy-gated FUN_005aec70): routes on *(param+1) to FUN_005f8e20 (page router) and the area/scenario handlers.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005fe620",
+  "name": "lobby_menu_router",
+  "subsystem": "lobby",
+  "summary": "Top-level lobby menu router: guarded by FUN_005aec70, dispatches on current menu id (+1) to lobby/join/leave/create sub-flows (join=FUN_005f5f80, leave=FUN_006052f0).",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x005ff950",
+  "name": "lobby_page_dispatcher",
+  "subsystem": "menus",
+  "summary": "Top-level lobby/room page dispatcher: gated on busy (FUN_005aec70), routes by phase byte +1 (0=FUN_005ff9f0 room pages, 1=FUN_00603e40, 2=FUN_0062ba00/70), then runs the message/chat sender FUN_005ffdc0 when +0x43a is set.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x00616c40",
+  "name": "room_scene_state_dispatch",
+  "subsystem": "rooms",
+  "summary": "Per-tick dispatcher for the room scene: on major-state byte +0xe routes to phase handlers 0..4,0x0a,0x0b (setup/countdown/select/broadcast/finalize), gated by FUN_005aec70.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x006177d0",
+  "name": "modeB_scene_state_dispatch",
+  "subsystem": "menus",
+  "summary": "Per-tick dispatcher for a type-0x0b scene object: routes major-state +0xe (0..5) to six sub-handlers.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x00617a50",
+  "name": "list_menu_state_machine_618130",
+  "subsystem": "menus",
+  "summary": "Per-tick state machine (minor +0xf 0..4) for a scene driven by table 0x618130: opens a UI list (FUN_005c0e30), waits, and on a stored choice at +0x997 either resets the object or invokes FUN_005f6970.",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x00627a20",
+  "name": "roster_display_tick_timers",
+  "subsystem": "roster",
+  "summary": "Per-frame tick: decrements the per-slot countdown at 0x715512 for every in-use roster display slot (50).",
+  "opcodes": []
+ },
+ {
+  "dispatcher": "0x005acab0 lobby_overlay_frame_dispatch",
+  "state_var": "0x6c4b90 (lobby sub-screen)",
+  "group": "lobby",
+  "handler": "0x0062d5e0",
+  "name": "lobby_tick_gate",
+  "subsystem": "lobby",
+  "summary": "Per-frame tick entry: if FUN_005aec70()==0 and struct+1==0 run the major dispatcher FUN_0062d640, then FUN_005af1a0(struct,1).",
+  "opcodes": []
+ }
+]

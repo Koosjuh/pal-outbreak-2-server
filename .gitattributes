@@ -1,0 +1,14 @@
+# Server code runs on the Pi (Linux/node) with LF endings. Pin it to LF so the
+# repo stays byte-identical to the deployed runtime (repo md5 == Pi md5).
+/server/*.js text eol=lf
+/server/*.json text eol=lf
+
+# server-v2 deploys to the Pi the same way and is verified by md5 equality, so
+# it needs the same pin. Without it a scripted edit on Windows silently rewrites
+# a whole file to CRLF, which breaks md5 equality and buries the real diff.
+/server-v2/**/*.js text eol=lf
+/server-v2/**/*.json text eol=lf
+/server-v2/**/*.md text eol=lf
+
+# Pi systemd env drop-ins are applied on Linux — pin to LF.
+/deploy/pi-env.d/** text eol=lf

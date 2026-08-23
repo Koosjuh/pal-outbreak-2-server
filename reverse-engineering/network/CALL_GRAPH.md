@@ -1,0 +1,66 @@
+# CALL_GRAPH — hub functions (most connected)
+
+_Auto-generated from indexes/cross_references.json. Full adjacency there; edges in generated/callgraphs/edges.json._
+
+| Function | Resolved | #callers | #callees |
+|---|---|---|---|
+| FUN_001069a8 | FUN_001069a8 | 74 | 0 |
+| FUN_005b14b0 | input_pressed | 65 | 0 |
+| FUN_00618b60 | ui_reset_view_flags | 59 | 0 |
+| FUN_005af2c0 | ui_draw_set_color | 59 | 0 |
+| FUN_005ec1b0 | parse_quoted_attr_value | 54 | 0 |
+| FUN_001ec9e0 | subpool_free | 46 | 7 |
+| FUN_001ef400 | snap_ipc_call_rpc | 52 | 1 |
+| FUN_005af1e0 | ui_draw_text | 52 | 0 |
+| FUN_001ef3e0 | snap_ipc_lock | 52 | 0 |
+| FUN_001ef3f0 | snap_ipc_unlock | 52 | 0 |
+| FUN_005af2e0 | ui_draw_set_size | 51 | 0 |
+| FUN_005b9110 | set_msg_channel_id | 50 | 0 |
+| FUN_00106b60 | FUN_00106b60 | 48 | 0 |
+| FUN_001e180c | snap_packet_enqueue_send | 42 | 4 |
+| FUN_00109728 | FUN_00109728 | 46 | 0 |
+| FUN_005b68e0 | timeout_counter_reset | 45 | 0 |
+| FUN_001cb360 | gfx_decode_image_dispatch | 42 | 2 |
+| FUN_001d5288 | snap_alloc_pkt_buf | 41 | 3 |
+| FUN_005b6900 | timeout_counter_tick | 42 | 1 |
+| FUN_001ed2c0 | pktbuf_reserve | 39 | 4 |
+| FUN_001c9b00 | snap_app_sm_pump | 0 | 36 |
+| FUN_001ee590 | snap_send_retlen_ef8d0 | 31 | 2 |
+| FUN_00618ba0 | sprite_slot_alloc | 33 | 0 |
+| FUN_005b8cf0 | spawn_message_widget | 31 | 1 |
+| FUN_001c3c90 | build_packet_header | 30 | 1 |
+| FUN_0062fea0 | get_localized_table_c_deref | 31 | 0 |
+| FUN_001c3840 | noop_stub | 31 | 0 |
+| FUN_001d4d24 | snap_set_callback_slot | 31 | 0 |
+| FUN_00610830 | room_create_menu_sm | 1 | 29 |
+| FUN_00634ab0 | kbd_input_tick | 9 | 21 |
+| FUN_005cab10 | display_list_item_build | 25 | 4 |
+| FUN_00620d60 | data_xfer_sm | 2 | 27 |
+| FUN_005ba7b0 | set_ui_dirty_flag_c5538 | 29 | 0 |
+| FUN_0060f910 | net_menu_screen_tick | 1 | 27 |
+| FUN_005bdfe0 | dispatch_by_mode | 24 | 3 |
+| FUN_005be9a0 | copy_str_to_0x6fc5e8 | 27 | 0 |
+| FUN_005acab0 | lobby_overlay_frame_dispatch | 1 | 25 |
+| FUN_00622180 | screen_dispatch | 1 | 25 |
+| FUN_001d9f78 | snap_app_msg_dispatch | 1 | 25 |
+| FUN_00115c68 | sif_rpc_call | 22 | 4 |
+| FUN_00618c20 | FUN_00618c20 | 26 | 0 |
+| FUN_005c7d00 | keepalive_reset_idle_timer | 26 | 0 |
+| FUN_00637180 | kbd_close_if_flagged | 22 | 3 |
+| FUN_005eef70 | render_text_token | 20 | 4 |
+| FUN_006345e0 | open_name_entry | 9 | 15 |
+| FUN_001d46ec | snap_conn_create | 1 | 23 |
+| FUN_005bf1e0 | read_channel_committed | 24 | 0 |
+| FUN_005b09b0 | cursor_nav_byte | 22 | 1 |
+| FUN_00625190 | screen_sm_text_entry | 1 | 22 |
+| FUN_001c3b10 | buf_read_be32 | 22 | 1 |
+| FUN_005adc80 | box_arg_stub (opaque leaf accessor) | 23 | 0 |
+| FUN_00109eb8 | FUN_00109eb8 | 23 | 0 |
+| FUN_005af300 | ui_sound_play_b | 21 | 1 |
+| FUN_001c3b90 | read_decrypt_body | 18 | 4 |
+| FUN_001d5ae4 | snap_send_coalesce | 1 | 21 |
+| FUN_001d6468 | snap_flush_send | 1 | 21 |
+| FUN_005bea10 | msgbuilder_commit_field | 22 | 0 |
+| FUN_005af2f0 | ui_sound_play_a | 20 | 1 |
+| FUN_005b9060 | spawn_count_label_widget | 20 | 1 |
+| FUN_001c2770 | conn_shutdown_sm | 4 | 17 |

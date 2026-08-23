@@ -1,0 +1,23 @@
+FUNCTION FUN_000132b0 @ 0x000132b0 size=112
+CALLERS (1): FUN_00000aa0@0x00000aa0
+CALLEES (0): 
+
+undefined4 FUN_000132b0(void)
+
+{
+  DAT_00017d04 = DAT_00016ef0;
+  DAT_00017d08 = DAT_00016ef4;
+  DAT_00017d0c = DAT_00016ef8;
+  DAT_00017d10 = DAT_00016efc;
+  DAT_00017d14 = DAT_00016f00;
+  DAT_00017d18 = DAT_00016f0c;
+  DAT_00017d1c = DAT_00016f04;
+  DAT_00017d20 = DAT_00016f08;
+  DAT_00017d24 = DAT_00016f10;
+  DAT_00017d28 = DAT_00016f14;
+  DAT_00017d2c = DAT_00016f18;
+  return 0;
+}
+
+
+================================================================

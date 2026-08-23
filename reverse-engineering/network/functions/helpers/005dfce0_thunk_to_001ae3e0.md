@@ -1,0 +1,34 @@
+# 0x005dfce0 thunk_to_001ae3e0
+
+| field | value |
+|---|---|
+| Original address | 0x005dfce0 |
+| Binary / overlay | 3.DAT |
+| Module | overlay-3dat |
+| Original generated name | thunk_EXT_FUN_001ae3e0 |
+| Resolved name | thunk_to_001ae3e0 |
+| Subsystem | helpers |
+| Relevance | helper |
+| Status | classified (record from evidence-based classification; corrected pseudocode pending for non-core) |
+| Confidence | High |
+| Runtime validated | no |
+
+**Callers:** —
+**Callees:** —
+**Referenced globals:** —
+**Referenced strings:** —
+**Referenced opcodes:** —
+**State vars:** —
+
+## Behavioral explanation
+8-byte trampoline to 0x001ae3e0.
+
+## Notes / uncertainty
+(none recorded)
+
+## Raw decompilation
+`(thunk — no body)`  — untouched decompiler output.
+
+## Evidence
+- Classified from the raw decompile via the fan-out pass (callers/callees/globals/strings/control-flow).
+- Confidence **High**. Runtime validation pending. Promote to `reconstructed`/`validated` with corrected pseudocode + a trace.

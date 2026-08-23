@@ -1,0 +1,38 @@
+FUNCTION FUN_0000fb74 @ 0x0000fb74 size=184
+CALLERS (1): FUN_00000454@0x00000454
+CALLEES (5): FUN_0000ca20@0x0000ca20, FUN_0000c704@0x0000c704, FUN_0000d004@0x0000d004, FUN_0000cf80@0x0000cf80, FUN_0000d39c@0x0000d39c
+
+int FUN_0000fb74(undefined4 *param_1)
+
+{
+  short sVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  
+  sVar1 = FUN_0000c704();
+  iVar4 = (int)sVar1;
+  iVar2 = -2;
+  if (-1 < iVar4) {
+    iVar2 = FUN_0000ca20(iVar4,*(undefined2 *)((int)param_1 + 6),*param_1,
+                         *(undefined2 *)(param_1 + 1));
+    if (iVar2 << 0x10 < 0) {
+      FUN_0000d39c(iVar4);
+      iVar2 = -3;
+    }
+    else {
+      FUN_0000d004(iVar4,*(undefined1 *)((int)param_1 + 9),*(undefined1 *)((int)param_1 + 10),
+                   *(undefined1 *)((int)param_1 + 0xb),*(undefined2 *)(param_1 + 3),param_1[4],0);
+      iVar3 = FUN_0000cf80(iVar4,*param_1,*(undefined2 *)(param_1 + 1));
+      iVar2 = iVar4;
+      if (iVar3 << 0x10 < 0) {
+        FUN_0000d39c(iVar4);
+        iVar2 = -7;
+      }
+    }
+  }
+  return iVar2;
+}
+
+
+================================================================

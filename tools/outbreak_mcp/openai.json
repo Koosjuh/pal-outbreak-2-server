@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "model": "gpt-5.4-mini",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "timeout_seconds": 30,
+  "max_output_tokens": 1800,
+  "monthly_budget_usd": 10.0,
+  "stop_at_usd": 9.5,
+  "estimated_cost_per_1m_tokens": {
+    "input_usd": 0.15,
+    "output_usd": 0.60
+  },
+  "usage_log": "tools/outbreak_mcp/logs/openai_usage.jsonl",
+  "error_log": "tools/outbreak_mcp/logs/openai_errors.jsonl"
+}

@@ -1,0 +1,690 @@
+# SUBSYSTEM_MAP — network functions grouped by subsystem
+
+_Auto-generated. Per subsystem: count, then the CORE functions (relevance=core) with one-line behavior. The build guide: to make a protocol path work, satisfy what these core functions expect._
+
+## ui  (526 fns, 1 core)
+
+- **0x00612d10 screen_content_render_dispatch_0x4d** [High] — Content render dispatcher: switch(ctx+0x4d content id) routes to the specific panel renderer (room-member slots, room list, region select, room name/pw, scenario list, player entries, etc.) plus the common FUN_00612fd0 table pass.
+
+## menus  (341 fns, 15 core)
+
+- **0x001cfc90 send_op07_and_load_table** [High] — Channel 0x2100+, alloc tag 7, reliable send FUN_001cce80/offline FUN_001a0df0 with tmpl 0x24cbb0/0x24cbd0; then parses a large reply into 0x3ce2b0/0x3cdc90/0x3cdcb0 with a progress-UI wait loop for big payloads.
+- **0x001de298 snap_send_op43** [High] — Builds/sends opcode-0x43 (who 0xa000) with a single htonl u32; completion cb 0x2e, seq arg 0.
+- **0x005ac8a0 menu_top_dispatch** [High] — Top-level overlay tick: snapshots pad input then switches on faa (0,1,3,4,5,6,7,8,9,10,0x17) to the per-screen step handlers.
+- **0x005b1a30 dialog_task_dispatch** [High] — Modal-dialog/task dispatcher: clears busy flag +0x42c then switches on task-type +0x42d, running per-type handlers (msgbox/name-list/etc.).
+- **0x005fa0b0 menu_page_dispatch** [High] — Top page dispatcher: switch on screen id (+0xf) into the area/select/create/enter sub-screens; cases 4/7/8 raise error dialogs.
+- **0x005fa490 partner_select_grid_sm** [Medium] — Selection-grid screen SM (character/partner pick): reads D-pad/buttons, moves cursor over the 4-slot grid, plays SFX, guards on connection.
+- **0x005faa60 password_entry_screen_sm** [Medium] — Text/password-entry screen SM (buffer @0x6970a2): drives soft-keyboard input, timed prompts and confirm, guarded by connection check.
+- **0x005fb710 lobby_screen_dispatch** [High] — Screen dispatcher on page id (+0xf): routes to sub-screens FUN_005f8060 / fb9b0 / fb860 / fb790.
+- **0x005ff950 lobby_page_dispatcher** [High] — Top-level lobby/room page dispatcher: gated on busy (FUN_005aec70), routes by phase byte +1 (0=FUN_005ff9f0 room pages, 1=FUN_00603e40, 2=FUN_0062ba00/70), then runs the message/chat sender FUN_005ffdc0 when +0x43a is set.
+- **0x0060f910 net_menu_screen_tick** [High] — Top-level per-frame driver for the online lobby/create screen: switch(iRam0070d1d8) inits context/teardown, dispatches to the fetch/join/create sub-SMs (FUN_006101d0/00610580/00610830), maps their return codes to next state+message id, then runs the whole render tree.
+- **0x00612120 menu_layout_build_0x4a** [High] — Per-screen layout builder: switch(ctx+0x4a screen id) emits a sequence of UI element placements via FUN_00614c80 (element id, x, y) for each lobby/create/room panel; appends common elements 4 and 6.
+- **0x00621f10 overlay_entry_update** [High] — Overlay lifecycle entry: sets struct ptr (0x7152e0) then init(0)/update(1 -> run dispatcher FUN_00622180)/shutdown(2) based on phase iRam007153e8.
+- **0x00622180 screen_dispatch** [High] — Central screen dispatcher: reads the screen-id byte (*0x715298), calls the matching per-screen handler, and on its return code advances to the next screen via FUN_00621fb0.
+- **0x00625ea0 menu_scroll_list_nav_step** [Medium] — Per-frame menu-screen state machine (cRam007152e1 phases 0-3) with pad-driven cursor scroll over a uRam00365cf0-length list; drives display selectors, no wire I/O.
+- **0x0062d730 lobby_state0_area_select** [Medium] — Major-state 0 handler (area/room selection): initializes +0xf/+0x10 and builds UI via f500; on input (FUN_005b14b0 0x200/0x10) navigates list, else advances +0xe and loads next screen id from table at +0x1c.
+
+## rooms  (322 fns, 184 core)
+
+- **0x001c5900 snap_send_op26_create_prepare** [High] — Builds the create/prepare packet (opcode 0x26 = 'prepare' slot): sets up room name ptr (default 0x361a50 or conn+4) and data buffer (conn+8/0x35ccc8), emits seq(conn+0x9c)=0 + name string, transmits, advances to state 0x20.
+- **0x001c5a20 recv_op2d_transfer_setup** [Medium] — Reply parser (create/enter data transfer): reads status byte, validates echoed name (memcmp conn+0x28 vs local), reads total length into conn+0x2c and a flag into conn+0x2a; if nonzero sets window 0x2d2 and advances to state 0x21 (chunk receive) else branches 0x19/0x31/0x3f by fsm-state.
+- **0x001c5bd0 snap_send_op2b_enter_request** [High] — Emits opcode 0x2b carrying room name (conn+0xa0), a u32 (conn+0xd0) and u16 (conn+0xac); advances to state 0x22 — enter/join-with-payload request.
+- **0x001c5c90 recv_conn_data_chunk** [Medium] — Per-connection data-chunk receiver: validates echoed name + seq (conn+0x34), computes window using who-byte 0x8000 (fsm-state 3) or 0x1000 else, copies body to conn+0x35 buffer, on completion branches next-state 0x21/0x31/0x19/0x3f by fsm-state.
+- **0x001c5ea0 snap_send_op2d_request** [High] — Emits empty request opcode 0x2d and transmits; advances to state 0x2a.
+- **0x001c6dc0 snap_send_op1c_roomlist_request** [High] — Emits opcode 0x1c room-list request: resets counters (0x365e10; 0x365e00 when fsm-state 1) and appends resume-cursor 0x365e00; advances to state 0x05.
+- **0x001c6e80 recv_roomlist_header** [High] — Reply-0x1c handler: on status=1 reads two u32 (0x365e04 total, 0x365e00 cursor) and inits list counters, advances to state 0x06; on status=0 finalizes to state 0x0c (fsm 5) or 0x08.
+- **0x001c7000 snap_send_op20_roomlist_page_request** [High] — Emits opcode 0x20 room-list page request: appends progress counters 0x365e18/0x365e1a; advances to state 0x07.
+- **0x001c70b0 recv_roomlist_entries** [High] — Reply-0x20 handler: reconciles the active-room id table (0x3619d0, 64 u16 slots), then reads a batch of room records (0x260 bytes each at 0x365e20) — name(0x3e), id(0xf), 8 flag bytes, data(0xff) — advancing 0x365e0c; loops state 0x06 until 0x365e18>=total then state 0x08.
+- **0x001c7580 snap_send_op1e_detail_request** [High] — Emits opcode 0x1e room-detail request: appends the current room's stored id (0x365f7c) and name (record at 0x365e20 indexed by 0x365e0c*0x260); advances to state 0x09.
+- **0x001c7680 recv_roomlist_entry_detail** [Medium] — Reply-0x1e/detail handler and list-teardown: on status=1 stores room token (0x365f7c) -> state 0x0a; on status=0 advances room cursor 0x365e0c and either continues (state 0x08) or finalizes the list (member-count clamp into 0x365e1c, state 0x0c); peer-gone path (fsm 4) purges the id table.
+- **0x001c7980 snap_send_op22_request** [High] — Emits opcode 0x22 room request: appends counters 0x365e18/0x365e1a and the current room record name (0x365e20 indexed by 0x365e0c); advances to state 0x0b.
+- **0x001c9030 snap_recv_large_record** [High] — Reads a selector byte then a 0x13-byte header plus a 0xfeb-byte body into the 0x35ccc8 buffer (large room/scenario record), advancing substate to 0x29.
+- **0x001cf3e0 send_area_member_update** [Medium] — Selects channel (idx*8 + 0x1000/0x1100 by mode byte@0x549), presets attributes, allocs a 0x20 message and opens a reliable send via FUN_001cce80 with packed routing; on mode==1 also calls FUN_001cf570.
+- **0x001cf7c0 send_room_member_op** [Medium] — Selects channel (idx*8 + 0x1400/0x1600 by param_3), presets attrs, allocs 0x20 (tag 2/3), and emits a member op via FUN_001ce070; if param_3==1 also calls FUN_001cf6a0.
+- **0x001cfb30 send_op08_message** [High] — Channel 0x2a00, attribute preset (note key0=0x20), alloc tag 8, reliable send FUN_001cce80 (or offline FUN_001a1750), builds tmpl 0x24cb90/0x24cba0 and on success calls FUN_001d24c0.
+- **0x001dc0b8 snap_send_op46** [Medium] — Builds/sends reliable opcode-0x46 (len 0x28): two 16-byte name fields, a short (param_4) and a u32 (param_5, htonl); completion cb 0x2f, seq conn+0x614.
+- **0x001dc310 snap_send_op05_data** [High] — Builds/sends reliable (who 0xb000) opcode-4 with a single htonl u32 payload (create-slot / room id); completion cb 0x1e, seq conn+0x615.
+- **0x001dc508 snap_send_create_room** [High] — Builds/sends reliable opcode-4 with a 0x2c-byte struct: name (FUN_00109eb8), a packed 16-bit field, optional string (+0x14), and two more packed shorts/u32; completion cb 0x1f, seq conn+0x616.
+- **0x001dc804 snap_send_op05** [High] — Builds/sends opcode-5 with a single htonl u32, who 0xa000 (reliable set, no DATA bit); completion cb 0x20, seq conn+0x617.
+- **0x001dc9fc snap_send_join** [High] — Builds/sends reliable (who 0xb000) opcode-6 with a single htonl u32 (room id) — member JOIN/enter; completion cb 0x21, seq conn+0x618.
+- **0x001dcbf4 snap_send_join_named** [High] — Builds/sends reliable opcode-6 (len 0x14): htonl u32 (room id) + optional 16-byte string (password/name); completion cb 0x21, seq conn+0x618.
+- **0x001dcdfc snap_send_op06_var** [High] — Builds/sends opcode-6 (len 0x18, who 0xa000): two htonl u32 + optional string; completion cb 0x22, seq conn+0x619.
+- **0x001dd07c snap_send_leave** [High] — Builds/sends a zero-length reliable (who 0xb000) opcode-7 (leave room); completion cb 0x23, seq conn+0x61a.
+- **0x001dd1dc snap_send_leave_nodata** [High] — Builds/sends a zero-length opcode-7 with who 0xa000 (DATA-less leave variant); completion cb 0x24, seq conn+0x61b.
+- **0x001dd5f8 snap_send_op09_nodata** [High] — Builds/sends opcode-9 (len 8, who 0xa000): two htonl u32; completion cb 0x16, seq conn+0x61d.
+- **0x001dd840 snap_send_op09** [High] — Builds/sends reliable (who 0xb000) opcode-9 (len 8): two htonl u32; completion cb 0x17, seq conn+0x61e.
+- **0x001dda88 snap_send_op0b** [High] — Builds/sends reliable (who 0xb000) opcode-0xb with a single htonl u32; completion cb 0x1b (no per-op seq counter, seq arg 0).
+- **0x001ddc60 snap_send_op0e** [High] — Builds/sends a zero-length reliable (who 0xb000) opcode-0xe; completion cb 0x1a, seq arg 0.
+- **0x001ddda0 snap_send_op47** [High] — Builds/sends a zero-length reliable (who 0xb000) opcode-0x47; completion cb 0x30, seq arg 0.
+- **0x001de470 snap_send_prepare** [High] — Builds/sends opcode-0xc PREPARE (who 0xa000): copies a *(conn+0x64)-length session blob from param_2; completion cb 0x26, seq conn+0x61f.
+- **0x001de648 snap_send_op0d** [High] — Builds/sends opcode-0xd (who 0xa000) with a single htonl u32; completion cb 0x27, seq conn+0x620.
+- **0x001de9e8 snap_send_op10_multi** [High] — Builds/sends opcode-0x10 (who param_4|0xa400): prefixes a count (param_5) then param_5 htonl u32 recipient ids (from varargs) followed by a param_3-length blob; no completion cb.
+- **0x001ded08 snap_send_op10_multi_ptr** [High] — Builds/sends opcode-0x10 (who param_4|0xa400) identical to FUN_001de9e8 but recipient ids come from an array descriptor param_5 (count + ptr) instead of varargs; no completion cb.
+- **0x001df380 snap_send_op10_multi_unrel** [High] — Builds/sends opcode-0x10 with who param_2|0x2000 (unreliable): count + param_5 htonl u32 ids (varargs) + param_4 blob; no completion cb.
+- **0x001df66c snap_send_op10_multi_unrel_ptr** [High] — Builds/sends opcode-0x10 with who param_2|0x2000 (unreliable): recipient ids from array descriptor param_5 (count+ptr) + param_4 blob; no completion cb.
+- **0x001dfda0 snap_send_op14_seq** [High] — Builds/sends opcode-0x14 with who param_2|0x2000: copies a param_4-length blob; completion cb 0x28, seq conn+0x621.
+- **0x001dff7c snap_send_op25_name2int** [Medium] — Builds/sends reliable (who 0xb000) opcode-0x25 (len 0x18): 16-byte field (param_2) + two htonl u32; completion cb 0x29, seq arg 0.
+- **0x001e0ed8 snap_build_op49_addr_register** [High] — Builds the reliable op-0x49 (room-list/register) payload: iterates up to 0x20 address entries (stride 0xc), encodes each by type (1->0xd,2->0x15,else->9 bytes) with byteswapped fields, then hands to the packet enqueuer with opcode 0x49 / who-byte 0xb000.
+- **0x005acea0 screen0_init_clear_lists** [High] — Sub-screen 0 state machine (+0xf): on entry zeroes the two 10-entry list arrays 0x6c3860(0xd98) and 0x6c3030(0x828) and clears each entry's type byte, resetting the room/roster tables.
+- **0x005ad030 roomlist_grid_nav_sm** [High] — Sub-screen 1 state machine: handles D-pad navigation (FUN_005b14b0 direction masks) over a list, moving cursor 0x907 with wrap, and on select calls FUN_005ad350 to enter an entry.
+- **0x005ad350 list_entry_select** [High] — Entry-select/confirm logic for the list: validates the chosen entry (type byte==3) at index*0x15c in 0x6c386e, reads its id fields (5bafc0/5bb010), records selection into 0x6c45f8; returns 1=accept/-1=reject.
+- **0x005b3070 screen_roomlist** [High] — Screen-3 room-list machine: loads the room-list arrays (count 0x6c4630; name/meta/detail tables 0x6c4634/0x6c4674/0x6c46c4), drives selection, and delegates join/create to 0x5b3c30.
+- **0x005b3790 screen_character_select** [Medium] — Screen-7 character/scenario-select machine: enumerates selectable characters 1..11 (0x5bac80), snapshots host/room info (0x874f3x), builds selection widgets, and toggles mode 0x874f35 on confirm.
+- **0x005b3c30 roomjoin_dispatch** [High] — Room enter/create sub-dispatcher: switches on +0x900 (0-3) to the four join/create phase handlers; returns -1 on invalid.
+- **0x005b3cb0 roomjoin_state0_open_list** [High] — Join phase 0: if rooms exist (0x6c4630), opens the room-list picker widget (list 0x5b7fd0 id 0xb, layout 0x5b4c80(9)) and sets active flag +0x454; else marks empty (phase 3).
+- **0x005b3d80 roomjoin_state1_pick_room** [High] — Join phase 1: reads the picked room's name/meta from 0x6c4634/0x6c4674 by index, waits for input, and routes to enter (phase 2) or full/locked branches.
+- **0x005b3ed0 roomjoin_state2_enter** [Medium] — Join phase 2: full enter-room flow — builds list/prompt widgets, checks slot availability (+0x43c), handles the join handshake and password/retry sub-widgets (0x5b45f0/47a0).
+- **0x005b41b0 create_room_entry_sm** [High] — Join phase 3: create-room flow — 7-state machine driving name/password entry (widgets 0x16/0x17 via 0x5b7fd0, keyboard 0x5b4860) and the create handshake, with retry/timeout via 0x5b47a0.
+- **0x005b53f0 roster_record_apply_filtered** [High] — Registered command handler (selector id 5): parses an incoming room/player record (0x5c4b90) and applies it (0x5f50d0), area-filtered, scanning the 4 player slots at 0x6c7c2c (stride 0x3b0).
+- **0x005b6950 build_room_create_request** [High] — Assemble a room create/register request struct (param_1) from local user/config (0x874f* handle, name 0x874fa0, options), scan up to 4 local character slots resolving names vs 0x874fc0, set counts/flags at param_1+8..+0xc and per-entry rows, then submit via FUN_005bdd60.
+- **0x005bba20 inroom_subevent_dispatcher** [High] — In-room sub-event dispatcher (dispatch code 0x13): switches on the sub-selector byte at msg+8 (cases 1..0x11) to route room title, member add, ready-state, names, chat, scenario, timer and game-event handlers.
+- **0x005bbb90 inroom_set_room_title_desc** [High] — Sub-event 1: zero-fills then loads a 0x300-byte room title/description block (0x6fc2d8/0x6fc2e8) from the payload, records owner id (0x6febe8), and enqueues a UI refresh (FUN_005bdfe0(0xc)).
+- **0x005bbf20 inroom_scenario_start_reset** [High] — Sub-event 3: when in-room (0x6ff2b1==1), clears scenario/game-start state (0x6ff2b2/0x6ff2af and the 0x654 buffer 0x6fb758) then either enters scenario (FUN_005c5c10 + start FUN_005bdf90(1)) for game-modes 0x04/0x0e or resets to lobby (FUN_005c5c70).
+- **0x005bc0e0 inroom_set_player_counts** [High] — Sub-event 5: when in-room, copies two scenario-selection bytes (payload+5 and payload+4) into 0x6ff2b3/0x6ff2b4.
+- **0x005bf410 start_room_stat_register_txn** [High] — Guarded launcher for the room STAT/USER registration: latches room index (param&0xffff)@0x6cbc24, arms state machine FUN_005bf470, stores user cb.
+- **0x005bf470 room_stat_register_sm** [High] — State machine that registers the created room: builds DIOL/STAT payloads for up to 4 player slots (loops 0x6cbc1c 0..3) then sends a USER register, via reliable compose+send.
+- **0x005bf740 user_register_reply_handler** [High] — Reply handler for the USER reliable txn: on ok advances SM (0x6cbc35=1); if reply tag==USER stores reply id into registry-A slot (0x6fec18) and render struct 0x6ce5de; on 0x27 sets error.
+- **0x005bfa70 start_enter_txn** [High] — Allocates a request slot (FUN_005be0a0) and sends a reliable USER enter/register (func_0x001dc9fc, cb 0x5bfb40), recording selector+txn id into request table 0x6ca97c/0x6ca97e; stages channel-0.
+- **0x005bfb40 enter_reply_handler** [High] — Reply handler for the enter txn: on ok clears status, commits channel-0 (FUN_005bf180), refreshes room state (FUN_005c4dc0), stores result word 0x6cbc80; on 0x27 error path sets 0x6cbc84=0xff and FUN_005c7e30(5); then re-arms UI (FUN_005bdfe0).
+- **0x005bfd80 reset_channel1_unlock** [High] — Resets scenario/char lock 0x6ff2b1=0, stages+commits channel-1, then invokes the committed channel-1 callback ptr with ok(0).
+- **0x005bfe00 start_leave_txn** [High] — Allocates a request slot (FUN_005be0a0), builds selector FUN_005c2080(1), sends a reliable txn (func_0x001dd07c, cb 0x5bfe90), recording selector+txn id in request table 0x6ca97c/0x6ca97e.
+- **0x005bfe90 leave_reply_handler** [High] — Reply handler for FUN_005bfe00: on ok clears status, clears channel-1 (FUN_005bf130), stores result word 0x6cbc80; on 0x27 sets error; re-arms UI (FUN_005bdfe0).
+- **0x005bffa0 start_registerB_user_txn** [High] — Allocates a request slot, builds selector FUN_005c1e70(2,..), sends a reliable USER register (func_0x001dd5f8, tag 0x55534552, cb 0x5c0060) keyed from registry-B (0x6fee68), recording selector+txn id.
+- **0x005c02b0 send_register_maxi** [High] — Allocates a txn slot, builds a register message (opcode 0x7b via 1e70) and sends a 'MAXI' (0x4d415849) reliable command tied to room record param_1 over the SN@P conn.
+- **0x005c0400 create_room_enter_screen_set_host** [High] — Enters the create-room screen: FUN_005bf0e0/5bf180 set room slot 2, sets host/create flag 0x6ff2b0=1, zeroes buffer 0x7006d0, then invokes the supplied completion callback.
+- **0x005c04f0 send_op6e_with_name** [High] — Allocates a txn slot, builds op 0x6e with a string payload (via 1ff0), sends the reliable command (func_0x001dcdfc, arg param_2 + count 1) for room record param_1, and sets room slot 2.
+- **0x005c05c0 on_reply_create_enter_op6e** [High] — Reply handler for the create/enter (op6e) request: on success sets room-owned state 0x6ff2b1=1 and 0x6ff2b2=1, timer 0x96; on error 0x27 sets fail status and inspects reply field +4==0xf; stores UI status and triggers redraw.
+- **0x005c0750 room_commit_send_stat_op70** [High] — If room-owned flag 0x6ff2b1 set, allocates a txn, advances 0x6ff2b1 to 3, and (if host 0x6ff2b0) sends a 'STAT' field =0x40000000 then op 0x70; otherwise invokes callback and bails.
+- **0x005c0e30 room_enter_begin** [High] — Begins the enter-room sequence (guard 0x6cbb6c): zeroes roster 0x6cdbe6, stores room slots 0/1/2 (bf0e0), sets room state 0x6ff2b1=3, and arms pump FUN_005c1c80 with completion ctx param_4.
+- **0x005c1770 pump_room_list_query** [High] — Async pump (guard 0x6cba2c): initializes the 30-entry room-list table 0x6cfb58 (0x144), clears raw records 0x6fee6c and host flag 0x6ff2b0=0, then sends a 'LOID'+'STAT' query for 0x1e=30 rooms and registers reply handler FUN_005c19d0.
+- **0x005c19d0 on_reply_room_list** [High] — Room-list reply parser: for each reply entry NOT flagged 0x40000000, fills raw records 0x6fee6c (0x24) and room-list table 0x6cfb58 (0x144) — id, occupancy (max at +0x20 vs cur at +0x14 => status 4 full else 3), passworded bit ((flags>>1)&0x8000), name; caps at 30 (0x6ca898); sets 0x6ce5c2=0x1e.
+- **0x005c1c80 pump_room_enter_sequence** [High] — Enter-room state machine (guard 0x6cbb6c, step 0x6cbb68 cases 0-5): probes room slots via FUN_005bf1e0, drives sub-steps FUN_005c0750 (STAT commit) and FUN_005bfe00, releases slots (bf180/bf130) on completion, and fires the completion callback 0x6cbb4c with ok/err.
+- **0x005c2120 send_op_d3_prepare** [High] — Sets flag 0x7005ad=1, allocates a txn, builds op 0xd3 (2250) and sends the reliable command (func_0x001de470, arg buffer 0x7004d0) with reply slot registration.
+- **0x005c2f40 build_scenario_config** [Medium] — Assembles the room's scenario/character configuration table into 0x6d2297: reads the scenario sub-record, decodes bitfields, calls the two cast builders, tallies rows into cRam006d2296, and (mode 1) copies the live player list or (mode 0) latches the 0x6d2294/95 config flags.
+- **0x005c3190 scenario_detail_request_sm** [High] — State machine (0x6cba50/54/55) that requests a room's scenario detail: from idle it either issues a transport request (0x1de0c0) against the room record at 0x6fee68 or, when 0x6ff2b0 is set, builds config locally (FUN_005c2f40) and copies the name; on completion invokes callback pcRam006cba34.
+- **0x005c3490 room_enter_commit_sm** [Medium] — Large enter/create-commit state machine (0x6cba78/7c/7d): builds the room-enter request packet (scenario id, player/difficulty bitfields, flags into 0x6febe4) at 0x7004d0/0x7005b0/0x7005c0 and sends via 0x1de470; on ACK sets the ownership lock uRam006ff2b1=1, uRam006cbc7e=0x10 and kicks bdfe0(0x18).
+- **0x005c39e0 room_enter_ack_cb** [High] — Reply callback for room_enter_commit_sm: status 0x00 -> 0x6cba7d=1 (ok), 0x27 -> 0x6cba7d=2 (fail).
+- **0x005c3a40 room_create_reply_cb** [High] — Create-room reply handler: on status 0x00 sets 0x6cba7d=1 AND 0x6ff2b0=1, stores the returned room handle (*(param2+4)) into the room record at idx*0x24+0x6fee8c, and copies the room name (0x6cc01a) into the slot's name field; status 0x27 -> fail(2).
+- **0x005c44a0 room_leave_or_create_finalize** [High] — Handles room teardown/finalize: mode0 just clears 0x6cbc84 and defers to bf230; when the create flag 0x6ff2b0 is set it marks the slot record (idx*0x144+0x6cfb70 = 1), sets current slot, enters UI state 0x10 and kicks bdfe0(0x21); otherwise routes to FUN_005c5ff0.
+- **0x005c4580 unlock_scenario_select** [High] — Sets the ownership state uRam006ff2b1=3 (unlocks title/pw/scenario/char editing) and triggers bdf90(1,0).
+- **0x005c5a10 handle_room_ready_reply** [High] — Processes a room-state reply: on type 0x00 fills room slots 0x700420/424/428 from payload (or zeroes them), on 0x27 sets error, computes conn hash and posts state event 0.
+- **0x005c5c10 send_op04_create_slot** [High] — Builds and sends the reliable app-opcode 0x04 create-slot packet (full 0x304-byte body) to the target.
+- **0x005c5c70 send_op10_room_info** [High] — Builds and sends the reliable app-opcode 0x10 room-info packet (0x304-byte body) to the target.
+- **0x005c5f70 send_op0b_word** [High] — Builds and sends a reliable app-opcode 0x0b packet with a 4-byte payload to the target.
+- **0x005c6050 send_op0c_prepare** [High] — Builds and sends the reliable app-opcode 0x0c prepare packet with a 4-byte payload to the target.
+- **0x005c60d0 send_op11_word** [High] — Builds and sends a reliable app-opcode 0x11 packet with a 4-byte payload to the target.
+- **0x005c6150 send_op0e_bare** [High] — Builds and sends a 4-byte reliable app-opcode 0x0e packet to the target.
+- **0x005c61b0 send_op0f_bare** [High] — Builds and sends a 4-byte reliable app-opcode 0x0f packet to the target.
+- **0x005c6210 roster_sync_sm_init** [High] — Initializes the room-roster sync state machine: seeds a 4-entry candidate table at 0x6ff2bd from stack args and registers FUN_005c6500 as the pump callback.
+- **0x005c6500 room_roster_sync_sm** [High] — Room create/enter roster-sync state machine (phases in cRam006cbb90): builds member list from candidate table, waits for accepts, then broadcasts op03/05/06/07/08/09 to sync every member and fires completion cb.
+- **0x005c7320 build_send_loid_stat_msg** [High] — Builds a LOID/STAT status app-message for the current member slot (DAT_00640580 payload) and sends it reliably with reply cb FUN_005c7790.
+- **0x005c75d0 build_send_loid_stat_msg_v2** [High] — Phase-2 variant of the LOID/STAT send: same member-slot status upload but with DAT_006405a8 payload and reply cb FUN_005c7850.
+- **0x005c8ae0 state_handler_wait_join_reply** [High] — State handler: dequeues a session message (FUN_005d8340), and on type +5==9 bumps the join/ack counter (0x60dcc); at 2 advances to state 2, else resets to idle.
+- **0x005c8bc0 state_handler_msg_to_error** [High] — State handler: on any dequeued message, sets result=-1 and advances to state 3 (error/leave path).
+- **0x005c8d10 state_handler_store_reply_advance** [High] — State handler: on dequeued reply, if subtype +5==9 aborts via FUN_005d5e90(-1); otherwise stores payload word to 0x68dd0 and advances sub-state.
+- **0x005c9360 room_name_validate_advance** [High] — Copies the room/host name (0x701e20) into the session name field and validates it against two reference strings; sets valid/invalid flag (0x60dc7) and advances room-create sub-state.
+- **0x005c9460 room_enter_reset_member_fields** [High] — Room enter/create reset: clears the six 17-byte member/chat name fields and status flags, seeds host name (FUN_0010a4f0), sets mode flags (0x68e80-82,0x68e84=2), and registers redraw (FUN_005dd920(0x14,..)).
+- **0x005c9690 room_enter_state_handler** [High] — Per-frame handler for a room/lobby screen state: processes the queued net result via FUN_005cc980 and, on the right pad+flag combo, sends op06 (member enter/join) or advances/ tears down the screen.
+- **0x005c9c50 roomlist_screen_enter** [High] — Enters/refreshes the room-list screen: inits cursor geometry, drains a queued result (FUN_005d5640), scans the 500-entry display list for room ('\r') and type-0x0e rows, and positions the cursor on the row whose name matches the saved room name at +0x43b.
+- **0x005ca0a0 inroom_member_tick** [High] — State-8 (in-room) tick: on pad+phase==1 sends op06 and advances to state 9, otherwise runs the roster-fill pass (FUN_005cce30) and the room timeout tick (FUN_005cd1d0).
+- **0x005cccf0 roomlist_query_dispatch** [High] — Scans the display list for room ('\r') rows and, for populated ones, issues a per-row query (FUN_005dedf0 builds key -> FUN_005d76b0 sends), marking row state and bumping the 0x2d request counter; sets next sub-state 8 or 10.
+- **0x005ce530 room_confirm_nav_input** [High] — Input handler for the room confirm/leave dialog (phases 4/5/6 of 0x68e85): on pad it either leaves the room (sends op07 via FUN_005d5c20) or opens the leave sub-screen (FUN_005d09d0), setting a result/SFX code at 0x68e7a; otherwise does normal up/down nav.
+- **0x005cf1e0 room_exit_input_handler** [High] — Sets phase 0x68e85=0xb and, on confirm pad, either counts pending room ('\r' state1) rows and re-sends op0b (FUN_005d5c20(0xb)) or pops the screen; branches on cRam003c8a80 (connection/link state).
+- **0x005d70b0 build_req_enter_or_create** [High] — Builds a txn-queue record for the current room: opcode 0x06 (enter, if the looked-up room is the current one, state=5) else 0x04 (create-slot, state=3), subtype 1, copying who-bytes 0x108/0x109 from the room.
+- **0x005d71e0 build_req_enter_or_prev** [High] — Like build_req_enter_or_create but using the reverse room iterator (FUN_005d6810): opcode 0x06/state5 if current, else opcode 0x05/state4, subtype 1.
+- **0x005d7320 build_req_op06_refresh** [High] — Builds an op06 (enter) txn record for the current room, subtype 1, stamps a fresh sequence byte (cRam00701010++) into +0x108 and who-byte from cur_room_whobytes_ptr; sets pending kind=5.
+- **0x005d7420 build_req_op01** [High] — Builds a txn record with opcode 0x01 subtype 1 for the current room payload, stamps seq byte, who-byte 0; sets pending kind=1.
+- **0x005d74a0 build_req_op03** [High] — Builds a txn record opcode 0x03 subtype 1 for the current room payload, stamps seq, then FUN_005d6a10(record+0x108,1,1) to register a slot; sets pending kind=2.
+- **0x005d76b0 build_req_op01_sub2** [High] — Builds an opcode 0x01 subtype 2 txn record for the current room, copies who-bytes; if FUN_005df7b0(room) reports not-ready sets state 6 with error class 0x124=2.
+- **0x005d8840 room_cursor_advance** [High] — Advances the current-room cursor iRam00701018 through the room-list pool according to the pending request kind uRam00701000 (1/2 forward+skip, 3 forward, 4 reverse) using the room iterators.
+- **0x005e6630 parse_list_entry_fields** [High] — Parses one comma-separated list entry (name + trailing type digit) into the per-slot record table @0x874500 (0x104-byte stride, indexed by param_1), setting a type code (0/1/2/3) at record+0.
+- **0x005e67a0 parse_list_message_apply** [High] — Applies a parsed lobby LIST/screen message: switch on message id (1-7) reads a sequence of quoted tokens (FUN_005e5e50) and dispatches each field to the state-applier FUN_005d9ea0 with field ids, building room/user lists of up to 10 entries.
+- **0x005e9a90 room_size_reset_apply** [High] — Applies arg, sets max=cfg+0x8f2=4 and cur=cfg+0x8f4=0, then FUN_005ed1f0(0).
+- **0x005e9ae0 room_size_reset** [High] — Applies arg, sets max cfg+0x8f2=4 and count cfg+0x8f4=0 (no redraw call).
+- **0x005e9b20 room_apply_by_count** [High] — Applies arg; calls FUN_005ed1f0(0) if count cfg+0x8f4==0 else FUN_005ed1f0(1).
+- **0x005e9b70 parse_room_max_0x8f2_min4** [High] — Parses decimal into cfg+0x8f2 (max players); clamps minimum to 4.
+- **0x005e9bd0 parse_room_count_0x8f4_min2** [High] — Parses number (FUN_005ec6d0) into cfg+0x8f4; clamps minimum to 2.
+- **0x005f8060 exit_room_flow_sm** [High] — State machine on +0x10 (0-4) for leaving a room: fades/timers, sends the leave request FUN_005c0e30(...,cb 0x5f81a0), then transitions screens via FUN_005f6970 based on context byte +0x997.
+- **0x005f82a0 on_room_action_reply** [High] — Reply handler gated on pending flag cRam006c4fbb=='\x05': on result 0 enters the room-list screen FUN_005f8b50(0); on failure resets the 0x6c4b9e state block and tears down net FUN_005b9110(0x4c).
+- **0x005f8340 build_room_detail_display** [High] — Registers the room-detail/create-screen display list: 2 header widgets (IDs from 0x649758, cb FUN_005f84c0), 2 label widgets (LAB_005f8ab0), 2 cursor widgets (LAB_005f8960), and 10 player-slot rows (cb FUN_005f85e0).
+- **0x005f8ec0 request_room_list** [High] — SM on +0xf: initializes the room-list table 0x6c0760 (30 entries stride 0x15c, indexed), then sends the room-list query FUN_005bff20(0,0xb7,cb 0x5fc0c0) and waits.
+- **0x005f8fc0 roomlist_cursor_sm** [High] — SM on +0xf: moves the cursor over room-list entries (FUN_005b1190 over page/index +0x448/+0x449), reads the entry status byte at 0x6c076e — cases 1/3 select a room and transition into join (sets +0xe), default raises a prompt (FUN_005f8d00).
+- **0x005fada0 room_join_screen_sm** [High] — Enter/join-room screen SM: builds request struct (@+0x1e50, memset 0xd4), sends join with password buffer 0x6970a2 (timeout 0x708), handles reply code @+0x9a9.
+- **0x005fb060 room_entry_decision_sm** [High] — Post-select routing SM: reads room-slot flags 0x10000/0x20000 (@0x6c0774) + mode cRam00343571 to choose create vs join vs locked path.
+- **0x005fb270 room_confirm_dialog_sm** [High] — Confirm/cancel dialog SM for enter/create: reads button glyph cRam006c462a ('P'/'O'/'+'), issues the network action (FUN_005b1420/1460), handles timeouts and rollback.
+- **0x005fc0c0 roomlist_reply_refresh** [High] — Room-list reply handler (pending-state 9): parses reply sub-byte; on full-list rebuilds the room-slot table (0x6c0760, count 0x6c4602) via per-field decoders, else handles sub 0x0a/0x0b.
+- **0x005fc2b0 reply_handler_state0a** [High] — Op-reply handler (pending-state 0x0a): on ok(0) sets room-created/enter flags, on error(-1) shows dialog 0x14.
+- **0x005fc360 reply_ack_pending0b_step_or_dialog48** [High] — Op-reply handler (pending-state 0x0b): on ok increments step counter 0x6c4ba0, on error shows dialog 0x48.
+- **0x005fc520 reply_ack_pending0f_step_or_dialog48** [High] — Op-reply handler (pending-state 0x0f): on ok increments 0x6c4ba0, on error shows dialog 0x48.
+- **0x005fc610 reply_ack_pending12_proceed_or_rebuild** [High] — Op-reply handler (pending-state 0x12): on ok calls FUN_005f7610 (proceed), on error resets the list flags and rebuilds.
+- **0x005fc6b0 reply_ack_pending13_opendetail_or_backout** [High] — Op-reply handler (pending-state 0x13): on ok advances via FUN_005f8b50(sel), on error backs out via FUN_005f6970(4).
+- **0x005fc730 reply_ack_pending14_step_or_backout** [High] — Op-reply handler (pending-state 0x14): on ok increments step 0x6c4ba0, on error backs out via FUN_005f6970(4).
+- **0x005fc7c0 reply_ack_pending11_errctx_dialog14** [High] — Op-reply handler (pending-state 0x11): on ok increments 0x6c4ba0, on error shows dialog 0x14.
+- **0x005fe8d0 roomlist_screen_init_and_ingest_sm** [High] — Menu screen init/step-machine that registers the field-sync decoder callbacks and, in case 5, parses a server list (count byte, per-entry 0x14a8 stride, inner name loop of 0x41 stride) into the 0x6970xx room/area tables.
+- **0x005fede0 room_detail_screen_sm** [High] — In-room detail screen state-machine (cases 0-5): builds the option menu (FUN_00601760/006018d0), runs cursor nav (FUN_005ff1b0), renders roster (FUN_00602700), and copies the selected member block (0x908 slot) into the display buffers.
+- **0x005ff9f0 room_subpage_dispatcher** [High] — Room sub-page dispatcher: routes byte +0xe (0..4) to the create/list/detail/stats sub-screens (FUN_005ffa90/005ffb20/005ffbe0/00600200/00600d10).
+- **0x00600200 room_detail_screen_sm_variant2** [High] — Second in-room detail screen state-machine (parallels FUN_005fede0 for the 0x10 room variant): syncs the selected member slot 0x908, copies the current-slot record into cb4ec/cf5c0/2e1c display buffers, advances via FUN_00600b60, and renders roster via FUN_00602700.
+- **0x00601170 field_decode_room_counts_0764** [High] — Field-sync decoder callback: decodes five per-player 2-byte fields at 0x6c0764/66/68/6a/6c via FUN_005c0370 (or zeroes them) — includes 0x6c076a, the room capacity/count used for join gating.
+- **0x00601d50 render_room_detail_screen** [High] — Renders the room-detail screen text: room field 0x6c0762/0x6c0764 or 0x6c0602 (host name path), scenario/host labels, and player-name lookups (FUN_005fe4b0/func_0x001b68b0) via the string table, using FUN_005af1e0 draws.
+- **0x00603d90 roster_ctx_finish_by_opcode** [High] — Terminal transition of the room-context state machine: branches on the context opcode (0x0c prepare / 0x04 create-slot / else) to set the next sub-state (+0xe..0x11) and clears busy flag +1.
+- **0x00603e40 roster_ctx_state_machine** [High] — Two-phase room-context driver: state0 seeds the member table (FUN_00603f30) and enters state1; state1 pumps the member-sync SM (FUN_00604180) and on completion branches on opcode 0x0c/0x04 to pick the next state.
+- **0x006052f0 prepare_ctx_state_machine** [High] — Variant room-context driver: state0 builds the screen (FUN_00605430); state1 polls reliable-reply gates (FUN_005b14b0 across masks) and dispatches to finish handlers FUN_00603d90 (data present) or d70/d50 (param branch) — i.e. resolves a prepare/enter transaction outcome.
+- **0x00606cf0 roomlist_screen_tick** [High] — Per-frame state-machine dispatcher: switch(0070cdb8) states 0-5 into the room-query/select screen handlers, then render tick FUN_00618c30.
+- **0x00606fc0 roomquery_fetch_sm** [High] — State-0 room-query screen: polls network (005c7900/005c7a00), on results copies bRam008744f8 room records (0x158 stride @0x70c000) via 005c7bd0 and drives retry/jingle via 00607a10.
+- **0x00607370 roomquery_state3_select** [High] — State-3: waits on input/timer, polls 005c7a00 & 00607a10, and on selection copies the chosen record into staging 0x874410 (from 0x874500 stride0x104 and 0x70c048 stride0x158), then selects via 005c79d0.
+- **0x0060f210 roomtable_find_by_keys** [High] — Linear-searches the global room table 0x35c000 (0x1c stride, 0..0x22) for a live entry (+0=!-1) whose +0x14 and +0x18 key strings both strcmp-match (param_1,param_2); returns index or -1.
+- **0x0060f2c0 room_slot_claim_ownership** [High] — Claims global owned-room pointer piRam0035c3d8 for room table[param_1] iff currently unowned, entry+0x8==1 (open) and entry+0=1 (live); returns 1 claimed, -2 not-claimable, or 0/-1 if already ours/foreign.
+- **0x006101d0 roomlist_fetch_sm** [High] — State machine (switch ctx+0x2c) that opens/pages the room list: recv via FUN_00618230/18520/18530, records available pages in bitmask +0x25, then FUN_0060ef20 opens the query, counts modes, and on success builds+registers rooms (FUN_0060ed40) and indexes them (FUN_0060e710). Returns -3/-2/-1/0/1.
+- **0x00610580 room_join_sm** [High] — Join-room state machine (switch ctx+0x20): registers user (FUN_0060e9b0,0x3ca2d0), runs the fetch SM, on a hit resolves the room (FUN_0060e820,0x3c98b0), validates the slot (+0x25c>=0), claims ownership (FUN_0060f2c0), primes send (FUN_006153b0/006150b0) and arms a 0x3c countdown. Returns SN@P error codes -1..-5.
+- **0x00610830 room_create_menu_sm** [High] — Large create-room configuration state machine (switch ctx+0x20, states 0-0x13): edits player-count/scenario/region/password/points fields from input bits, drives dialog nav (FUN_00618xxx), and in case 0x12 commits — resolves the room (FUN_0060e1c0/0060f1b0 reserved-check), opens query (FUN_0060ef20/0060ee80), claims slot (FUN_0060f2c0), registers+enters (FUN_0060e9b0/0060e820) and returns 1.
+- **0x00616c40 room_scene_state_dispatch** [High] — Per-tick dispatcher for the room scene: on major-state byte +0xe routes to phase handlers 0..4,0x0a,0x0b (setup/countdown/select/broadcast/finalize), gated by FUN_005aec70.
+- **0x00617110 room_phase02_broadcast_selects** [High] — Room phase-2: builds a 4-byte per-player selection array (from each player's +0x22c8/+0x22ca) at 0x70f330 and submits it to the network layer (func_0x001d40e0), then latches room id fields from +0x1f18.
+- **0x00628110 query_op11_send_step** [High] — Sub-step of the member machine that emits app opcode 0x11 (room/member query) via FUN_005b7fd0 and waits on the reliable-send window before setting the +0x443 done flag.
+- **0x00628e10 charsel_room_task_dispatch** [High] — Per-frame task dispatcher for the character/room-select machine: runs sub-state uRam00695cf8 (cases 0-8) across select/confirm/register/password sub-steps.
+- **0x00628f70 charsel_pick_sm** [High] — Character-pick state machine: moves the selection index (clamped by FUN_00629160 against room player count bRam006c555e), and on confirm value 8/9 branches to sub-machines, else copies the 0xa5-byte character block into the active slot.
+- **0x006290e0 charsel_register_send_step** [High] — Charsel sub-step that, after its timer expires, rebuilds the widget/render and sends app opcode 0x09 (register) via FUN_005b7fd0 with the chosen slot.
+- **0x006293f0 room_password_entry_sm** [High] — Password/keyboard sub-machine (cases 0-7): looks up an entry in table 0x870880 (FUN_00604860), shows the input dialog via FUN_005b8da0/8cf0, validates (FUN_005af440), and times the retry/close windows.
+- **0x006296a0 room_join_by_name_sm** [High] — Room-join sub-machine (cases 0-10): finds the target member in master roster 0x694700 by name/id (FUN_00604860 + memcmp), opens a confirm dialog, commits via FUN_006049b0, and re-syncs the display roster (FUN_006278e0).
+- **0x0062a6d0 room_slot_select_menu** [Medium] — Room/member-slot selection state machine: cursor at +10 (0..4), memsets/copies the +0x1055 roster+name array, plays SE, advances sub-state.
+- **0x0062aeb0 room_enter_menu** [Medium] — Enter handler that first drives the network enter submachine (FUN_0062cf50 @0x7154a0); on success builds widgets and dedups name scratch across the 3 slots.
+- **0x0062bb20 roster_screen_enter** [Medium] — Enter handler for the roster/member-list screen: zeroes the +0x10b8 (0x20a) and +0x12c2 (0x19e) member buffers, builds widgets, bumps state.
+- **0x0062bbc0 room_slot_select_menu2** [Medium] — Room-slot selection variant with a selection==3 special branch; polls occupancy (FUN_0062bd50), clears scratch (FUN_0062cf10) and copies the +0x1055 name slot.
+- **0x0062c1d0 room_enter_menu2** [Medium] — Enter handler (screen 3) that drives the network enter submachine (FUN_0062cf50 @0x7154a0), builds widgets and dedups name scratch across the 3 slots; twin of FUN_0062aeb0.
+- **0x0062c9f0 validate_selected_member** [Medium] — Validates the selected id (+0x10b8) against globals: looks up type/status (FUN_005bafc0/5bb010/5bae30) and returns an action code 0..4, writing name fields +0x8ec/+0x8ed.
+- **0x0062cb00 room_action_commit** [Medium] — Commits the room action: resets +0x10b4, sets +0x9a9=0xff and +0x42b=0x1f, then launches the action dialog (FUN_005c0e30 cb 0x62cba0) with the selected id, or FUN_00617a00 when id==0.
+- **0x0062d1b0 build_member_record** [Medium] — Builds the member/registration record: scans the slot-count table (0x715512 stride 0x14) for a free slot, else copies name+id (0x694700/0x694710, stride 0x38) into a 0x25 output record and fires the request (func_0x001b0140(1)).
+- **0x0062d950 lobby_state2_dispatch** [High] — Major-state 2 sub-dispatcher on struct+0xf: 0->d9f0(roomlist init), 1->dae0(list scan), 2->dc40(create), 3->de90(enter/roster), 4->e2a0(exit).
+- **0x0062d9f0 roomlist_state_init** [High] — State2/sub0 init: zero-fills room table 0x6c0760 (0x28c8 bytes) and param+0x9ac (0x1e), seeds 0x1e room-index entries (stride 0x15c), sets screen +0x42b=9 and requests room list via FUN_005bff20(0,0xb7,0x62e9b0).
+- **0x0062dae0 roomlist_select_scan** [High] — Scans room table 0x6c0760 (up to uRam006c4602 entries) for a joinable room: entry-state byte==3 and per-room flag +0x9ac==0, testing attribute bits 0x20000/0x10000 in 0x6c0774 vs cRam00343571; picks room -> sets 0x6c4600 and +0xf to 2(join) or 3(enter).
+- **0x0062dc40 create_room_flow** [High] — Create-room state machine (struct+0x10 switch): builds a 0xd4-byte room-create record at +0x1e50 (fills char stats from sRam006c4b94, uRam006c4b9c, bRam00343625) and sends via FUN_005bd940(...,0x62eb70); later steps register replies 0x62ec90/0x62ed30/0x62edc0.
+- **0x0062e440 room_join_sequence** [High] — Room-join sequence (struct+0x10 switch): sends join steps for selected room 0x6c4600 via FUN_005c0a00(...,0x62f1e0) and FUN_005bffa0(...,0x62f2b0), sets screen +0x42b=0x17, arms retry timer +0x98c, restarts frame via FUN_005af120.
+- **0x0062e5b0 room_member_join_gate** [High] — Member-join gate (struct+0x10): checks room member count at +0x456 against 4 (full-room check) and drives join/enter, advancing +0xf to 2 (enter) on success; builds slot UI via FUN_0062f890.
+- **0x0062e720 room_leave_flow** [High] — Leave-room flow: sets screen +0x42b=0x23, sends leave request via FUN_005c0e30(...,0x62f480); on reply branches on +0x997 (1->FUN_005f74d0, 2->FUN_00617a00 lobby reset).
+- **0x0062e800 room_back_exit** [High] — Back/cancel from room (struct+0x10): sets screen +0x42b=0x19, sends via FUN_005c0750(0x62f3f0); on completion resets 0x6c4b90 block (b9e=1, timer 0x6c5530=0x708).
+- **0x0062e8e0 room_enter_arm_queries** [High] — Room leave/cleanup: resets 0x6c4b90 substates (b9e=3), clears roster/room state at 0x6c79ac (0xec0 bytes), reinit timers (0x6c5514=0x3c,0x6c5518=0x14) and re-requests room detail via FUN_005c0f60(...,0x62ef80)/FUN_005c2820(...,0x62eff0).
+- **0x0062e9b0 roomlist_reply_populate** [High] — Room-list reply callback (expects cRam006c4fbb==9): on status 0 reads room count into 0x6c4602 then per-room (stride 0x15c into 0x6c0760) unpacks id/state/attrs/name via FUN_005c02xx/03xx accessors; sets phase substate b9f=1.
+- **0x0062ec90 create_room_ack_handler** [High] — Reply callback (expects cRam006c4fbb==0x11): status 0 advances substate ba0, else error resets ba0=5, ba1=0 and FUN_005be9a0(0x6c517c).
+- **0x0062ed30 create_room_ack_handler_step14** [High] — Reply callback (expects cRam006c4fbb==0x14): status 0 sets ba0=7, ba1=0, flag 0x6c5539=0xff; else FUN_005f6970(4) error.
+- **0x0062edc0 roomlist_reply_populate_v2** [High] — Room-list reply callback variant (cRam006c4fbb==9): like e9b0, unpacks room count 0x6c4602 and per-room fields (0x6c0762/76e/76f/774) into table 0x6c0760; sets b9f=1, timer 0x6c5530=0x708.
+- **0x0062ef80 room_detail_reply_handler** [High] — Reply callback: on status 0 loads room-detail record for selected room 0x6c4600 into 0x6c5510 via FUN_005c0fd0, else clears 0x6c5510.
+- **0x0062f060 enter_step_ack_handler** [High] — Reply callback (expects cRam006c4fbb==0x0a): status 0 sets 0x6c550e=1 and bumps ba0; status 0xff resets ba0=0, b9f=1, timer 0x6c5530=0x708 and FUN_005be9a0(error).
+- **0x0062f2b0 selected_room_update_handler** [High] — Reply callback (guard cRam006c4b90==0x0e): bumps ba0; status 0 updates selected-room entry 0x6c0762 (via FUN_005c01d0), else zeroes its 0x6c0606 field.
+- **0x0062f3f0 back_exit_ack_handler** [High] — Reply callback (expects cRam006c4fbb==0x19): status 0 clears ba1 and bumps ba0, else FUN_005f6970(4) error.
+
+## transport  (307 fns, 146 core)
+
+- **0x00100838 net_rpc_resolve_request** [Medium] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x00100b70 net_rpc_bind_svc595** [Medium] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x00100e88 net_rpc_bind_svc593** [Medium] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x001010a8 net_rpc_init_term** [High] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x00101388 net_rpc_ctl_svc59a** [Medium] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x00101580 net_rpc_ctl_svc59c** [High] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x00113cd0 stream_filter_event** [Medium] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x00114ac8 printf_via_output_vector** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00115a98 sif_rpc_bind** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00115c68 sif_rpc_call** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00115e60 sif_rpc_bind_ready** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00137578 rpc_bind_once** [High] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x0015c920 mwsfd_init_refcounted** [Low] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001801b0 request_slot_alloc_and_submit** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00183fd0 file_size_query** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001840d0 memcpy_bytes** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00184120 queue_28a3d0_post** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00184140 queue_28a3d0_take** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001841d0 netstack_teardown_stage2** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00186320 copy_64byte_block_vu** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00186610 read_triple_at_0x30** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001889b0 clone_blob_at_p8_len0xc** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00188a30 clone_blob_at_p0x14_len0x18** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00188ab0 invoke_197ae0_return_true** [Low] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00188ad0 record_subsystem_reset_wrapper** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00189530 record_get_count16** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00189bb0 descriptor_array_init_inline** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00189db0 descriptor_array_init_ptrtable** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00195e00 subsystem_init_build_table10_register** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00199850 record_effective_count** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00199890 record_get_count_by_key** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001998c0 record_get_u32_at** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00199d50 tlv_read_u16_list_tag100000** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00199df0 tlv_read_config_block_tagf0000** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x00199f10 tlv_get_value_tag2** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0019a010 tlv_get_value_tag9** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0019a110 tlv_entryA_payload_ptr** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0019a1e0 tlv_entryB_payload_ptr** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0019a210 tlv_get_value_tag50000** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0019a260 resource_table_copy_all** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0019aaf0 resource_entry_lookup_typed** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0019d3e0 netstack_is_ready** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a0df0 asset_request_chanA** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a0e90 asset_request_chanB** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a0eb0 asset_load_by_triplet** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a1750 asset_load_named_or_indexed** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a2220 iop_reboot_and_load_image** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a4cd0 rpc_call_sync_2arg** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a5440 cmdring_push_byte** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a56f0 rpc_call_sync_3arg** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a5bb0 reqqueue_enqueue_16** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a79b0 lz_decompress_halfwords** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a7b70 draw_reg_write** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a8730 is_idle** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a99c0 handle_table700_add** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a9a90 handle_table64_add** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a9ae0 handle_table64_remove** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a9c30 fifo_pop_u32** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001a9d30 slot_alloc_bitmap600** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001aa580 zero_init_block_0x640** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001aa780 reset_state_and_clear_flag_4fa64f** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001ab460 record_pool_reserve** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001ab580 record_pool_clear_by_ptr** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001ab6d0 clear_word_4f9f8c** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001ae3e0 measure_text_width** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001afc20 asset_loader_state_reset** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001b3720 snap_submodule_init_0x337d40** [Low] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001bf140 streambuf_bytes_remaining** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001bf170 streambuf_read_ptr** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001bf180 FUN_001bf180 (two-stage buffer op)** [Low] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001bf230 streambuf_consume_compact** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001bf2e0 net_get_link_status** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001bf580 FUN_001bf580 (const-zero stub)** [Low] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001bf5e0 net_adaptor_init** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001c3380 netbuf_step_dispatch** [Medium] — Per-tick driver of the connection object: syncs (func_0x005c7d00) then dispatches PTR_FUN_002487c0[state 0x365acc] and copies a 0x14-byte status result out.
+- **0x001c9850 snap_connect_state_machine** [High] — TCP connection-establishment sub-SM: phase 0 init, phase 1 resolve (FUN_001c08e0), phase 2 connect to 0x35ccb0 port (FUN_001c3850), phase 3 poll (FUN_001ee430) with 0x708 timeout and retry.
+- **0x001d507c snap_conn_reset_seq_state** [High] — Resets a connection's sequence/window state: stores peer id at +0x4c, zeroes send cursor +0xc, clears the two seq-head cells, seeds the seq at +0x4a, and sets state field +0x48=2.
+- **0x001d5460 snap_retransmit_scan** [Medium] — Walks the in-flight/unacked queue (conn+0x58), and for packets whose cumulative size fits the window it checks the resend counter against conn+0x518, bumps retry timers, and requeues onto the send list; overflow sets error 300/200 at conn+0x50c.
+- **0x001d5ae4 snap_send_coalesce** [Medium] — Aggregates queued send buffers (conn+0x60 pool) into combined datagrams under the merge policy and a 0x37f size budget, splitting/joining nodes and tagging merged packets with the 0x800 bit.
+- **0x001d63b8 snap_build_ack_header** [High] — Builds a standalone ack packet header 0x6010 (0x6000|0x10), stamps its seq from the source packet and the peer id from conn+0x44.
+- **0x001d6468 snap_flush_send** [High] — Send-path flush: coalesces (001d5ae4), attaches ack header (001d63b8), assigns outbound seq numbers from conn+0x16, appends the 0xba476611 trailer/checksum, encrypts, and transmits each datagram; failure sets conn+0x143.
+- **0x001d6dfc snap_process_recv_queue** [High] — Drains the reassembled reliable-in queue (conn+0x68), handing each completed message to the app-dispatch (001d9f78) and freeing it.
+- **0x001d72a8 snap_transport_tick** [High] — Main per-poll transport dispatcher: stamps the clock, pumps the handshake (001d7104), receives datagrams, validates source and the 0xba476600 magic, runs the accept-gate (001d6988), flushes sends (001d6468), delivers messages (001d6dfc), and scans retransmits (001d5460).
+- **0x001e16b4 snap_reserve_reorder_slot** [Medium] — Walks the reorder list at struct+8 looking for a node comparing 0x1000; splits/allocates a fragment via the pool watermark alloc and re-links it, tagging nodes with 0x200/0x1000 markers.
+- **0x001e180c snap_packet_enqueue_send** [High] — Core send-path packet finalizer: validates body length, stamps who-byte(+0x2c with len&0x3ff), opcode/flags(+0x2e), src(+0x30); if unreliable assigns seq conn+0xc, if reliable(0x8000) marks retransmit(0x8001); enqueues onto the conn TX list (conn+0x60).
+- **0x001e1ac8 snap_ack_retire_packet** [Medium] — Pops an acked/received node from the socket queue (struct+8, falling back to conn+0x60), tags it 0x800, updates rate accounting (e19c4), and returns it to the pool.
+- **0x001e1c10 snap_inorder_delivery_gate** [High] — In-order delivery gate: repeatedly scans the reorder list (conn+0x5c+4) for the node whose seq == expected(*(conn+0x5c)), moves it to the ready list (conn+0x68) and increments expected; stops when a gap remains.
+- **0x001e34dc socket_sendto** [High] — sendto() for an established dgram socket (state 0x7f,type2): sends payload to the sockaddr(len 0x10) via FUN_001eff60.
+- **0x001e366c socket_send_or_recv** [Medium] — send()/recv-ish: for stream(type1, state 0x7f/0xff4) transmits via FUN_001efb80 after pumping e4bec; for dgram(type2) dequeues a buffered packet (eb434) and reads it out via FUN_001ed7e0.
+- **0x001e3880 socket_recvfrom** [High] — recvfrom() for a dgram socket(type2): dequeues an inbound packet (eb434), copies payload (ed7e0) and fills the source sockaddr (ed3f4/ed4fc) into param_5.
+- **0x001e3a3c socket_rx_demux_pump** [High] — Receive worker: pulls raw datagrams off the device (FUN_001f0070), matches the destination socket by id (e2a90), allocates a pool buffer, copies payload+addr+flags and appends it to that socket's RX queue (sock+8).
+- **0x001e3ba8 socket_select** [High] — select(): scans read/write fd bitmasks (param_2/param_3) over up to 0x40 sockets, pumps state (e4bec) and the RX demux (e3a3c), counts ready descriptors and clears not-ready bits.
+- **0x001ea8e8 blowfish_ecb_hashed_key** [High] — Derives a key by SHA-1-hashing two input pairs (param_3/4, param_5/6), then encrypts param_1 in 8-byte blocks via a keyed block-cipher round (FUN_001e5104) with endian transforms around each block.
+- **0x001ebed0 subpool_init** [High] — Builds the 3-tier reliable-transport buffer pool: allocates a 0x78 conn/pool struct, sets tier MTUs (0xec/0x22c/0x3ac) and high-water counts (6/3/3), inits three lists (+0/+0x14/+0x28), and preallocates param_2/3/4 buffers into each tier.
+- **0x001ec1f8 subpool_alloc** [High] — Allocates a buffer from the 3-tier pool sized to param_3: picks the smallest tier whose MTU (0x5e/0x64/0x6a header-adjusted) fits, dequeues a node, tracks the low-water mark, bumps starvation counters, and latches the high-water flag when a tier drains past its watermark.
+- **0x001ec9e0 subpool_free** [High] — Returns a buffer to its tier: validates it (FUN_001ed034), matches its capacity to one of the three tier MTUs (0xec/0x22c/0x3ac), tags the tier id, re-inserts it, bumps the free counter, and clears the high-water latch once the tier refills above threshold.
+- **0x001ecdc0 subpool_release_all_if_idle** [High] — If all three channels' computed seq (FUN_001eb2d4) equals stored base at +0x5c/+0x62/+0x68, drains each queue (FUN_001eb434) processing+freeing entries via FUN_001ee024, then releases conn; else returns 0xffffe0c1 (-7999).
+- **0x001ef310 snap_ipc_bind_rpc** [High] — Initializes the SN@P IPC layer: lazily CreateSema()s semaphore 0x37aee0, zeroes queue counters, then spins receiving on message-queue 0x37df10 (FUN_00115a98) until ready (iRam0037df34!=0).
+- **0x001ef400 snap_ipc_call_rpc** [High] — Sends an IPC request on queue 0x37df10 via FUN_00115c68, 16-byte-aligning the two length args (param_3/param_5) and passing the shared send/recv buffers 0x37cf00 and 0x37bf00.
+- **0x001ef4a0 snap_ipc_rpc_type5** [High] — Synchronous IPC RPC: locks (ef3e0), sends message type 5 with 0x20-byte buffers via ef400, reads reply word from 0x37bf18, unlocks (ef3f0), returns it.
+- **0x001f0070 snap_rpc_poll_event** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0230 snap_rpc_cmd1a_set_u16** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0290 snap_rpc_cmd1f** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f02e0 snap_rpc_cmd20** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0330 snap_rpc_submit_room_request** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0450 snap_rpc_cmd22** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f04a0 snap_rpc_get_status_block** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0560 snap_rpc_get_word** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f05c0 snap_rpc_op25_put_blob** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0650 snap_rpc_op27_mode_on** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f06a0 snap_rpc_op28_mode_off** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f06f0 snap_rpc_op29_phase2** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0750 snap_rpc_op53_cmd** [Low] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f07a0 snap_rpc_op2a_phase5** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f07f0 snap_room_enter (op2b)** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0840 snap_room_exit (op2c)** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0890 snap_room_transfer (op2d)** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0920 snap_rpc_op2e_query_u32** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0980 snap_rpc_op33_cmd2w** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f09f0 snap_rpc_op34_query3w** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0a80 snap_rpc_op35_cmd** [Low] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0ad0 snap_rpc_op37_cmd2w** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0b40 snap_room_create (op38)** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0bf0 snap_room_close (op39)** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0c40 snap_req_fn3a_set_blob512** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0cb0 snap_req_fn3b_set_word** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0d10 snap_req_fn3c_query_word** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0d90 snap_req_fn4d_get_word** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0df0 snap_req_fn4e_list_records** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0eb0 snap_req_fn4f_set_word0** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f0f10 snap_req_fn50_cmd** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f1e40 snap_local_table_reset** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f1fe0 iopdev_rpc_init** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f22a0 iopdev_rpc_enumerate** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f2348 iopdev_rpc_open** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f25e0 iopdev_rpc_set_mode** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f26e0 iopdev_set_params** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f2728 iopdev_set_flag4** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f2778 iopdev_set_field8** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f27c8 iopdev_rpc_poll** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f33e8 endpoint_set_mode** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f46e0 netmod_state_reset** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001f58b8 netlib_init_version_gate** [High] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x005bc860 register_snap_message_handlers** [High] — Registers the overlay's SN@P message handlers on the connection handle (0x6febac) via func_0x001d4d24(handle, code, addr): binds codes 0xd/0xe/0xb->name-reply, 3/7->area count, 0x13->in-room subdispatch, 0x15/4/5/2/6/8/10 to their handlers.
+- **0x005d7a30 txn_recv_step** [High] — Drives the receive side of a txn record: per mode char (FUN_005df7b0) calls FUN_0060dea0/FUN_0060d4f0 to read a datagram into +0x118/+0x11a; on -3/-2 (fatal) sets state 6, on success stores length at +0x114, and drops stale roster nodes whose id collides.
+- **0x00605d60 recv_framed_chunk** [High] — Length-prefixed stream reader: polls the socket (func_0x001ee430), parses a 12-byte header once (magic/type==4) to latch expected length from bytes +4/+5, then copies body in bounded chunks into the caller buffer, tracking consumed vs expected and returning progress/rollover/-1.
+
+## helpers  (288 fns, 0 core)
+
+
+## session  (280 fns, 137 core)
+
+- **0x0017c6b8 build_tagged_record** [Medium] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x0017c920 find_tagged_record** [Medium] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x0017e5f8 dbcsock_open** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017e700 dbcsock_close** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017e900 dbcsock_poll** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017eb98 dbcsock_bind** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017ee60 dbcman_init** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017f0e8 dbcman_config** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017f158 dbcman_open** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017f230 dbcman_close** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017f2b8 dbcman_bind** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017f4f8 dbcman_ctl_0x315** [Medium] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017f568 dbcman_ctl_0x316** [High] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x0017f5d8 dbcman_ctl_0x317** [High] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x0017f648 dbcman_set_pair_0x31d** [High] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x0017f6d0 dbcman_transfer_0x318** [High] — Network-string referencer (DNAS/HTTP/socket) — pending reconstruction.
+- **0x0017f818 dbcman_transact** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017f948 dbcman_send_data2** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017faa8 dbcman_send_data3** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017fc10 dbcman_ctl_recv** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017fd28 dbc_cmd_get_01038002** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x0017fda8 dbc_cmd_send_0103400b** [High] — Missed lower network stack (DNAS/HTTP/socket/DNS/Avetcp) — pending deep reconstruction.
+- **0x001c0ca0 connect_poll** [High] — Non-blocking connect progress (mode==1): polls FUN_001ef1c0, resolves peer FUN_001ef230, opens socket FUN_001ef2b0; stores fd in ctx[4] or -1 on failure.
+- **0x001c0e60 conn_mode_dispatch** [High] — Dispatcher: logs then jumps through PTR_FUN_00248460[type] (type = *param_1) to the per-mode connection state machine (e.g. FUN_001c0f40/19e0).
+- **0x001c0f40 auth_conn_sm_modeA** [High] — Large DNAS-auth/connection state machine (states 'd','c',0x00-0x0a): drives connect->handshake->keepalive, builds error codes 0xaa/0xab/0xae/0xaf/0xfb/0xfd/0xfe into out-status, branches on peer reply 0x35a6e0.
+- **0x001c19e0 auth_conn_sm_modeB** [High] — Second large connection/auth state machine (states 0x00-0x1f incl. matchmaking/query steps): retries with backoff (0x35b74c/e ttl), calls resolver/connect helpers and FUN_001ef0d0/eee60 query polls; emits errors 0xaa-0xad.
+- **0x001c2770 conn_shutdown_sm** [High] — Connection close/retry sub-state machine (states 0x00-0x14): tears down socket, retries DNS/connect via FUN_001ee190/ef0d0/eeb50, mode-branches on 0x35c3d8 and src-sel 0x35bec8.
+- **0x001c4100 snap_send_session_hello** [High] — Builds the session open/register handshake: derives+stores the session key at conn+0x4c (FUN_001c3ab0), emits selector(0,2) with two config strings and a capability/flags byte, transmits, advances to state 0x36.
+- **0x001c42d0 snap_send_op18_request** [High] — Emits empty request opcode 0x18 and transmits; advances to state 0x03.
+- **0x001c4360 recv_reply_u32_368480** [High] — Reply handler: on peer-gone sets global 0x368480=0 else reads a u16 into it; advances to state 0x10.
+- **0x001c43c0 snap_send_op1a_request** [High] — Emits empty request opcode 0x1a and transmits; advances to state 0x0f.
+- **0x001c4450 recv_session_params_block** [High] — Reply handler that loads an 8-field parameter block (timeouts/limits) into 0x368484..0x368492 — literal defaults on peer-gone, else 8 u16 reads; advances to state 0x04.
+- **0x001c4560 snap_send_op16_request** [High] — Emits empty request opcode 0x16 and transmits; advances to state 0x15.
+- **0x001c45f0 recv_reply_u32_36847c** [High] — Reply handler: sets global 0x36847c (0 on peer-gone else FUN_001c3b10), then branches next-state on current fsm-state (0x0e / 0x2d / 0x31).
+- **0x001c46a0 snap_send_op0f_request** [High] — Emits empty request opcode 0x0f and transmits; advances to state 0x1e.
+- **0x001c4730 recv_register_info** [High] — Reply parser for state 0/7: reads several u32 fields into user/registration globals (0x248338,0x248358,0x349f70) plus 14 more discarded reads; advances to state 0x1f. On peer-gone tears down.
+- **0x001c67b0 snap_send_op28_request** [High] — Emits opcode 0x28 (the op28 selector reply) with no extra body and transmits; advances to state 0x24.
+- **0x001c6840 recv_two_name_blobs** [High] — Reply parser (state 0/7): reads an optional u16 into 0x35b9e8 then up to two 0x100-byte blobs into 0x35b8e0 and 0x35bee0; advances to state 0x25.
+- **0x001c8b60 snap_send_op35_record** [High] — Builds and sends the op-0x35 packet serializing a fixed profile/config record from 0x365a70 (byte/u16/u32 fields, 3x(u32,byte,byte), 8x u32), then advances substate to 0x2e.
+- **0x001c8dd0 snap_send_op05_or_finalize** [High] — If create-in-progress flag set, finalizes/errors the session; otherwise builds and sends an op-0x05 packet.
+- **0x001c91d0 snap_recv_session_config** [High] — On first pass reads a 0x3e-byte record into 0x35cc70 and a u16 server port into 0x35ccb0 (used later to open the TCP connection), then advances to substate 0x31.
+- **0x001c92d0 snap_xfer_dispatch_by_mode** [High] — Top-state dispatcher that on state 0/7 reads a 0xe-byte handshake, extracts a 10-byte id (0x365dd1) and 4-byte tag plus two u32 lengths, seeding the data-transfer state; other states just set the next substate.
+- **0x001c94c0 snap_send_op0d_data_chunk** [High] — Builds and sends an op-0x0d data-upload chunk (10-byte id + offset + length, capped to fit 0x300) advancing the sent offset (+0x12) and substate to 0x18.
+- **0x001c95e0 snap_recv_data_chunk** [High] — Receives a data-download chunk: reads a 10-byte id, memcmp's it against 0x365dd1, then reads up to 0x8000 into iRam00365df0; loops (substate 0x17) until total (+0x1c) reached, then 0x31.
+- **0x001c9b00 snap_app_sm_pump** [High] — The central per-tick app-protocol driver: polls the socket (FUN_001ee430), then on ready dispatches ~40 sub-state handlers (create/list/roster/transfer steps) via a big switch on substate +0xd, arming reply-waits with FUN_001c3450.
+- **0x001ca410 snap_lookup_resolve_sm** [Medium] — Sub-SM issuing a lookup/keepalive query: phase 0 sends marker 0x62, phase 1 sends 0x63 and resolves via FUN_001c08e0, phase 2 sends 0x64 and on count>=100 sets result state 3.
+- **0x001cfa30 libsnap_send_op06_member_join** [High] — Sends the op06 member JOIN/enter: channel (toggle*0x80+0x1800), alloc tag 6, opens reliable send FUN_001cce80 with packed (p3|p1<<16|p2<<8) and marks member flags at 0x4de3e0; offline path calls FUN_001a0eb0.
+- **0x001d0040 libsnap_send_op04_create_slot** [High] — Channel 0x2000, alloc tag 4, reliable send FUN_001cce80 (offline FUN_001a1750) with tmpl 0x24cc50/0x24cc60/0x24cc80 (uRam0034357a); parses the reply into 0x3ce350 and sets list ptr 0x3ce30c.
+- **0x001d46ec snap_conn_create** [High] — Allocates+zeroes the 0x624 connection struct, stamps the 'SNAP-SWAN' magic, creates the UDP socket (AF_INET/DGRAM), binds a port from 2000 upward, wires sub-pools, and publishes it to the global conn ptr.
+- **0x001d4de0 snap_conn_destroy** [High] — Tears down the session: closes the socket (*conn), frees per-module state, and clears the global conn ptr to 0.
+- **0x001d6ee0 snap_build_prepare_msg** [High] — Builds the connection prepare/establish control message: resets seq state, byteswaps the token at conn+0x88, allocates a 0x36c buffer, emits 'MR'/'LC' TLV fields, and queues it with who-selector 0x3000.
+- **0x001d7104 snap_handshake_pump** [High] — Connection handshake/keepalive state machine over conn+0x80 (states 1/2/3): on timer expiry sends the prepare message (001d6ee0) and advances state, else fires the periodic keepalive (001d94b0).
+- **0x001d94b0 snap_session_notify_timeout** [High] — Synthesizes a session-result descriptor (status 0x14) to the app callback at conn+0x5b8 and resets the connect state machine (0x7c/0x80=0).
+- **0x001d9550 snap_session_notify_connected** [High] — Delivers a session event (status 1) carrying peer IP(param+0x30)/addr(+0x3c)/port(+0x40, byteswapped) to the conn+0x5b8 callback; calls FUN_001d507c to record the port, then clears state.
+- **0x001d9678 snap_connect_reply_handler** [High] — Handles the connect/open reply while state==1: decrypts+validates the datagram (FUN_001e5538/FUN_00109d70), records peer session fields (0x500/0x504/0x508/0xa8), formats peer IP string, advances state 1->2 and arms timeout 0x51c; on validation fail delivers status 0x13 and resets.
+- **0x001d9b6c snap_keyexchange_reply** [High] — Secure-handshake responder: decrypts incoming (FUN_001e5538 key conn+0x4d4), runs DH/crypto step FUN_001ea8e8 against conn+0x484, builds an 0x88-byte encrypted reply (FUN_001e56c8) and sends it reliably with opcode 0x41; sets errno 0x65/0x66 on alloc/send failure.
+- **0x001db7e8 snap_session_open** [High] — Builds and sends the SN@P session-open/connect request (opcode 0x2c, who 0x3000): copies key material to conn+0x484/0x4ac, encodes peer/port/name fields, appends LC/MR TLVs (FUN_001eac0c 0x4c43/0x4d52), sends, sets state 0x80=1 and arms timeout; registers completion cb 0x1c.
+- **0x001dbd0c snap_send_close** [High] — Sends a zero-length reliable opcode-2 message (session close/bye) when conn+0x50c lock is clear; sets errno 0x65/0x66 on alloc/send fail.
+- **0x001dbefc snap_send_op03** [Medium] — Builds/sends a reliable (who 0xb000) opcode-3 message carrying a 16-byte blob (param_2 copied via FUN_00109eb8); completion cb 0x1d, seq counter conn+0x614.
+- **0x001dd33c snap_send_register** [High] — Builds/sends opcode-8 register (who param5|0xa000): u32 tag (param_2) + variable blob; skips the tag byteswap when tag == 'NAME' (0x4e414d45); completion cb 0x25, seq conn+0x61c.
+- **0x001df9a8 snap_send_op12** [Medium] — Builds/sends a zero-length opcode-0x12 with who 0x2000 (unreliable, empty command); no completion cb.
+- **0x001dfad0 snap_send_op13** [Medium] — Builds/sends a zero-length opcode-0x13 with who 0x2000 (unreliable, empty command); no completion cb.
+- **0x001e270c socket_create** [High] — socket()-like allocator: validates domain(==2) and type(1=stream/2=dgram), reaps closed slots, claims the first free slot in the table, stamps type and flushes it.
+- **0x001e2c7c socket_accept** [High] — accept() for a listening stream socket (state 0xff5/0xff6): drives the accept handshake loop (FUN_001efcf0 + nanosleep), claims a free table slot for the new peer, sets it established(state 0x7f) and fills the returned sockaddr.
+- **0x001e2ffc socket_listen** [High] — listen(): on an unbound stream slot (state -1) opens a passive endpoint via FUN_001ef690 using stored addr(+0xe)/port(+0x10) and transitions state to 0xff5 (listening).
+- **0x001e3100 socket_bind** [High] — bind(): requires sockaddr len 0x10; for stream(type1) stashes addr(+0xe)/port(+0x10); for dgram(type2) opens a bound endpoint via FUN_001efee0 and moves to established(0x7f).
+- **0x001e332c socket_connect** [High] — connect() for a stream socket: advances the state machine (e4bec) and, when in 0xff4/0x7f, issues the connect via FUN_001ef9a0, transitioning to 0xff2 on pending.
+- **0x001e3f98 socket_close** [High] — close(): for stream sockets initiates teardown (FUN_001ef770, state->0xff3); for dgram flushes the RX pump thrice, tears down the endpoint (FUN_001f0230) and frees the slot (0xffff).
+- **0x001e4bec socket_state_machine_pump** [High] — TCP-like connection state machine: polls the lower layer (FUN_001ef830) for events and drives slot state through 0xff0..0xff6/0x7f (handshake, established, closing) transitions per event flags.
+- **0x001ee6e0 snap_session_reset** [High] — Resets the SN@P session: calls FUN_001ef4f0() and clears state-machine var and two mode flags to 0 (init/teardown of session state).
+- **0x001eea10 snap_submit_record_f0330** [High] — Marshals fields from a caller record (pointer-of-pointer at +4, dwords +0x14/+0x18/+0x1c, +2 of sub-struct, +0xc, byte +6) into FUN_001f0330(1,...) then advances state-machine to 2.
+- **0x001eeb00 snap_state_enter_3_a** [High] — State transition: clears flag 0x37a298, sets state-machine var to 3, sets flag 0x37a2a3=1.
+- **0x001eeb30 snap_state_enter_4_a** [High] — State transition: clears flag 0x37a2a3, sets state-machine var to 4.
+- **0x001eed60 snap_state_enter_5_a** [High] — Calls FUN_001f0450() then sets state-machine var to 5.
+- **0x001eee30 snap_state_enter_2_b** [High] — Calls FUN_001f06f0() then sets state-machine var to 2.
+- **0x001eee90 snap_state_enter_3_b** [High] — State transition: clears 0x37a298, sets state var to 3, sets 0x37a2a3=1 (duplicate of FUN_001eeb00).
+- **0x001eeec0 snap_state_enter_4_b** [High] — Calls FUN_001ef5c0(), clears 0x37a2a3, sets state var to 4.
+- **0x001eef50 snap_state_enter_5_b** [High] — Calls FUN_001f07a0() then sets state var to 5.
+- **0x005ade20 screen7_session_sm** [High] — Lobby screen-7 state machine (+0xe): runs the session/connect sequence, snapshots a 0x1d0-byte table 0x870f10->0x6ca090, diffs it (memcmp), and on change pushes it via 5bea90 (cb 0x5ae0b0), driving the ae130 sub-sequence.
+- **0x005ae130 session_seq_dispatch** [High] — Session/connect sub-sequence dispatcher: switches on screen-obj +0x993 (0..6) to the seven ordered connect steps ae1e0..ae3c0.
+- **0x005ae310 session_seq_step4_connect** [High] — Session-seq step 4: calls FUN_005c8810 (connect/handshake) reading its status (-100/-1/1/0); on done/err resets gfx (ac380) [+ thunk 6235f0 on error] and advances cursor.
+- **0x005b25c0 lobby_init_and_register_handlers** [High] — Screen-0 init: zeroes lobby buffers and registers ~30 command/selector handlers via 0x5bdf70, then builds+submits the session USER registration struct.
+- **0x005b2e40 screen_connect_server** [High] — Screen-8 connect-to-server machine: kicks off the connection (00620d40), polls result (00620d60: 1=ok,-1=fail), and swaps UI callbacks accordingly.
+- **0x005b6070 result_code_menu_state_dispatch** [High] — Dispatch on a 16-bit result code (hi/lo bytes): 0xFF-prefixed codes 7/8/9 set error step (uRam006c550a 1/2) or FUN_005f6970(4); low-byte cases 0-5 set menu step uRam006c4b9e/9f and, on case 2, copy user/handle blocks (0x874fb0/0x874fc0) from 0x6c69bc/cc.
+- **0x005bc590 handle_name_register_reply** [High] — Name/register reply handler (dispatch codes 0xd and 0xb): sub-type 0 loads a name/id record (0x6fc06a/0x6fc07e + params) and dispatches screen 5; sub-types 1/2 hash a 0x20-byte name against the registry (func_0x0010a338 @0x36842c) and, on miss, latch a duplicate/error state (0x700680) and dispatch error screen 0x2b.
+- **0x005bc790 handle_name_reply_simple** [High] — Name reply handler (dispatch code 0xe): sub-type 0 loads the name/id record (0x6fc06a/0x6fc07e) and dispatches screen 5; otherwise hashes the 0x20-byte name into the registry (0x36842c) without the error-latch logic of FUN_005bc590.
+- **0x005bcee0 session_connect_established_cb** [High] — Connection-established callback: starts the RTT probe (FUN_005bcc30) then, on either result code (0 or '\''), refreshes local name/id (0x6cc440/0x6cc450 from 0x639e78/0x86f820), stamps a UI type byte and calls FUN_005bdc70 to advance the session.
+- **0x005bcfd0 session_open_result_handler** [High] — Session-open result/error handler: on success (byte0==0) either arms the connect-established callback (FUN_005bc860 + func_0x001de648 ->0x5bcee0) or advances to screen 2; on failure maps the negative/positive result code (0x3a..0x3f, 1..8) to an error message index (639e68 table) and error screen (FUN_005c7e30 8/9) then dispatches screen 2.
+- **0x005bd2e0 session_open_connect** [High] — One-time lobby session bring-up: copies the passed 0x20-byte server config, initializes lobby/registry state (0x6cbccc, 0x6cbd0c/0x6cc104 roster tables, 0x6fc8e8 8KB buffer), resolves the server socket (func_0x001d46ec) and opens the SN@P session via func_0x001db7e8, storing the handle in 0x6febac; on warm restart re-drives via FUN_005c6d60(0x5bcfd0) or reconnect callback 0x5bcee0. Returns 0 on first open, -1 if already up.
+- **0x005be0a0 alloc_task_slot** [High] — Allocates the first free entry (state byte==0) in the 128-slot callback/task table at 0x6ca960 (stride 0x20), storing state, a tick callback (+0x968) and a destroy callback (+0x96c); returns index or -1.
+- **0x005be120 free_task_slot** [High] — Frees a task slot: mode 1 matches by short IDs (0x6cbc80/0x6cbc7c) then clears state and fires the destroy callback; mode 2 frees by explicit index, also firing the callback.
+- **0x005be270 tick_active_task_slots** [Medium] — Per-frame dispatcher: iterates all 128 task slots invoking the tick callback (+0x968) for those in state 2, then iterates a second 19-entry callback table at 0x6cb968/0x6cb98c firing active handlers.
+- **0x005be330 overlay_frame_driver** [High] — Master per-frame overlay tick: guarded by iRam006ca950, drives session poll (FUN_005c7d40/FUN_005bf1e0), runs scenario/cast-lock countdowns that flip cRam006ff2b1 to 3 and cRam006ff2b2 stages, capacity-checks room member count at 0x6cfa2c, and pumps task slots via FUN_005be270.
+- **0x005be690 session_open** [High] — Starts a SN@P session: gated by cRam006cbbe4, latches the connect state-machine callback FUN_005be7b0 and param, then calls transport open func_0x001dbe60(sessionCtx).
+- **0x005be700 session_open_with_init** [High] — Session-open variant that first lazily initializes the net subsystem (iRam006ca950/init leaves) if inactive, then latches the FUN_005be7b0 connect callback and invokes transport open when handle valid.
+- **0x005be7b0 session_connect_sm** [High] — Session connect/disconnect state machine (phases 0->1->2->3 in cRam006cbbe0): advances the handshake, on phase2 clears lobby buffers (0x6ce5c8, 0x70047c, 0x6ff2b1) and fires the completion callback; phase3 signals error (0xff).
+- **0x005be900 session_close_advance** [High] — Advances session teardown: when active and not already in phase2, steps the phase, calls transport close func_0x001d4de0/0x001ca780 and invalidates the handle (0x35b9e0=-1).
+- **0x005bf340 start_txn_cb_005c0ff0** [High] — Guarded async-txn launcher: if idle (cRam006cb9dc==0) latches param(&0xf) at 0x6cb9d0, arms tick callback FUN_005c0ff0, stores user-cb param_3, resets state.
+- **0x005bfbe0 start_txn_cb_005c14a0** [High] — Guarded async-txn launcher: if idle (cRam006cba04==0) latches param(&0xf)@0x6cb9f8, arms tick callback FUN_005c14a0, stores user cb, resets state.
+- **0x005bff20 start_txn_cb_005c1770** [High] — Guarded async-txn launcher: if idle (cRam006cba2c==0) latches param(&0xff)@0x6cba20, arms tick callback FUN_005c1770, stores user cb, resets state.
+- **0x005c28f0 stat_channel_register** [High] — Allocates a channel slot (be0a0), stores a key (c08b0), and opens a 'STAT' transport channel via 0x1dd33c with flag 0x40000000; records the returned handles in the 0x20-stride table at 0x6ca97c.
+- **0x005c29c0 app_reply_cb_state2** [High] — App-reply callback: on status byte 0x00 clears / 0x27('\'') sets the 0x6cbc84 error flag, latches a payload word, sets state=2, and kicks the UI via bdfe0(0).
+- **0x005c3ef0 signin_sm_begin** [High] — Starts the sign-in/auth state machine: guards on 0x6cbc0c, clears the 0x201-byte work area at 0x6fbe58, copies the 0x10-byte credential/id from param1 to 0x7003fd, registers the tick fn (pcRam006cbbe8=FUN_005c40a0) and the completion callback, and enters state 0.
+- **0x005c40a0 signin_auth_sm_tick** [High] — The sign-in/auth state machine tick (0x6cbc08): sequences two 'DIO' transport transactions (0x1e094c and 0x1e0ed8 against result blocks 0x700424/0x700428), evaluates the 0x700470 result flags to set uRam006fbe57, then fires the completion callback.
+- **0x005c4380 signin_sm_begin_mode1** [High] — Variant of signin_sm_begin that sets uRam0070047d=1 before registering the same tick fn (FUN_005c40a0) and callback; starts the auth SM in the alternate mode.
+- **0x005c5ad0 register_conn_slot** [High] — Allocates a connection slot (FUN_005be0a0), stores its conn-hash and a registration send-handle keyed by the connID token with a trailing '-' delimiter.
+- **0x005c5ff0 send_op02** [High] — Builds and sends a 4-byte reliable app-opcode 0x02 packet to the target.
+- **0x005c6d60 init_signin_request_sm** [High] — Registers FUN_005c6da0 as the sign-in/matchmaking request pump and stores its completion callback, arming the state machine.
+- **0x005c6da0 signin_request_sm_pump** [High] — Sign-in/login request state machine: phase 0 assembles a login request struct at 0x700480 from user-config fields (0x6cc0xx) and issues an async call; polls result (3=continue,4=done) then fires completion cb.
+- **0x005c85d0 connect_establish_state_handler** [High] — Connection-establish handler: on link status (func_0x001ee360 => 1/2/3) latches connected, compares peer id string (0x642bc8), and branches host vs join (0x701f20) to advance the session state (0x701070+1).
+- **0x005c8810 net_session_update_tick** [High] — Main per-frame network-session update: runs sub-updates, the connect handler, then dispatches the mode-specific driver via table PTR_FUN_00642bd0[0x701f20]; returns result code 0x700fe0.
+- **0x005cc980 session_net_result_process** [High] — Dequeues a server result record from the 0x4f97c queue (FUN_005d8340) and switches on its subtype byte to set session state and return a code (-2/-1/1/2) driving the create/join/enter handshake; records current msg id at 0x68dd0.
+- **0x005d7760 session_enter_dispatch** [High] — Given a request key and subtype, finds/creates a session-pool node (0x4f370): for enter/create (4/5) checks slot via FUN_005d6a50, for 6 rejects if occupied, else allocates a fresh session node (evicting the oldest) and sets its state to 3 (in-progress).
+- **0x005d7e00 txn_begin_enter** [High] — Processes a state-4 subtype-1 txn record: copies its key, looks it up (FUN_005df340), runs session_enter_dispatch; on accept (node state 3) allocates a send object (func_0x01212970) with an 0x8000 buffer and fills its descriptor, or on state 2 marks the record done (state 5).
+- **0x005d80c0 txn_pump** [High] — Per-service scan of the txn queue (0x4f694): for state 4 records dispatches to txn_begin_join_roster/txn_begin_enter by subtype 0x10d, and for state 3 records invokes the send vtable (node[0x46]+100) then txn_apply state via txn_recv/reply handler FUN_005d7b60.
+- **0x005d8340 txn_complete_dispatch** [High] — Scans the txn queue for a record matching a key; on state 6 (finished) routes the result by subtype and status: commits into the room list (FUN_005d6920), sets global result flags/pointer (0x701004/0700ff8) and builds an HTML page for status 0..9, freeing session nodes; on state 5 (partial) copies who/handle back and republishes.
+- **0x005e9440 apply_addr_0x101c_guarded** [Medium] — If guards cfg+0x186==0 && cfg+0xe96b==0, applies FUN_005d9d70(cfg+0x101c, flag cfg+0x111c).
+- **0x005f6b00 connect_flow_sm** [High] — State machine on +0x11 (0-7) driving the connect/lobby-join sequence: memory setup, retry timers, runs the wait-overlay SM FUN_005f7270, resets network via FUN_005b24c0, branches on context byte +0x97b to next screen (FUN_00606f10/FUN_005f4550).
+- **0x005f6d20 disconnect_flow_sm** [High] — Longer state machine on +0x11 (0-0xc) for the disconnect/return flow: runs wait-overlay FUN_005f7270, error/retry handling, teardown FUN_005b24c0/FUN_005b9110(0x4c), and context-byte (+0x97b) branch back to lobby/menu screens.
+- **0x005f91f0 create_room_enter_transition** [High] — SM on +0x10: prepares (FUN_005fe300) and sends the enter-room request FUN_005c0400(id, cb 0x5fc2b0), advancing to the receive step; state 1 spins on FUN_005b6900.
+- **0x005f97c0 confirm_room_text_field** [High] — SM on +0x10: submits the chosen character/name (buffers 0x6970a2/0x6970b2) to the server via FUN_006345e0 and polls the ack FUN_00634ab0; on ready advances the join substate.
+- **0x005f99c0 submit_room_entry** [High] — SM on +0x10: assembles the local player's entry record at +0x1e50 (0xd4 bytes: portrait/color/id from sRam006c4b94 tables, bRam00343625) and submits it (FUN_005bd940 cb 0x5fc4a0), plus name/member payloads via FUN_005c08a0/FUN_005c0470 (buffers 0x6970a2/b2), completing the room-join into the game.
+- **0x005fb670 connection_guard_or_teardown** [High] — Connection guard: returns 0 if active-slot state (@0x6c076e) is 3/4 (connected); otherwise tears the session down and returns 1.
+- **0x00606000 lobby_resolve_and_connect** [High] — Three-stage state machine (sRam0070cdd0=0/1/2) that parses a 'host:port' string (':' 0x3a delimiter, decimal port), resolves the host against table 0x8716e3/0x87130f, kicks off DNS + socket connect (FUN_00605d30), and polls connect completion with retry/timeout (0x3c ticks x up to 0x15).
+- **0x006063c0 lobby_conn_state_dispatch** [High] — Top-level lobby-connection dispatcher: switches on sRam0070cdc8 (0..6, 99) to the corresponding step handler (init/connect-retry/await/post-connect/handshake/advance/error-reset), returning done when state 6 hits the re-init thunk.
+- **0x00606780 lobby_conn_handshake** [High] — State-4 handshake: reads a framed reply (FUN_00605d60) expecting magic 0x1031, builds a response packet with the packet-writer (FUN_005be9f0/bea00/bea50/bea10 — type 0x1031, echoes bytes +6/+7), sends it (func_0x001ee590), advances on full send else errors to 99 (code 5).
+- **0x00606af0 session_login_state_machine** [High] — 6-case session/login driver (cRam006c4b9e): issues reliable requests via FUN_005b8cf0 (offsets -0x63, 0x50), waits on async completion (FUN_00606a70), advances on specific result codes (cRam0070cd80 == -0x14d / -0x11), and re-fires (FUN_00606c80) on error, pumping the frame each step (FUN_00618c30).
+- **0x006076c0 server_connect_screen** [High] — State-5 connect screen: 12-step switch driving connect (005c80a0)/poll (005c8810), sprintf request into 0x701e20, animated progress bar (005af1e0), and audio cues by phase.
+- **0x00608300 login_connect_state_machine** [High] — Multi-phase connect/login state machine on cRam0070cda8 (0,1,2,'c',3,4,5,6): sprintf request into 0x701e20 from format strings by conn-mode, drives connect/poll (005c80a0/005c8810), branches on results (-100/-1/1/2).
+- **0x006088b0 reconnect_state_machine** [High] — Connect/reconnect state machine on cRam0070cd98 (0-4): sprintf request into 0x701e20, connect/poll (005c80a0/005c8810), branches on results, on failure sets status 0070cd80=0x85 and returns via FUN_00606ac0.
+- **0x0061d6a0 dnas_connect_state_machine** [High] — Screen-driven connection/auth state machine keyed on cRam007152e2: runs the DNAS/SN@P connect sequence (func_0x001f5630 connect, 001f4680, 001f46e0), decrementing per-state timers and transitioning through connecting/error/retry states.
+- **0x0061ded0 net_session_state_machine** [High] — Primary lobby/session connect state machine keyed on cRam0071535c: under a mutex it steps through a network op (FUN_0061e650 returning codes -0x100..-0xfb), keepalive/poll (FUN_0061e770/e6e0), send (FUN_0061e640/e680), branching to error/retry/success states.
+- **0x00620d60 data_xfer_sm** [Medium] — Large 0x715439-keyed state machine that streams 0x8000-byte data blocks (buffers 0x380700/0x388700/0x390700) via external send/recv encode primitives, with retry/error branches.
+- **0x00623be0 data_download_sm** [Medium] — Large scenario/save-data download state machine (struct+0x161 key): polls transfer primitives (func_0x001f5620/4770/4980/4ca0), decodes a rich error space (-0xff..-0xfb), and stages received blocks; sets result at struct+0x180.
+- **0x00626900 session_connect_screen_step** [High] — Lobby-server connect screen state machine: builds host address from IP bytes and calls session-open FUN_001db7e8, teardown FUN_001d4de0/001dbe60; manages retry count iRam007152a0.
+- **0x0062cf50 enter_submachine_dispatch** [Medium] — Dispatcher on cRam00695d40 (0..2) into the enter/register submachine (select -> request-build -> send steps).
+- **0x0062d140 enter_request_init** [Medium] — Initializes the enter/register request task: allocs task (FUN_00628760), zeroes counters, kicks an internal request FUN_005b7fd0(0x23,...) carrying the selection byte.
+
+## roster  (192 fns, 84 core)
+
+- **0x001c7a70 snap_recv_member_list_entries** [High] — Parses room/member-list reply entries from the wire into 0x134-byte member records and distributes them across the 0x40-slot participant table.
+- **0x001c85c0 snap_send_op24_member_batch** [High] — Builds and sends the op-0x24 packet carrying up to 12 accumulated member-record pointers (a member-list batch/ack), then advances substate to 0xd.
+- **0x001c8790 snap_recv_member_list_page2** [High] — Second-phase member-list receive: reads trailing u16 field (+0x12c) per record and a 0x3e-byte page trailer into 0x365e20, then pages the cursor or advances to next page.
+- **0x001c8f50 snap_send_op0a_memberlist_req** [High] — Builds and sends the op-0x0a member-list request (subtype byte 1) with a 0x100-byte encoded field from 0x35b9f0, advancing substate to 0x35.
+- **0x001ce740 group_register_and_fill_roster** [High] — Creates/reuses a group slot for (param_1,param_3): builds a request via FUN_00109728+FUN_001cb360, decodes the reply roster with FUN_001d09e0, then marks slot active and records ids (short@2/8/0xc).
+- **0x001ce970 reconcile_state1_roster** [High] — Diffs the state-1 entity snapshot (via FUN_001ce890) against live member arrays (0x4f9f80/0x4f8be0/0x4f8d60); applies leaves (FUN_001cda90/FUN_001cd620/FUN_001ce4b0) and joins (FUN_001cde00/FUN_001ce740), then flushes via FUN_001841d0.
+- **0x001cee20 reconcile_state2_roster** [High] — Diffs the state-2 snapshot (via FUN_001ceda0) against the live array at 0x4f83e0 (indexed by uRam00343582) and applies leaves via FUN_001cda90/FUN_001cd500/FUN_001cd620.
+- **0x001cf8e0 send_op09_register_member** [High] — Builds and sends the op09 register message: channel 0x1200/0x1300 (by param_1), alloc tag 9, encodes a member record from base table (0x3c18b0/0x3c2250) via FUN_001cde00; rolls back alloc on failure.
+- **0x001d0230 build_and_send_list_screen_msg** [Medium] — Channel 0x2400, alloc tag 10, reliable send FUN_001cce80 (offline FUN_001a1750) with tmpl 0x24cc90/0x24cca0/0x24ccc0; wires up list buffers at 0x301018/0x30101c for the member-list reply.
+- **0x001d0510 decode_member_grid_8row** [Medium] — Decodes a packed member record set (param_4 = count/offset pairs) into an 8-row display grid at param_2, interning name ids via thunk_FUN_00198d30/FUN_00188a30 and freeing old ids with FUN_00188ad0.
+- **0x001d06d0 decode_member_grid_20row** [Medium] — Decodes a member record set into a 20-row x 100-col display grid at param_2, with per-cell present markers (offset 0xfa4) and a normal/mirrored layout (param_5); interns name ids like FUN_001d0510.
+- **0x001ddee8 snap_send_op0a_memberlist_req** [High] — Builds/sends reliable (who 0xb000) opcode-0xa with a single htonl u32 (room id) — member-list request; completion cb 0x19, seq arg 0.
+- **0x001de0c0 snap_send_op0a_memberlist_req_alt** [High] — Builds/sends opcode-0xa with who 0xa000 (DATA-less member-list request), single htonl u32; completion cb 0x18, seq arg 0.
+- **0x001e094c snap_send_op48_name_query** [High] — Builds/sends reliable (who 0xb000) opcode-0x48 name/roster query: a request-id word then up to 32 entries, each with an htonl id, a 1-byte kind, and a kind-dependent body (type1=two u32, type2=16-byte addr, else one u32); computes length via FUN_001ebca8; completion cb 0x31.
+- **0x005ad890 roster_list_A_populate_cb** [High] — Async reply callback (pending flag fbb==3): on success unpacks a received list into array 0x6c3860, writing index + fields (5bf9e0/5bf940/5bf3c0/5bfa20) for uRam006c45fa entries; on failure shows error.
+- **0x005ada90 roster_list_B_populate_cb** [High] — Async reply callback (pending fbb==7): unpacks a received list into second array 0x6c3030, writing index+fields (5bfcf0/5bfcb0/5bfd30) for uRam006c45fe entries; error path shows box.
+- **0x005b4da0 screen_element_render** [High] — Per-element render callback (installed via +0xc): draws the various lobby/room screens by element type +2, including case 9 = the 3-slot room roster (host names 0x6c4634 / player names 0x6c4674).
+- **0x005b5ac0 roster_slot_insert_or_match** [High] — In room modes (4/0x0e, and 5): scan the 4-slot member table (stride 0x3b0 @0x6c7c3c), match/insert a member entry (name@0x6c7c2c, tag@0x6c7c3c, data@0x6c7c50) and optionally emit via FUN_005c4d20.
+- **0x005b5d20 roster_slot_remove_compact** [High] — In room modes 4/0x0e: find local member in 4-slot roster (name-compare vs FUN_005c0920), zero its entry, compact remaining slots down, clear tail slot; on removal (mode!=send) reset dialog buffer 0x6c517c (0x300) and reload title string via FUN_0062fd30(0x89).
+- **0x005b6570 roster_and_scoreblock_remove_compact** [High] — In mode 0x0c (leave/exit-room): find local member in 4-slot roster, remove+compact it, then similarly remove+compact the matching 0x830-stride per-player block in the array at iRam003435d4+0xc942c.
+- **0x005bb670 room_member_leave_and_roster_refresh** [High] — Handles member-leave (dispatch code 6): decrements per-area count, clears the departing player's id from the 4-slot in-scenario table (0x7006d4) and notifies via FUN_005bb610, or in the alt mode copies the matching roster entry into scratch and fires a roster redraw (0x25/0x23).
+- **0x005bbc20 inroom_member_join_add_slot** [High] — Sub-event 2: inserts a member id into the 4-slot table (0x7006d4) if absent, updates the per-area member count (0x6cfb70, capped at 4), broadcasts the new count to the other members (FUN_005c60d0), and may trigger start (FUN_005bdf90) once threshold reached.
+- **0x005bbe00 inroom_set_member_count_c** [High] — Sub-event 0xc: writes the member count byte (payload+4) into the per-area count field (0x6cfb70), triggers FUN_005bf230(0x6fec00), and enqueues UI refresh (FUN_005bdfe0(0x21)).
+- **0x005bbea0 inroom_set_member_count_11** [High] — Sub-event 0x11: writes the member count byte (payload+4) into the per-area count field (0x6cfb70) and enqueues a UI refresh (FUN_005bdfe0(0x21)); a lighter variant of FUN_005bbe00 without the callback.
+- **0x005bbfc0 inroom_set_player_state_1** [High] — Sub-event 4: finds the roster slot (0x6ff70d table, stride 0x114) whose id matches the payload and sets that player's ready/state byte at 0x6ff2b5[i] to 1.
+- **0x005bc050 inroom_set_player_state_2** [High] — Sub-event 0x10: finds the roster slot matching the payload id and sets that player's ready/state byte at 0x6ff2b5[i] to 2; sibling of FUN_005bbfc0.
+- **0x005bc110 inroom_set_player_names** [High] — Sub-event 6: when in-room, copies two 0x10-byte name/id strings into the per-player table at 0x6fffad/0x6fffbd indexed by player-slot (payload+4, stride 0x114).
+- **0x005bc370 roster_pack_visible_list** [High] — Compacts the 4-entry source roster (0x6cdbe6, stride 0x118) into the packed/visible roster array (0x6ce046, stride 0x118), including only entries whose active flag (+0x101) == 1; returns the visible count.
+- **0x005bc430 roster_member_update_and_redraw** [High] — Member-list handler (dispatch code 0x0a): scans the 4-entry roster (0x6cdbe6) for the id in the payload, copies the id/name/blob fields into the entry and scratch (0x6cd672), and when the entry's active byte (+0xe5)==1 repacks the visible roster (FUN_005bc370) and fires the roster redraw (FUN_005bdfe0 0x24/0x23).
+- **0x005bc990 name_query_reply_callback** [High] — Callback for the NAME query (sub-type 0): sums a per-entry 16-bit field across the returned member list (count at resp+8, stride 0x24) and compares to a threshold (FUN_005c5060) to branch to FUN_005bdc70 vs error screen 8; sub-type '\'' shows an error dialog from table 0x639e68.
+- **0x005bca90 send_name_query** [High] — Builds and sends a 'NAME' query request: on sub-type 0 assembles a request struct tagged 0x4e414d45 ('NAME') carrying local name (FUN_005c4f40) and id (FUN_005c4fd0) and transmits via func_0x001e094c with completion callback FUN_005bc990; sub-type '\'' renders an error dialog.
+- **0x005bf830 room_stat_reply_accumulate** [High] — Reply handler for the DIOL/STAT send: iterates reply entry list (count@+8, stride 0x28) accumulating per-slot totals into 0x7006b0 and per-room render count 0x6ce5e0; advances SM when done.
+- **0x005c0060 maxi_user_register_reply_handler** [High] — Reply handler for FUN_005bffa0: locates registry-B slot (FUN_005bf2e0), stores key; if tag==MAXI writes id 0x6fee88 + render 0x6cfb66 and sets ready flag 0x6cfb6c=1; if tag==USER writes id 0x6fee7c + render 0x6cfb62; then re-arms UI.
+- **0x005c0a00 request_member_list** [High] — Zeroes roster table 0x6cdbe6 (0x460), allocates a txn, builds op 0x86 (0dc0) and sends the member-list request for room record param_1; resets roster count 0x6ca890.
+- **0x005c0ae0 on_reply_member_list** [High] — Member-list reply handler: iterates reply entries (count at +8), copies each member's name (FUN_005c50a0) and record into roster table 0x6cdbe6 (0x118 stride, count 0x6ca890), then stores UI status and redraws.
+- **0x005c2390 request_member_list_visible** [High] — Zeroes two roster tables (0x6ce046 and 0x6cdbe6, 0x460 each), allocates a txn, builds the member-list op (2760) and sends it (func_0x001de0c0, arg record uRam0086f840); resets roster count 0x6ca890.
+- **0x005c2460 on_reply_member_list_filtered** [High] — Member-list reply handler: fills raw roster 0x6cdbe6 (0x118), then compacts entries whose flag +0x6cdce7==1 (over 4 slots) into active roster 0x6ce046, counts them into 0x6fb746/0x6fb739, sets 0x70047c=1, stores UI status and issues two redraws (0x00 and 0x23).
+- **0x005c3370 scenario_member_scan_reply_cb** [Medium] — Reply handler for the member/roster list: on status 0x00 walks the variable-length member array (count at +8), copies each active member's 8-word block to 0x7005d0, increments the member counter 0x6ca890, and signals the SM (0x6cba55=1); status 0x27 signals failure (=2).
+- **0x005c45b0 roster_download_sm_begin** [High] — Starts the member/roster download state machine: guards on 0x6cbaa4, registers tick fn pcRam006cba80=FUN_005c4760 and the completion callback (0x6cba84), enters state 0.
+- **0x005c4760 roster_download_sm_tick** [High] — Roster-fill state machine (0x6cbaa0, states 0-7): when the room is owned (0x6ff2b0) it stages the 4 player records (copying id/name/0xf0-blob from the 0x114-stride source at 0x6fffad into the 0x150-stride roster at 0x6fb86c) and issues the fetch via 0x1de648; otherwise polls/times out; on done fires callback pcRam006cba84.
+- **0x005c51a0 roster_slot_write** [High] — Populates a member roster slot: copies connID token + fields (0x10/0x14/0x18/0x1c/0x20) into parallel tables 0x6fee6c and 0x6cfb58, sets state 3 or 4 and reliable/host bit.
+- **0x005c5390 roster_slot_clear** [High] — Zeroes a roster slot (0x24 bytes @0x6fee6c and 0x144 bytes @0x6cfb58) and re-inits it as free with its index.
+- **0x005c54e0 roster_add_member** [High] — On a member-present event (flag 0x80000): finds existing slot by connID or first free of 30, writes it via roster_slot_write, then refreshes UI.
+- **0x005c5610 roster_remove_member** [High] — Finds the roster slot whose connID matches param, clears it (roster_slot_clear) and refreshes the member-list UI.
+- **0x005c56a0 roster_update_member_stat** [High] — On a 'STAT' (0x53544154) message for a known member: updates that member's status field/flags and fires UI event 0x29.
+- **0x005c5bb0 send_op03** [High] — Builds and sends a 4-byte reliable app-opcode 0x03 packet to the target conn (roster-sync step).
+- **0x005c5cd0 send_op09_register** [High] — Builds and sends a 4-byte reliable app-opcode 0x09 register packet to the target.
+- **0x005c5d30 send_op05** [High] — Builds and sends a reliable app-opcode 0x05 packet with a 2-byte payload (slot idx + count) to the target.
+- **0x005c5db0 send_op06_member_join** [High] — Builds and sends the reliable app-opcode 0x06 member-JOIN/enter packet with a 0x22-byte member record to the target.
+- **0x005c5e30 send_op07_charstats** [High] — Builds and sends the reliable app-opcode 0x07 leave/notify packet with a 0x36-byte payload to the target.
+- **0x005c5eb0 send_op08** [High] — Builds and sends a 4-byte reliable app-opcode 0x08 leave packet to the target.
+- **0x005c5f10 send_op0a_member_list** [High] — Builds and sends a 4-byte reliable app-opcode 0x0a member-list request to the target.
+- **0x005c7020 build_send_op48_name_query** [High] — Builds a NAME app-message carrying two name strings and sends it reliably, registering reply handler FUN_005c70e0.
+- **0x005c70e0 name_reply_populate_roster** [High] — NAME-reply handler: iterates reply entries, resolves each id via FUN_005bf280, and fills the member/id roster tables, then pokes redraw (FUN_005bdfe0(0xf)).
+- **0x005cce30 roster_member_populate** [Medium] — Roster-fill pass: for each room ('\r') row awaiting a reply (state[5]==1), dequeues the matching record (FUN_005d8340) and writes member id/port/slot into the roster arrays (0x68dd8/0x68e28/0x68e50), incrementing the member count 0x60dcf; drives the sub-state 8/10 and returns done/accept codes.
+- **0x005d78d0 session_node_lookup_or_insert** [High] — Finds a roster node (pool 0x4f47c) by key; if absent allocates one (evicting oldest) and marks state 3; if present-and-state5 either releases it (when mode cRam00701000==5 and who-byte mismatches param_3) or reactivates it to state 2.
+- **0x005d7f80 txn_begin_join_roster** [High] — Processes a state-4 subtype-2 txn record via roster_lookup_or_insert; on accept allocates a send object with a 0x4000 buffer indexed by mode byte (0x701020 table) and fills its descriptor, reliability set when mode==5.
+- **0x005f62e0 build_roster_display_list** [High] — Allocates display/task entries (FUN_00618ba0) for the member roster: header rows (IDs 0x13a/0x13b), up to 7 member name rows (ID 0x6c with per-member draw cb FUN_005f6790) plus footer rows (0x6d/0x6e cb FUN_005f6610).
+- **0x005f6790 draw_roster_member_row** [High] — Draw callback for one player-list row: renders the member name string (table 0x649750) and copies that member's 0x10-byte record from the 0x70a164 table (stride 0x30) to draw the player's icon/portrait; highlights the local slot (iVar2+0xc == slot).
+- **0x005f78c0 build_room_roster_slots** [High] — On room-detail entry, builds the 6-slot player assignment table 0x70b410 from the room member records (present-flags cRam006c303e in the 0x6c3030 table, stride 0x15c) and the member bitmask FUN_005bae80; then registers the display list via FUN_005f8340 and arms input FUN_005bfbe0(0,7,...).
+- **0x005f7b30 on_memberlist_reply** [High] — Reply/event handler gated on pending-op flag cRam006c4fbb=='\a': on success (result byte 0) fills the member table 0x6c3030 (count uRam006c45fe, stride 0x15c) with per-member id/name/state via FUN_005bfcf0/cb0/c60, bumps the roster-dirty counter 0x6c4b9f.
+- **0x005f85e0 draw_room_slot_row** [High] — Draw callback for one of the 10 room player-slot rows (slot=param+3, <6): selects coords/ids from DAT tables by slot occupancy in 0x70b410, draws the player's name (from 0x6970a0 region) or an 'empty/vacant' label, and highlights the cursor slot cRam006c5497.
+- **0x005f9280 recv_room_detail** [High] — On enter-reply, downloads the room detail payload (FUN_005c0f20) into the 0x6970a0 buffer and unpacks it: header flags (cRam006970a0/a1, member count bRam006970f4) plus per-member records (stride 0x14a8: name, slot flags at +0x138, character/color grids), then sends the next step FUN_005c0960(cb 0x5fc360).
+- **0x005f9540 room_char_select_sm** [High] — SM on +0x10: character/slot selection inside the joined room — moves selection +0x908 via FUN_005f9bb0 (valid-slot picker) and FUN_005b09b0 cursor, triggers per-choice actions FUN_005f9d40/9e50/9f60, and sends the pick via FUN_005f8c20/FUN_005fc850.
+- **0x005ffbe0 room_claim_member_slot** [High] — On room entry, scans the 4 member slots (0x830 stride at 0xc942c) matching local id (func_0x00109d70 vs +0x1e3c) to find/claim own slot 0x908, initializes that member record ([0]=4,[1]=4,[3]=1) and copies name/id fields, then builds the room menu (FUN_006020e0).
+- **0x00600de0 field_decode_room_members4** [High] — Field-sync decoder callback: when active (mode!=6) and full-refresh, clears 0x6c79ac and decodes all 4 room member slots via FUN_005c0d30 into the 0x6c7c2c/3c/50 tables.
+- **0x00601580 build_roster_display_blocks4** [High] — Render/refresh callback: rebuilds the 4 room-member display blocks in the 0x830-stride table at 0xc942c from the decoded 0x6c7c2c/3c fields, marking occupied slots ([0]=1,[1]=1).
+- **0x00602700 render_roster_stats_table** [Medium] — Builds the per-member roster/stats table (name/time/score rows) for bRam00341ae4 members across pages selected by +0x9ab (0=summary,1=stats,2=times,3=names), formatting each row via FUN_006038f0 into the display list at 0xcd5ac.
+- **0x00603f30 roster_table_rebuild** [High] — Rebuilds the active member roster table at 0x70b4b0 (0x38-stride) by scanning up to 0x32 source records at overlay+0xc8000, resolving each id against pools 0x694700 to set per-member status (0/2/3) at +0x70b4d0, counts members into ctx+0x914, then builds the roster UI draw jobs via FUN_00604af0.
+- **0x00604180 member_sync_state_machine** [High] — Large 6-case (0x900 selector) member add/remove/sync engine: manages join/leave transactions against the roster status table (0x70b4d0) and pool 0x694700, driving reliable sends (005b8cf0/005b9110/005b8da0) with per-step countdown timers (ctx+0x918) and playing UI feedback (0x1b0140).
+- **0x006049b0 roster_insert_or_find** [High] — Upsert into a 0x38-stride member pool: if id already present return existing (0), else claim first free slot, copy record+id, zero counter at +0x20, return 1; -1 if full.
+- **0x006130a0 room_member_slots_render** [High] — Renders the room member/player list: for up to 2 visible slots (+0x1e scroll base) reads slot state from ctx+600 table (+0x25c valid, +600 state 1/2), colors occupied/empty, resolves the player name (FUN_0060e1c0) or a default (ctx tbl+0x28), and draws '#N name'; also renders the highlighted current slot.
+- **0x00627d60 member_op23_task_dispatch** [High] — Per-frame task dispatcher for the op-0x23 member-list machine: runs sub-state uRam00695ce0 (cases 0-6) across the send/wait/process/refresh/leave sub-steps and resets the task record on completion.
+- **0x00627ea0 member_list_send_init** [High] — Sub-step 0 of the member machine: snapshots current roster count (FUN_00604810 over 0x694700), builds the descriptor list, and sends app opcode 0x23 (member-list request) via FUN_005b7fd0.
+- **0x00627f20 member_list_reply_process** [High] — Processes the op-0x23 member-list reply: iterates returned entries (+0xc base, +8 count), marks/selects roster slots, and advances or re-queries via the L1 send-queue guards FUN_005b14b0.
+- **0x00628210 member_refresh_sm** [High] — Large member-list refresh/removal state machine (cases 0-6): times a refresh window, polls FUN_0061ded0 for a member event, re-syncs the display roster (FUN_006278e0), and compacts the master roster 0x694700 on leave.
+- **0x0062ab50 roster_confirm_iter** [Medium] — Iterates the 3 roster slots (+0x1460 index over +0x1055) and opens a confirm dialog (FUN_005c3e70 callback 0x62b2c0) per occupied member; formats into +0x5ec.
+- **0x0062bee0 roster_slot_confirm_iter** [Medium] — Iterates occupied roster slots (+0x1460 over +0x1055) opening a confirm dialog (FUN_005c3ef0 cb 0x62cc60); stores per-slot result (0xff/1) and sets +0x42b=0x1e; when done advances.
+- **0x0062c030 roster_record_store** [High] — Copies the scratch member record (+0x10b8..+0x10bf then +0x10c0 0x81 bytes) into the member-list array at +0x12c2 + idx*0x8a, then increments the slot index.
+- **0x0062c160 roster_record_store_from_buf** [High] — Copies a 0x81-byte member record from the +0x5ec work buffer into +0x12c2 + idx*0x8a and increments the slot index.
+- **0x0062c3f0 roster_detail_load** [High] — Loads the selected member's record from +0x12c2 + sel*0x8a into the scratch +0x10b8 fields and name buffers (+0xefb/+0xf0b), opens a window and advances.
+- **0x0062de90 room_enter_roster_recv** [High] — Room enter/detail state machine with a ~166KB receive buffer; case4 parses the room roster: player count bRam006970f4, per-player records (stride 0x14a8) into table 0x6970a0 including names, char id, and 0x20x0x20 map/cell data.
+- **0x0062eff0 reply_handler_playercount** [High] — Reply callback: on status 0 reads a 2-byte value (FUN_005c0f00) and stores player-count/state into 0x6c4fe6 and 0x6c4fe8 via FUN_005c2890; else zeroes both.
+- **0x0062f1e0 reply_handler_roster_clear** [High] — Reply callback (guard cRam006c4b90==0x0e): bumps ba0, zero-fills 0x6c79ac (0xec0), and on status 0 re-seeds up to 4 player slots at 0x6c7c2c/0x6c7c3c/0x6c7c50 via FUN_005c0d30.
+
+## unrelated  (101 fns, 0 core)
+
+
+## packets  (94 fns, 8 core)
+
+- **0x001c3880 recv_framed_reassemble** [High] — Reads a length-prefixed frame from the socket (FUN_001ee430/ee560): parses big-endian length at obj+0x42, streams body into obj+0x34 tracking obj+0x3e progress, handles multi-chunk reassembly and returns 1 on complete frame.
+- **0x001c3b90 read_decrypt_body** [High] — Reads an encrypted framed body: be16 length + be16 expected-checksum, copies/zero-pads into caller buffer, decrypts via FUN_001c3750 and validates checksum (returns -1/-2/-3 on hdr/overflow/checksum error) advancing cursor on success.
+- **0x001c3c90 build_packet_header** [High] — Builds the 8-byte tx header at obj+0x28: type byte param_3 (0x01/0x02/0x10), length-derived bytes from DAT_002484c0/510 tables, and an auto-incrementing sequence (obj+0x3d) for reliable types; resets payload length obj+0x38.
+- **0x001d9f78 snap_app_msg_dispatch** [High] — Received-app-message sub-dispatcher: reads who-byte (conn+0x2c) reliable/set/DATA bits and 7-bit selector (conn+0x2e), byteswaps fields, then switches on (selector-3) to the per-type app callback in the conn+0x548..0x610 table (rooms/roster/chat/menus), including nested sub-selector routing for types 0x24/0x25/0x26.
+- **0x001edbb8 snap_frames_hton** [High] — Walks every 0x10-byte sub-frame in the payload and byte-swaps its header fields host->net (FUN_001e234c=htons x2, FUN_001e2304=htonl x3), advancing by len&0x3ff; the outgoing serialize pass.
+- **0x001edd9c snap_frames_ntoh** [High] — Incoming parse: walks sub-frames byte-swapping net->host (FUN_001e23dc=ntohs x2, FUN_001e2394=ntohl x3), validating each 10-bit length is >=0x10 and within remaining bytes; returns error codes 0xffffe0c3/c5 on malformed frames.
+- **0x005c4d20 send_op01_to_conn** [High] — Builds a 0x8000-reliable packet with app-opcode 0x01 + payload and sends it to a specific decoded connID target.
+- **0x0062d8b0 lobby_reply_step5_handler** [High] — Network reply callback (expected step cRam006c4fbb==5): reads status byte *param; 0=success advances substate b9e, else error -> FUN_005b9110(0x4c)+reset 0x6c4b90 block.
+
+## unknown  (76 fns, 0 core)
+
+
+## lobby  (71 fns, 47 core)
+
+- **0x001c48c0 snap_send_op12_named_request** [High] — Emits request opcode 0x12 carrying a name string (from buffer 0x36842c); advances to state 0x11 — starts a named-resource download.
+- **0x001c4960 recv_download_setup_A** [Medium] — Reply-0x12 handler: validates echoed name (memcmp vs 0x36842c), reads a chunk-count (clamped to 2) and per-chunk sizes into the 0x36846c pool table, resets seq (0x368421/0x368424), advances to state 0x12 (chunk-fetch).
+- **0x001c4c80 snap_send_op14_chunk_request_A** [High] — Emits opcode 0x14 chunk-fetch: appends chunk-idx (0x368421), byte-offset (0x368424), and window size 0x2f2; advances to state 0x13.
+- **0x001c4d40 recv_download_chunk_A** [High] — Reply-0x14 handler: validates idx/offset against 0x368421/0x368424, copies the 0x2f2 body via FUN_001c3b90 into pool ptr (0x368474[idx]+off), advances offset/chunk; on last chunk copies name to 0x36842c and goes to state 0x14, else loops state 0x12.
+- **0x001c4fb0 snap_send_op39_request** [High] — Emits empty request opcode 0x39 and transmits; advances to state 0x1a — starts download machine B.
+- **0x001c5040 recv_download_setup_B** [High] — Reply-0x39 handler: reads a count (clamped 8) into 0x365cf0, fills per-slot sizes (0x365cf4) and dest ptrs (0x365d34 into ring at 0x35ccc8, 0x400 stride), resets seq, advances to state 0x1b.
+- **0x001c51a0 snap_send_op3b_chunk_request_B** [High] — Emits opcode 0x3b chunk-fetch: appends slot-idx (0x365db4), offset (0x365db8), window 0x2f2; advances to state 0x1c.
+- **0x001c5260 recv_download_chunk_B** [High] — Reply-0x3b handler: validates slot/offset (0x365db4/0x365db8), copies body into ring 0x35ccc8+idx*0x400+off via FUN_001c3b90, advances offset/slot, terminates at state 0x3b when all slots done else loops 0x1b.
+- **0x001c5480 snap_send_op3d_request** [High] — Emits empty request opcode 0x3d and transmits; advances to state 0x3c — starts download machine C.
+- **0x001c5510 recv_download_setup_C** [High] — Reply-0x3d handler: reads count (clamped 2) into 0x365c20, fills sizes (0x365c24) and dest ptrs (0x365c64 into ring 0x35ccc0, 0x800 stride), resets seq, advances to state 0x3d.
+- **0x001c5630 snap_send_op3f_chunk_request_C** [High] — Emits opcode 0x3f chunk-fetch: appends slot-idx (0x365ce4), offset (0x365ce8), window 0x2f2; advances to state 0x3e.
+- **0x001c56f0 recv_download_chunk_C** [High] — Reply-0x3f handler: validates slot/offset (0x365ce4/0x365ce8), copies body into ring 0x35ccc0+idx*0x800+off, advances offset/slot, terminates to state 0x3f when done else loops 0x3d.
+- **0x001c5f30 recv_download_setup_D_keyed** [Medium] — Reply handler: reads count (clamped 8) into 0x365cf0, fills dest ptrs (0x365d34 into ring 0x35ccc8, 0x800 stride) plus per-slot id(0x365d74)+size(0x365cf4) pairs, resets seq, advances to state 0x2b.
+- **0x001c6060 snap_send_op2f_chunk_request_D** [High] — Emits opcode 0x2f chunk-fetch: appends current slot-id (0x365d74[idx]), offset (0x365db8), window 0x2d2; advances to state 0x2c.
+- **0x001c6130 recv_download_chunk_D** [High] — Reply-0x2f handler: matches slot-id (0x365d74), reads offset+len, copies body into ring 0x35ccc8+idx*0x800+off, advances slot/offset, terminates to state 0x31 (fsm 3) or 0x02 else loops 0x2b.
+- **0x001c6330 snap_send_op31_finalize** [High] — Emits empty request opcode 0x31 and transmits; advances to state 0x40.
+- **0x001c63c0 recv_download_setup_E** [High] — Reply handler: reads count (clamped 8) into 0x365bb0, fills dest ptrs (0x365bf4 into ring 0x35ccb8, 0x200 stride) plus id(0x365bb4)+size(0x365bd4) pairs, resets seq, advances to state 0x41.
+- **0x001c64f0 snap_send_op33_chunk_request_E** [High] — Emits opcode 0x33 chunk-fetch: appends current slot-id (0x365bb4[idx]), offset (0x365c18), window 0x2d2; advances to state 0x42.
+- **0x001c65c0 recv_download_chunk_E** [High] — Reply-0x33 handler: matches slot-id (0x365bb4), reads offset+len, copies body into ring 0x35ccb8+idx*0x200+off, advances slot/offset, terminates to state 0x31 else loops 0x41.
+- **0x001c69b0 snap_send_op45_request** [High] — Emits opcode 0x45 with a single byte(1) selector; advances to state 0x26.
+- **0x001c6a50 recv_op45_download_setup** [High] — Reply-0x45 handler: reads a total length (<0x100) into 0x35b7d0; if zero -> state 0x1d, else zeroes buffer 0x35b7e0, resets offset conn+0x48, advances to state 0x27 (chunk receive).
+- **0x001c6b90 snap_send_op47_chunk_request** [High] — Emits opcode 0x47 chunk-fetch: byte(1), current offset (conn+0x48), remaining-len (0x35b7d0 - offset); advances to state 0x28.
+- **0x001c6c60 recv_op47_download_chunk** [High] — Reply-0x47 handler: reads offset+len, if within 0x35b7d0/0x100 stores new cursor at conn+0x48 and stays state 0x27 else state 0x1d, copies body into 0x35b7e0+offset.
+- **0x005acab0 lobby_overlay_frame_dispatch** [High] — In-lobby per-frame dispatcher: switches on screen id cRam006c4b90 (0..0xf) to each lobby/room screen handler, with a paused/overlay-active alternate path; ticks frame counter.
+- **0x005b24e0 lobby_menu_state_dispatch** [High] — Top-level lobby/menu screen state machine: switches on screen id +0xe (0-9) to the per-screen handlers (init, connect, entry, room-list, char-select, etc.).
+- **0x005b2bc0 screen_lobby_entry** [Medium] — Screen-2 lobby-entry machine: gated by can_enter_lobby_for_mode, handles the password buffer (+0x5194, 0x300 bytes) and submits entry (0x5b9060 sel 0x14), with fade transitions.
+- **0x005b53b0 cmd_handler_02_area_refresh** [High] — Registered lobby command handler (selector id 2): unless area 0x6c4b90==6, sets refresh flag 0x6c50fa and rebuilds a list via 0x5be9a0(0x6c517c).
+- **0x005b6300 server_list_reply_parse** [Medium] — On result byte 0: parse a count+entry list (FUN_00618890) of 12-byte records into table 0x697020, clear a 0x8000 buffer, populate name pointers from 0x6c5480, advance menu step; on 0xFF just advance step.
+- **0x005bb8e0 lobby_area_population_increment** [High] — Increments the per-area lobby population counter (0x6ce5de, stride 0x144, saturating at -1==unset) for the current area and pushes a UI refresh (FUN_005bdfe0(0xf)).
+- **0x005bb980 lobby_area_population_decrement** [High] — Decrements the per-area lobby population counter (0x6ce5de) for the current area (floored at 0) and pushes a UI refresh (FUN_005bdfe0(0xf)).
+- **0x005c0ff0 pump_area_list_query** [High] — Async pump (guard 0x6cb9dc): on entry builds the area/channel list — initializes a 10-entry table 0x6ce5d4 (id,name via 2a70, desc via 2a90), then sends a 'NAME'(0x4e414d45) query for 10 entries and registers reply handler FUN_005c1220.
+- **0x005c1220 on_reply_area_list** [High] — Reply handler for the area/channel 'NAME' query: parses each reply entry, matches its 2-digit id, and fills area records 0x6fec08 and the 10-entry table 0x6ce5dc (name, 5 u32 fields, status via 2ab0); sets ready count 0x6ce5be=10.
+- **0x005c14a0 pump_stat_query_loid** [High] — Async pump (guard 0x6cba04): initializes a 6-entry stat table (0x6cf27c/0x6fed70/0x6fec28) then loops (up to 4 pages) sending a 'LOID'(0x4c4f4944)+'STAT'(0x53544154) query and registering reply handler FUN_005c13e0.
+- **0x005e60c0 parse_config_block** [Medium] — Parses a server '<...>' configuration block: reads key/value tokens, matches keys (via FUN_005ec920/charmap) and stores connection/session parameters — server address string (@+0xe980), port digits (@+0x4f8b9, +0xfbc1/2) and a 10+ bit flag word (@+0xe97e).
+- **0x005e7070 parse_lobby_line_dispatch** [Medium] — Top-level lobby text-protocol line parser: recognizes 'M..' message prefixes and '<...>' tags, dispatches to config parse (FUN_005e60c0) or list parse (FUN_005e67a0), and decodes control tokens (FUN_005e5f80) into parser state bytes (+0x186/+0x18e/+0x191/+0x192) driving the current screen.
+- **0x005fa190 area_select_screen_sm** [High] — Area/scenario-select screen state machine: builds the area list (FUN_005fe300), memsets 0x6970a0 model, loads per-area records and sends the area query.
+- **0x005fe500 lobby_roomlist_init** [High] — Initializes/resets the lobby room-list screen: sets mode 0x6c4b90=4, clears paging/selection state, seeds timers, and installs the list widget callbacks.
+- **0x005fe620 lobby_menu_router** [High] — Top-level lobby menu router: guarded by FUN_005aec70, dispatches on current menu id (+1) to lobby/join/leave/create sub-flows (join=FUN_005f5f80, leave=FUN_006052f0).
+- **0x005fe730 lobby_substate_dispatch** [High] — Dispatches the base lobby screen sub-state (+0xf, 0-8) to its per-step handler (init FUN_005fe800 .. FUN_005ff760).
+- **0x00613380 roomlist_render** [High] — Renders the lobby room list from the global registry 0x35c000 (0x1c stride, 0x23 entries): for each live entry (+0=!-1, type +0x8) formats '+0x14 / +0x18' key strings (fmt 0x6540f8), colors by state, lists rows past scroll offset ctx+0x1d.
+- **0x0062d4e0 lobby_state_reset_enter** [High] — Resets the lobby major-state block at 0x6c4b90 (phase b90=0xe, substates b91/b9e/b9f/ba0/ba1=0), clears 0x6c45fc/4600, then runs FUN_005fe300.
+- **0x0062d560 room_screen_init** [High] — Initializes room-screen state struct: major+0xe=3, sub+0xf=3(host,param2==0) or 2(join); join path also sets +0x443/+0x4b7 flags. Common: +0x45d=2, +0x146b=0.
+- **0x0062d5e0 lobby_tick_gate** [High] — Per-frame tick entry: if FUN_005aec70()==0 and struct+1==0 run the major dispatcher FUN_0062d640, then FUN_005af1a0(struct,1).
+- **0x0062d640 lobby_major_state_dispatch** [High] — Top-level lobby/room state dispatcher on struct+0xe: 0->d730(area/roomlist), 1->d810, 2->d950, 3->e3c0, 4->e8d0(stub); state3 sets +0x992 fail-flag if FUN_005f4be0==0.
+- **0x0062d810 lobby_state1_enter** [High] — Major-state 1 handler: sets screen +0x42b=5, timer +0x9a0=0x708, sends a request via FUN_005bfd80 registering reply callback 0x62d8b0.
+- **0x0062e2a0 lobby_exit_teardown_sm** [High] — Major-state 4 (exit) timed cleanup: countdown on struct+0x16, tears down UI (FUN_005b9110 0x4c) and resets 0x6c4b90 block via FUN_00617a00; FUN_005b8cf0(-0x52) restores prior screen.
+- **0x0062e3c0 lobby_state3_substate_dispatch** [High] — Major-state 3 sub-dispatcher on struct+0xf: 0->e440(join flow), 1->e5b0(member gate), 2->e720(leave), 3->e800(back/exit).
+
+## initialization  (50 fns, 5 core)
+
+- **0x001c0100 dnas_boot_step** [High] — DNAS/DVD-auth boot state machine: switch on 0x35a6b0 — reset, poll ready (FUN_001c0630), FUN_001ee360, sub-machine FUN_001c2770, finalize FUN_001bf580.
+- **0x001ee1e0 netlink_status_poll** [High] — Link/connection status state machine: gated on status(0x37a298)==0 && 0x37a290==0 && handle!=0, branches on mode param_1 (2/3 vs 1) querying link (FUN_001eeb50/ef0d0/eef00/ef1c0) and latches error codes 1/2/3 into 0x37a298.
+- **0x005c80a0 net_session_context_init** [High] — Full init/reset of the large network-session context (iRam00701068 arena): zeroes sub-structs, sets defaults/flags, seeds host-vs-join mode (param_1), and calls sub-inits incl. FUN_00634550(language).
+- **0x005c8ed0 session_arena_stream_reset** [High] — Full reset of the session arena: zeroes sub-buffers, frees+reallocs the 500-slot message pool (92d0/9130), seeds a fresh out-stream, defaults, and registers handler/timer entries via FUN_005dd920.
+- **0x005d6d50 lobby_pools_init** [High] — Constructs the four lobby object pools (session 0x114/2, roster 0x11c/31, room-list 0x10c/31, txn-queue 0x128/19), links each free-list, wires session data buffers, then calls sub-init and zeroes the state block at 0x701000.
+
+## chat  (33 fns, 16 core)
+
+- **0x001de840 snap_send_op0f_reliable** [High] — Builds/sends opcode-0xf (who param_4|0xa400): copies a param_3-length blob; no completion cb.
+- **0x001df044 snap_send_op32_unrel** [Medium] — Builds/sends opcode-0x32 with who 0x2000 (set, unreliable, no DATA/reliable bits): copies a param_3-length blob; no completion cb.
+- **0x001df1d8 snap_send_op0f_unrel** [High] — Builds/sends opcode-0xf with who param_2|0x2000 (unreliable): copies a param_4-length blob; no completion cb.
+- **0x001dfbf8 snap_send_op11_unrel** [Medium] — Builds/sends opcode-0x11 with who param_2|0x2000 (unreliable): copies a param_4-length blob; no completion cb.
+- **0x001e0188 snap_send_op34_string** [High] — Builds/sends reliable (who 0xb000) opcode-0x34: copies a length-prefixed blob (FUN_0010a050 measured, clamped to 0x368); completion cb 0x2a.
+- **0x001e05c8 snap_send_op3e** [Medium] — Builds/sends reliable (who 0xb000) opcode-0x3e: copies a param_3-length blob clamped to 0x36c; no completion cb.
+- **0x001e0774 snap_send_op3f_hdr_blob** [Medium] — Builds/sends reliable (who 0xb000) opcode-0x3f: a 4-byte header (param_2/param_3) followed by a param_4-length blob clamped to 0x368; no completion cb.
+- **0x005b5520 chat_cmd03_recv_line_to_scrollback** [High] — Registered command handler (selector id 3): parses an incoming chat line (sender/name/text via 0x5c3e80), dedupes against 0x870880, and inserts it into the 8-entry scrollback log (0x6c5562, stride 0xa5).
+- **0x005b5690 chat_cmd04_set_single_line** [High] — Registered command handler (selector id 4): clears the 0x31c-byte chat/message buffer at 0x6c9d32, parses one record (0x5c3e80), and sets its ready flag.
+- **0x005bc1c0 inroom_recv_member_text_fragment** [High] — Sub-event 7: when in-room, copies a variable-length text blob (len at payload+5) into the per-player chat/text buffer at 0x6fffd1 + slot*0x114 + offset(payload+6).
+- **0x005c4af0 send_chat_message_and_echo** [High] — Assembles and emits a chat/DATA message: clears 0x6fc05a buffer, stamps sender-name len, copies name+text, then queues UI event 5.
+- **0x005c4bd0 build_send_chat_datagram** [High] — Builds a DATA datagram [type, senderNameLen, name, payload] and sends via net ctx; picks reliable(0x1000) vs unreliable(0) based on in-room flag.
+- **0x005e9940 chat_ingest_msg_hash_prefix** [High] — Parses a message; if it starts with '#' sets mode 0x17f=1 and stores at cfg+0x8f6, else mode=2 and stores at cfg+0x9f6.
+- **0x005e99c0 chat_ingest_msg_mode3_dispatch** [High] — Parses a message, sets mode 0x17f=3 and dispatches it through FUN_005ecf20.
+- **0x005ffdc0 chat_message_send_sm** [High] — Outbound chat/message state-machine (cases 0-0x0b): finds an active member slot, accumulates the message body in 0x20-byte chunks (+0x24 length), and when <0x800 flushes it through FUN_005c4d20 (encrypt+send, render cb 0x6001d0).
+- **0x006000e0 chat_message_recv_append** [High] — Inbound message handler: matches sender against the 4 member slots (0x14-byte id), sets slot type (4/1 = self-echo vs 2 = remote), and appends the payload (+0x18 len) into that slot's growing buffer at +0x2c/+0x28.
+
+## errors  (13 fns, 1 core)
+
+- **0x005d7b60 txn_apply_reply_status** [High] — Maps a server reply's status code (reply struct +0x3d, 0x00..0x14) to the record's outcome: code 0 -> success state 5 (copies room id/handle, sets sub-result); all other codes -> state 6 with an error class written to +0x124 and detail +0x125.
+

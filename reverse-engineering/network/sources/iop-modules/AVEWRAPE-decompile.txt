@@ -1,0 +1,2569 @@
+Program: AVEWRAPE.IRX, image base: 00000000
+
+================================================================
+FUNCTION FUN_00000000 @ 0x00000000 size=16
+CALLERS (1): FUN_00000010@0x00000010
+CALLEES (0): 
+
+undefined4 FUN_00000000(void)
+
+{
+  return DAT_00002c64;
+}
+
+
+================================================================
+FUNCTION FUN_00000010 @ 0x00000010 size=152
+CALLERS (2): FUN_00000834@0x00000834, FUN_00000724@0x00000724
+CALLEES (2): FUN_00002804@0x00002804, FUN_00000000@0x00000000
+
+undefined4 FUN_00000010(int *param_1)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  undefined1 auStack_38 [8];
+  short local_30;
+  short local_26;
+  
+  iVar1 = FUN_00000000();
+  if ((iVar1 == 1) || (uVar2 = 0, iVar1 == 4)) {
+    iVar1 = FUN_00002804(&DAT_00004156,0,auStack_38);
+    if (iVar1 << 0x10 < 0) {
+      param_1[6] = -0x10;
+      uVar2 = 0xffffffff;
+    }
+    else if (local_30 == 4) {
+      uVar2 = 0;
+    }
+    else {
+      param_1[6] = -0x22;
+      *param_1 = (int)local_26;
+      uVar2 = 0xffffffff;
+      param_1[1] = (int)local_30;
+    }
+  }
+  return uVar2;
+}
+
+
+================================================================
+FUNCTION FUN_000000a8 @ 0x000000a8 size=192
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (3): FUN_00002804@0x00002804, FUN_00002814@0x00002814, FUN_00002850@0x00002850
+
+/* WARNING: Type propagation algorithm not settling */
+
+void FUN_000000a8(undefined4 *param_1)
+
+{
+  short sVar1;
+  undefined2 local_30 [2];
+  undefined4 local_2c;
+  undefined4 local_28;
+  undefined2 local_20;
+  undefined2 local_1e;
+  int *local_1c;
+  int local_18 [2];
+  
+  local_2c = 9;
+  local_28 = *param_1;
+  local_30[0] = 0;
+  DAT_00002c64 = param_1[1];
+  local_18[0] = 9;
+  FUN_00002850(1,local_18,4);
+  local_18[0] = local_18[0] + -1;
+  FUN_00002850(2,local_18,4);
+  FUN_00002814(local_30);
+  local_20 = 1;
+  local_1e = 4;
+  local_18[1] = 1;
+  local_1c = local_18 + 1;
+  sVar1 = FUN_00002804(&DAT_0000412e,&local_20,0);
+  param_1[6] = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000168 @ 0x00000168 size=52
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_0000280c@0x0000280c
+
+void FUN_00000168(int param_1)
+
+{
+  short sVar1;
+  undefined1 auStack_10 [8];
+  
+  sVar1 = FUN_0000280c(auStack_10);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000019c @ 0x0000019c size=108
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_0000019c(int param_1)
+
+{
+  short sVar1;
+  undefined4 local_28;
+  undefined4 local_24;
+  undefined4 local_20;
+  undefined1 auStack_18 [8];
+  
+  sVar1 = FUN_00002804(0x4101,auStack_18,&local_28);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  *(undefined4 *)(param_1 + 0x1c) = local_28;
+  *(undefined4 *)(param_1 + 0x20) = local_24;
+  *(undefined4 *)(param_1 + 0x24) = local_20;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000208 @ 0x00000208 size=92
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000208(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_18 [2];
+  undefined4 local_14;
+  undefined4 local_10;
+  undefined4 local_c;
+  
+  local_18[0] = 0;
+  local_14 = *(undefined4 *)(param_1 + 0x1c);
+  local_10 = *(undefined4 *)(param_1 + 0x20);
+  local_c = *(undefined4 *)(param_1 + 0x24);
+  sVar1 = FUN_00002804(0x4105,local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000264 @ 0x00000264 size=64
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000264(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10 [4];
+  
+  local_10[0] = 0;
+  sVar1 = FUN_00002804(0x4106,local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000002a4 @ 0x000002a4 size=96
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000002a4(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_18;
+  undefined2 local_16;
+  undefined2 local_14;
+  int local_10;
+  
+  local_18 = *(undefined2 *)(param_1 + 0x1c);
+  local_16 = *(undefined2 *)(param_1 + 0x1e);
+  local_14 = *(undefined2 *)(param_1 + 0x20);
+  local_10 = param_1 + 0x22;
+  sVar1 = FUN_00002804(&DAT_00004108,&local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000304 @ 0x00000304 size=96
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000304(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_18;
+  undefined2 local_16;
+  undefined2 local_14;
+  int local_10;
+  
+  local_18 = *(undefined2 *)(param_1 + 0x1c);
+  local_16 = *(undefined2 *)(param_1 + 0x1e);
+  local_14 = *(undefined2 *)(param_1 + 0x20);
+  local_10 = param_1 + 0x22;
+  sVar1 = FUN_00002804(&DAT_00004109,&local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000364 @ 0x00000364 size=116
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000364(int param_1)
+
+{
+  short sVar1;
+  undefined4 local_20;
+  undefined2 local_1c;
+  undefined2 local_1a;
+  undefined1 local_18;
+  undefined1 local_17;
+  undefined1 local_16;
+  undefined1 local_15;
+  undefined2 local_14;
+  undefined4 local_10;
+  undefined4 local_c;
+  
+  local_20 = *(undefined4 *)(param_1 + 0x1c);
+  local_1c = *(undefined2 *)(param_1 + 0x20);
+  local_1a = *(undefined2 *)(param_1 + 0x22);
+  local_17 = 0;
+  local_16 = 0;
+  local_15 = 0;
+  local_18 = 0;
+  local_14 = 0;
+  local_10 = 0;
+  local_c = 0;
+  sVar1 = FUN_00002804(&DAT_00004110,&local_20,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000003d8 @ 0x000003d8 size=112
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000003d8(int param_1)
+
+{
+  short sVar1;
+  undefined4 local_20;
+  undefined2 local_1c;
+  undefined2 local_1a;
+  undefined1 local_18;
+  undefined1 local_17;
+  undefined1 local_16;
+  undefined1 local_15;
+  undefined2 local_14;
+  undefined4 local_10;
+  
+  local_20 = *(undefined4 *)(param_1 + 0x1c);
+  local_1c = *(undefined2 *)(param_1 + 0x20);
+  local_1a = *(undefined2 *)(param_1 + 0x22);
+  local_17 = 0;
+  local_16 = 0;
+  local_15 = 0;
+  local_18 = 0;
+  local_14 = 0;
+  local_10 = 0;
+  sVar1 = FUN_00002804(&DAT_00004111,&local_20,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000448 @ 0x00000448 size=108
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (0): 
+
+void FUN_00000448(int *param_1)
+
+{
+  if (DAT_00002c58 != -0xe) {
+    *param_1 = (int)DAT_00002c58;
+    param_1[1] = (int)DAT_00002c5a;
+    param_1[2] = DAT_00002c5c;
+    param_1[3] = (uint)DAT_00002c60;
+    DAT_00002c58 = 0xfff2;
+    DAT_00002c5a = 0;
+    DAT_00002c5c = 0;
+    DAT_00002c60 = 0;
+    return;
+  }
+  *param_1 = -1;
+  param_1[1] = -1;
+  param_1[2] = -1;
+  param_1[3] = -1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000004e8 @ 0x000004e8 size=124
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000004e8(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_18 [2];
+  undefined4 local_14;
+  undefined4 local_10;
+  
+  if (DAT_00002c58 != -0xe) {
+    DAT_00002c58 = -0xe;
+    DAT_00002c5a = 0;
+    DAT_00002c5c = 0;
+    DAT_00002c60 = 0;
+  }
+  local_18[0] = *(undefined2 *)(param_1 + 0x1c);
+  local_14 = 0x4b4;
+  local_10 = 0;
+  sVar1 = FUN_00002804(&DAT_00004112,local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000564 @ 0x00000564 size=68
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000564(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10 [4];
+  
+  local_10[0] = *(undefined2 *)(param_1 + 0x1c);
+  sVar1 = FUN_00002804(&DAT_00004113,local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000005a8 @ 0x000005a8 size=68
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000005a8(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10 [4];
+  
+  local_10[0] = *(undefined2 *)(param_1 + 0x1c);
+  sVar1 = FUN_00002804(&DAT_00004114,local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000005ec @ 0x000005ec size=68
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000005ec(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10 [4];
+  
+  local_10[0] = *(undefined2 *)(param_1 + 0x1c);
+  sVar1 = FUN_00002804(&DAT_00004115,local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000630 @ 0x00000630 size=116
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000630(int param_1)
+
+{
+  short sVar1;
+  undefined4 local_20;
+  undefined2 local_1c;
+  undefined2 local_1a;
+  undefined2 local_18 [4];
+  
+  local_18[0] = *(undefined2 *)(param_1 + 0x1c);
+  sVar1 = FUN_00002804(&DAT_00004116,local_18,&local_20);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  *(undefined4 *)(param_1 + 0x20) = local_20;
+  *(undefined2 *)(param_1 + 0x26) = local_1c;
+  *(undefined2 *)(param_1 + 0x24) = local_1a;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000006a4 @ 0x000006a4 size=128
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000006a4(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_20;
+  undefined2 local_1e;
+  undefined2 local_1c;
+  undefined2 local_1a;
+  undefined2 local_18 [4];
+  
+  local_18[0] = *(undefined2 *)(param_1 + 0x1c);
+  sVar1 = FUN_00002804(&DAT_00004117,local_18,&local_20);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  *(undefined2 *)(param_1 + 0x1e) = local_20;
+  *(undefined2 *)(param_1 + 0x20) = local_1e;
+  *(undefined2 *)(param_1 + 0x22) = local_1c;
+  *(undefined2 *)(param_1 + 0x24) = local_1a;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000724 @ 0x00000724 size=184
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (2): FUN_00002804@0x00002804, FUN_00000010@0x00000010
+
+void FUN_00000724(int param_1)
+
+{
+  short sVar1;
+  int iVar2;
+  undefined2 local_38 [2];
+  undefined4 local_34;
+  undefined1 local_30;
+  undefined1 local_2f;
+  undefined2 local_2c;
+  int local_28;
+  short local_20 [4];
+  undefined2 local_18 [4];
+  
+  iVar2 = FUN_00000010();
+  if (-1 < iVar2 << 0x10) {
+    local_18[0] = *(undefined2 *)(param_1 + 0x1c);
+    sVar1 = FUN_00002804(&DAT_00004117,local_18,local_20);
+    iVar2 = (int)sVar1;
+    if (-1 < iVar2) {
+      if (local_20[0] == 4) {
+        local_38[0] = *(undefined2 *)(param_1 + 0x1c);
+        local_34 = 0;
+        local_30 = 0;
+        local_2f = 1;
+        local_2c = *(undefined2 *)(param_1 + 0x1e);
+        local_28 = param_1 + 0x20;
+        sVar1 = FUN_00002804(&DAT_00004118,local_38,0);
+        iVar2 = (int)sVar1;
+      }
+      else {
+        iVar2 = -6;
+      }
+    }
+    *(int *)(param_1 + 0x18) = iVar2;
+  }
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000007dc @ 0x000007dc size=88
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000007dc(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_18;
+  undefined2 local_16;
+  int local_14;
+  undefined4 local_10;
+  
+  local_18 = *(undefined2 *)(param_1 + 0x1c);
+  local_16 = *(undefined2 *)(param_1 + 0x1e);
+  local_14 = param_1 + 0x20;
+  local_10 = 0;
+  sVar1 = FUN_00002804(&DAT_00004119,&local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000834 @ 0x00000834 size=252
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (2): FUN_00002804@0x00002804, FUN_00000010@0x00000010
+
+void FUN_00000834(int param_1)
+
+{
+  short sVar1;
+  int iVar2;
+  undefined2 local_30;
+  ushort local_2e;
+  int local_2c;
+  undefined4 local_28;
+  short local_20 [3];
+  ushort local_1a;
+  undefined2 local_18 [4];
+  
+  iVar2 = FUN_00000010();
+  if (-1 < iVar2 << 0x10) {
+    local_18[0] = *(undefined2 *)(param_1 + 0x1c);
+    sVar1 = FUN_00002804(&DAT_00004117,local_18,local_20);
+    iVar2 = (int)sVar1;
+    if ((-1 < iVar2) &&
+       ((local_20[0] == 4 ||
+        (((local_20[0] == 5 || (iVar2 = -6, local_20[0] == -1)) && (iVar2 = -6, local_1a != 0))))))
+    {
+      if (local_1a == 0) {
+        *(undefined4 *)(param_1 + 0x18) = 0;
+        return;
+      }
+      local_30 = *(undefined2 *)(param_1 + 0x1c);
+      local_2e = *(ushort *)(param_1 + 0x1e);
+      if ((int)(uint)local_1a < (int)(short)*(ushort *)(param_1 + 0x1e)) {
+        local_2e = local_1a;
+      }
+      local_2c = param_1 + 0x20;
+      local_28 = 0;
+      sVar1 = FUN_00002804(&DAT_00004119,&local_30,0);
+      iVar2 = (int)sVar1;
+    }
+    *(int *)(param_1 + 0x18) = iVar2;
+  }
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000930 @ 0x00000930 size=76
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000930(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10;
+  undefined2 local_e;
+  
+  local_10 = *(undefined2 *)(param_1 + 0x1c);
+  local_e = *(undefined2 *)(param_1 + 0x1e);
+  sVar1 = FUN_00002804(&DAT_0000411a,&local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000097c @ 0x0000097c size=68
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_0000097c(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10 [4];
+  
+  local_10[0] = *(undefined2 *)(param_1 + 0x1c);
+  sVar1 = FUN_00002804(&DAT_0000411c,local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000009c0 @ 0x000009c0 size=172
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (3): FUN_000029bc@0x000029bc, FUN_0000293c@0x0000293c, FUN_000029c4@0x000029c4
+
+void FUN_000009c0(int param_1)
+
+{
+  undefined2 uVar1;
+  short sVar2;
+  undefined4 uVar3;
+  
+  FUN_000029c4(DAT_00004db0);
+  uVar3 = DAT_00004a2c;
+  sVar2 = DAT_00004a28;
+  uVar1 = DAT_00004a26;
+  if (DAT_00004a24 == 0) {
+    *(undefined4 *)(param_1 + 0x18) = 0;
+  }
+  else {
+    *(int *)(param_1 + 0x18) = (int)DAT_00004a24;
+    *(undefined2 *)(param_1 + 0x1c) = uVar1;
+    *(short *)(param_1 + 0x1e) = sVar2;
+    *(undefined4 *)(param_1 + 0x20) = uVar3;
+    FUN_0000293c(param_1 + 0x24,&DAT_00004a30,(int)sVar2);
+    DAT_00004a24 = 0;
+  }
+  FUN_000029bc(DAT_00004db0);
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000a6c @ 0x00000a6c size=172
+CALLERS (0): 
+CALLEES (2): FUN_000029bc@0x000029bc, FUN_000029c4@0x000029c4
+
+undefined4 FUN_00000a6c(short param_1,undefined2 *param_2)
+
+{
+  undefined4 uVar1;
+  
+  if (param_1 == 0) {
+    uVar1 = 1;
+    if ((short)param_2[4] < 0x381) {
+      FUN_000029c4(DAT_00004db0);
+      DAT_00004a26 = *param_2;
+      DAT_00004a28 = param_2[4];
+      DAT_00004a2c = *(undefined4 *)(param_2 + 6);
+      *(undefined **)(param_2 + 10) = &DAT_00004a30;
+      uVar1 = 0;
+    }
+  }
+  else {
+    DAT_00004a24 = DAT_00004a24 + 1;
+    FUN_000029bc(DAT_00004db0);
+    uVar1 = 0;
+  }
+  return uVar1;
+}
+
+
+================================================================
+FUNCTION FUN_00000b18 @ 0x00000b18 size=92
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000b18(int param_1)
+
+{
+  short sVar1;
+  undefined4 local_18;
+  undefined2 local_14;
+  undefined4 local_10;
+  undefined4 local_c;
+  
+  local_18 = *(undefined4 *)(param_1 + 0x1c);
+  local_14 = *(undefined2 *)(param_1 + 0x20);
+  local_10 = 0;
+  local_c = 0xa6c;
+  sVar1 = FUN_00002804(&DAT_00004124,&local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000b74 @ 0x00000b74 size=128
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000b74(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_20 [2];
+  undefined4 local_1c;
+  undefined1 local_18;
+  undefined1 local_17;
+  undefined1 local_16;
+  undefined1 local_15;
+  undefined2 local_14;
+  int local_10;
+  
+  local_20[0] = *(undefined2 *)(param_1 + 0x1c);
+  local_1c = *(undefined4 *)(param_1 + 0x20);
+  local_18 = 1;
+  local_14 = *(undefined2 *)(param_1 + 0x24);
+  local_10 = param_1 + 0x29;
+  local_17 = *(undefined1 *)(param_1 + 0x26);
+  local_16 = *(undefined1 *)(param_1 + 0x27);
+  local_15 = *(undefined1 *)(param_1 + 0x28);
+  sVar1 = FUN_00002804(&DAT_00004125,local_20,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000bf4 @ 0x00000bf4 size=68
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000bf4(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10 [4];
+  
+  local_10[0] = *(undefined2 *)(param_1 + 0x1c);
+  sVar1 = FUN_00002804(&DAT_00004113,local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000c38 @ 0x00000c38 size=84
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000c38(int param_1)
+
+{
+  short sVar1;
+  undefined4 local_18;
+  undefined4 local_14;
+  undefined2 local_10;
+  
+  local_18 = *(undefined4 *)(param_1 + 0x1c);
+  local_14 = *(undefined4 *)(param_1 + 0x20);
+  local_10 = 1;
+  sVar1 = FUN_00002804(&DAT_00004130,&local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000c8c @ 0x00000c8c size=76
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000c8c(int param_1)
+
+{
+  short sVar1;
+  undefined4 local_10;
+  undefined4 local_c;
+  
+  local_10 = *(undefined4 *)(param_1 + 0x1c);
+  local_c = *(undefined4 *)(param_1 + 0x20);
+  sVar1 = FUN_00002804(&DAT_00004131,&local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000cd8 @ 0x00000cd8 size=196
+CALLERS (1): FUN_00000d9c@0x00000d9c
+CALLEES (0): 
+
+void FUN_00000cd8(undefined2 *param_1)
+
+{
+  *param_1 = 1;
+  param_1[1] = 1;
+  param_1[2] = 1;
+  param_1[4] = 1;
+  *(undefined **)(param_1 + 6) = &DAT_000029f8;
+  *(undefined **)(param_1 + 8) = &DAT_00002a00;
+  *(undefined **)(param_1 + 10) = &DAT_00002a08;
+  *(undefined ***)(param_1 + 0xc) = &PTR_DAT_00002a0c;
+  *(char **)(param_1 + 0xe) = "CONNECT";
+  *(undefined **)(param_1 + 0x10) = &DAT_00002a18;
+  *(char **)(param_1 + 0x12) = "ERROR";
+  *(char **)(param_1 + 0x14) = "DELAYED";
+  *(char **)(param_1 + 0x16) = "NO CARRIER";
+  *(char **)(param_1 + 0x18) = "NO DIALTONE";
+  *(undefined **)(param_1 + 0x1a) = &DAT_00002a48;
+  *(undefined1 *)(param_1 + 0x1c) = 0xd;
+  *(char **)(param_1 + 0x1e) = "error";
+  param_1[3] = 0;
+  *(char **)(param_1 + 0x20) = "dial \"%t\"\n";
+  *(undefined4 *)(param_1 + 0x22) = 0;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000d9c @ 0x00000d9c size=184
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (2): FUN_00002804@0x00002804, FUN_00000cd8@0x00000cd8
+
+void FUN_00000d9c(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_18 [2];
+  int local_14;
+  
+  FUN_00000cd8(&DAT_000030d0);
+  sVar1 = FUN_00002804(&DAT_00004151,&DAT_000030d0,0);
+  if (((sVar1 == 0) && (sVar1 = FUN_00002804(&DAT_00004153,0,&local_14), sVar1 == 0)) &&
+     (local_14 != 0)) {
+    local_18[0] = 0;
+    sVar1 = FUN_00002804(&DAT_00004141,local_18,0);
+    if (sVar1 == 0) {
+      *(undefined4 *)(param_1 + 0x18) = 0;
+      DAT_000030cc = local_14;
+      return;
+    }
+  }
+  *(undefined4 *)(param_1 + 0x18) = 0xffffffff;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000e54 @ 0x00000e54 size=80
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00000e54(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10 [4];
+  
+  local_10[0] = 0;
+  FUN_00002804(&DAT_00004142,local_10,0);
+  sVar1 = FUN_00002804(&DAT_00004152,0,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000ea4 @ 0x00000ea4 size=532
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (3): FUN_00002804@0x00002804, FUN_00001b3c@0x00001b3c, FUN_00002850@0x00002850
+
+void FUN_00000ea4(undefined4 *param_1)
+
+{
+  short sVar1;
+  int iVar2;
+  undefined2 local_18;
+  undefined2 local_16;
+  undefined4 *local_14;
+  undefined4 local_10;
+  undefined4 local_c;
+  
+  local_10 = 0;
+  local_c = 0;
+  if (param_1[1] != 0) {
+    local_10 = 1;
+    local_c = 1;
+    FUN_00001b3c(*param_1);
+  }
+  FUN_00002850(3,&local_10,4);
+  local_18 = 2;
+  local_16 = 4;
+  local_14 = &local_c;
+  sVar1 = FUN_00002804(&DAT_0000415a,&local_18,0);
+  iVar2 = -1;
+  if (sVar1 == 0) {
+    DAT_00003118 = *(undefined2 *)(param_1 + 200);
+    DAT_0000311a = *(undefined2 *)((int)param_1 + 0x322);
+    DAT_0000311c = *(undefined2 *)(param_1 + 0xc9);
+    DAT_0000311e = *(undefined2 *)((int)param_1 + 0x326);
+    DAT_00003120 = *(undefined2 *)(param_1 + 0xca);
+    DAT_00003124 = 0;
+    DAT_00003128 = 0;
+    DAT_00003168 = &DAT_00003118;
+    DAT_00003130 = *(undefined2 *)((int)param_1 + 0x1e);
+    DAT_0000313c = param_1 + 0xb8;
+    DAT_00003132 = (ushort)(*(char *)(param_1 + 0xb8) != '\0');
+    DAT_00003134 = 0x5a;
+    DAT_00003136 = 0;
+    DAT_00003138 = 0x1e;
+    DAT_00003140 = 0;
+    DAT_00003144 = 0;
+    DAT_0000316c = &DAT_00003130;
+    DAT_00003148 = 0;
+    DAT_0000314c = 0;
+    DAT_00003150 = *(undefined2 *)(param_1 + 2);
+    DAT_00003152 = 0x5dc;
+    DAT_00003174 = param_1 + 8;
+    DAT_00003154 = 0x12345678;
+    DAT_00003158 = 0;
+    DAT_0000315a = 0;
+    DAT_0000315c = 0;
+    DAT_00003160 = 0;
+    DAT_00003164 = 0;
+    DAT_00003178 = param_1 + 0x48;
+    DAT_0000317c = param_1 + 0x88;
+    DAT_00003180 = param_1 + 0x98;
+    DAT_00003184 = param_1 + 0xa8;
+    DAT_00003170 = &DAT_00003148;
+    DAT_00003188 = 0;
+    DAT_0000318c = 0;
+    DAT_00003190 = 0;
+    DAT_00003194 = 0;
+    DAT_00003196 = 0;
+    DAT_00003198 = 0x8001;
+    if (*(short *)(param_1 + 7) == 0) {
+      DAT_00003198 = 1;
+    }
+    else {
+      DAT_000031a0 = 0;
+      DAT_000031a4 = 0;
+      DAT_000031a8 = 0;
+      DAT_000031ac = 0;
+      DAT_000031b0 = 0;
+      DAT_000031b4 = 0;
+    }
+    sVar1 = FUN_00002804(&DAT_00004154,&DAT_00003168,0);
+    iVar2 = (int)sVar1;
+  }
+  param_1[6] = iVar2;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000010b8 @ 0x000010b8 size=72
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000010b8(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10 [2];
+  undefined2 local_c;
+  
+  local_10[0] = 0;
+  local_c = 1;
+  sVar1 = FUN_00002804(&DAT_00004155,local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001100 @ 0x00001100 size=60
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001100(int param_1)
+
+{
+  short sVar1;
+  
+  sVar1 = FUN_00002804(&DAT_00004156,0,param_1 + 0x1c);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000113c @ 0x0000113c size=72
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_0000113c(int param_1)
+
+{
+  short sVar1;
+  undefined4 local_10 [2];
+  
+  sVar1 = FUN_00002804(&DAT_00004159,0,local_10);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  *(undefined4 *)(param_1 + 0x1c) = local_10[0];
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001184 @ 0x00001184 size=84
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001184(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10;
+  undefined2 local_e;
+  int local_c;
+  
+  local_10 = *(undefined2 *)(param_1 + 0x1c);
+  local_e = *(undefined2 *)(param_1 + 0x1e);
+  local_c = param_1 + 0x20;
+  sVar1 = FUN_00002804(&DAT_0000415a,&local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000011d8 @ 0x000011d8 size=84
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000011d8(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10;
+  undefined2 local_e;
+  int local_c;
+  
+  local_10 = *(undefined2 *)(param_1 + 0x1c);
+  local_e = *(undefined2 *)(param_1 + 0x1e);
+  local_c = param_1 + 0x20;
+  sVar1 = FUN_00002804(&DAT_0000415b,&local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000122c @ 0x0000122c size=160
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_0000122c(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10 [2];
+  int local_c;
+  
+  sVar1 = FUN_00002804(&DAT_00004161,0,0);
+  if (((sVar1 == 0) && (sVar1 = FUN_00002804(&DAT_00004163,0,&local_c), sVar1 == 0)) &&
+     (local_c != 0)) {
+    local_10[0] = 0;
+    sVar1 = FUN_00002804(&DAT_00004141,local_10,0);
+    if (sVar1 == 0) {
+      *(undefined4 *)(param_1 + 0x18) = 0;
+      DAT_000030cc = local_c;
+      return;
+    }
+  }
+  *(undefined4 *)(param_1 + 0x18) = 0xffffffff;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000012cc @ 0x000012cc size=80
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000012cc(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10 [4];
+  
+  local_10[0] = 0;
+  FUN_00002804(&DAT_00004142,local_10,0);
+  sVar1 = FUN_00002804(&DAT_00004162,0,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000131c @ 0x0000131c size=84
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (2): FUN_00002804@0x00002804, FUN_00001b3c@0x00001b3c
+
+void FUN_0000131c(undefined4 *param_1)
+
+{
+  short sVar1;
+  undefined2 local_10;
+  undefined2 local_e;
+  
+  FUN_00001b3c(*param_1);
+  local_10 = 0;
+  local_e = 2;
+  sVar1 = FUN_00002804(&DAT_00004164,&local_10,0);
+  param_1[6] = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001370 @ 0x00001370 size=72
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001370(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_10;
+  undefined2 local_e;
+  
+  local_10 = 0;
+  local_e = 3;
+  sVar1 = FUN_00002804(&DAT_00004164,&local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000013b8 @ 0x000013b8 size=60
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000013b8(int param_1)
+
+{
+  short sVar1;
+  
+  sVar1 = FUN_00002804(&DAT_00004165,0,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000013f4 @ 0x000013f4 size=60
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000013f4(int param_1)
+
+{
+  short sVar1;
+  
+  sVar1 = FUN_00002804(&DAT_00004171,0,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001430 @ 0x00001430 size=60
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001430(int param_1)
+
+{
+  short sVar1;
+  
+  sVar1 = FUN_00002804(&DAT_00004172,0,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000146c @ 0x0000146c size=88
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_0000146c(int param_1)
+
+{
+  short sVar1;
+  undefined4 local_18;
+  int local_14;
+  int local_10;
+  int local_c;
+  
+  local_14 = param_1 + 0x1c;
+  local_10 = param_1 + 0x11c;
+  local_c = param_1 + 0x120;
+  local_18 = 0;
+  sVar1 = FUN_00002804(&DAT_00004173,&local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000014c4 @ 0x000014c4 size=72
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000014c4(int param_1)
+
+{
+  short sVar1;
+  undefined4 local_10;
+  int local_c;
+  
+  local_c = param_1 + 0x1c;
+  local_10 = 0;
+  sVar1 = FUN_00002804(&DAT_00004174,&local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000150c @ 0x0000150c size=84
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_0000150c(int param_1)
+
+{
+  short sVar1;
+  int local_18;
+  int local_14;
+  int local_10;
+  
+  local_18 = param_1 + 0x1c;
+  local_14 = param_1 + 0x20;
+  local_10 = param_1 + 0x24;
+  sVar1 = FUN_00002804(&DAT_00004175,&local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001560 @ 0x00001560 size=60
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001560(int param_1)
+
+{
+  short sVar1;
+  
+  sVar1 = FUN_00002804(&DAT_00004176,0,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000159c @ 0x0000159c size=60
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_0000159c(int param_1)
+
+{
+  short sVar1;
+  
+  sVar1 = FUN_00002804(&DAT_00004177,param_1 + 0x1c,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000015d8 @ 0x000015d8 size=112
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000015d8(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_28 [2];
+  undefined4 local_24;
+  undefined4 local_20;
+  undefined4 local_1c;
+  int local_18;
+  int local_14;
+  int local_10;
+  undefined4 local_c;
+  
+  local_28[0] = 0;
+  local_24 = 0;
+  local_20 = *(undefined4 *)(param_1 + 0x1c);
+  local_18 = param_1 + 0x20;
+  local_14 = param_1 + 0x24;
+  local_10 = param_1 + 0x28;
+  local_1c = 0;
+  local_c = *(undefined4 *)(param_1 + 0x2c);
+  sVar1 = FUN_00002804(&DAT_00004178,local_28,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001648 @ 0x00001648 size=124
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001648(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_28 [2];
+  undefined4 local_24;
+  undefined4 local_20;
+  undefined4 local_1c;
+  undefined4 *local_18;
+  undefined4 *local_14;
+  undefined4 *local_10;
+  undefined4 local_c;
+  
+  local_28[0] = 0;
+  local_24 = 0;
+  local_20 = *(undefined4 *)(param_1 + 0x1c);
+  local_18 = &DAT_00003de4;
+  local_14 = &DAT_00003de8;
+  local_1c = 0;
+  local_10 = &DAT_00003dec;
+  local_c = *(undefined4 *)(param_1 + 0x20);
+  sVar1 = FUN_00002804(&DAT_00004179,local_28,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000016c4 @ 0x000016c4 size=128
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000016c4(int param_1)
+
+{
+  undefined4 uVar1;
+  undefined4 uVar2;
+  undefined4 uVar3;
+  short sVar4;
+  
+  sVar4 = FUN_00002804(&DAT_00004176,0,0);
+  uVar3 = DAT_00003dec;
+  uVar2 = DAT_00003de8;
+  uVar1 = DAT_00003de4;
+  if ((ushort)(sVar4 - 3U) < 3) {
+    *(undefined4 *)(param_1 + 0x18) = 0;
+    *(undefined4 *)(param_1 + 0x1c) = uVar1;
+    *(undefined4 *)(param_1 + 0x20) = uVar2;
+    *(undefined4 *)(param_1 + 0x24) = uVar3;
+  }
+  else {
+    *(undefined4 *)(param_1 + 0x18) = 0xffffffff;
+  }
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001744 @ 0x00001744 size=60
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001744(int param_1)
+
+{
+  short sVar1;
+  
+  sVar1 = FUN_00002804(&DAT_0000417a,0,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001780 @ 0x00001780 size=80
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001780(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_18 [2];
+  undefined4 local_14;
+  undefined4 local_10;
+  
+  local_18[0] = 0;
+  local_14 = *(undefined4 *)(param_1 + 0x1c);
+  local_10 = *(undefined4 *)(param_1 + 0x20);
+  sVar1 = FUN_00002804(&DAT_0000417b,local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000017d0 @ 0x000017d0 size=80
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000017d0(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_18 [2];
+  undefined4 local_14;
+  undefined4 local_10;
+  
+  local_18[0] = 0;
+  local_14 = *(undefined4 *)(param_1 + 0x1c);
+  local_10 = *(undefined4 *)(param_1 + 0x20);
+  sVar1 = FUN_00002804(&DAT_0000417c,local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001820 @ 0x00001820 size=120
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001820(int param_1)
+
+{
+  short sVar1;
+  int iVar2;
+  int iVar3;
+  int local_18;
+  undefined4 local_14;
+  undefined4 local_10;
+  
+  iVar3 = 0;
+  iVar2 = 0;
+  do {
+    *(undefined4 *)((int)&DAT_000031b8 + iVar2) = 0xffffffff;
+    iVar3 = iVar3 + 1;
+    iVar2 = iVar3 * 4;
+  } while (iVar3 < 1);
+  local_18 = param_1 + 0x1c;
+  local_14 = *(undefined4 *)(param_1 + 0x11c);
+  local_10 = *(undefined4 *)(param_1 + 0x120);
+  sVar1 = FUN_00002804(&DAT_00004181,&local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001898 @ 0x00001898 size=60
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001898(int param_1)
+
+{
+  short sVar1;
+  
+  sVar1 = FUN_00002804(&DAT_00004182,0,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000018d4 @ 0x000018d4 size=212
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000018d4(int param_1)
+
+{
+  short sVar1;
+  int iVar2;
+  int iVar3;
+  int local_18;
+  int local_14;
+  
+  iVar3 = 0;
+  local_18 = param_1 + 0x1c;
+  local_14 = 0;
+  iVar2 = 0;
+  do {
+    if (*(int *)((int)&DAT_000031b8 + iVar2) < 0) {
+      local_14 = iVar3 * 0xc24 + 0x31c0;
+      break;
+    }
+    iVar3 = iVar3 + 1;
+    iVar2 = iVar3 * 4;
+  } while (iVar3 < 1);
+  if (local_14 == 0) {
+    *(undefined4 *)(param_1 + 0x18) = 0xffffffff;
+  }
+  else {
+    sVar1 = FUN_00002804(&DAT_00004183,&local_18,0);
+    *(int *)(param_1 + 0x18) = (int)sVar1;
+    (&DAT_000031b8)[iVar3] = (int)sVar1;
+  }
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000019a8 @ 0x000019a8 size=124
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_000019a8(int param_1)
+
+{
+  short sVar1;
+  int *piVar2;
+  int iVar3;
+  short local_10 [4];
+  
+  iVar3 = 0;
+  piVar2 = &DAT_000031b8;
+  do {
+    iVar3 = iVar3 + 1;
+    if ((int)*(short *)(param_1 + 0x1c) == *piVar2) {
+      *piVar2 = -1;
+      break;
+    }
+    piVar2 = piVar2 + 1;
+  } while (iVar3 < 1);
+  local_10[0] = *(short *)(param_1 + 0x1c);
+  sVar1 = FUN_00002804(&DAT_00004184,local_10,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001a24 @ 0x00001a24 size=84
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001a24(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_18 [2];
+  int local_14;
+  undefined2 local_10;
+  
+  local_18[0] = *(undefined2 *)(param_1 + 0x1c);
+  local_14 = param_1 + 0x20;
+  local_10 = 1;
+  sVar1 = FUN_00002804(&DAT_00004185,local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001a78 @ 0x00001a78 size=92
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002804@0x00002804
+
+void FUN_00001a78(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_20 [2];
+  int *local_1c;
+  undefined2 local_18;
+  int local_10 [2];
+  
+  local_10[0] = param_1 + 0x1e;
+  local_20[0] = *(undefined2 *)(param_1 + 0x1c);
+  local_1c = local_10;
+  local_18 = 1;
+  sVar1 = FUN_00002804(&DAT_00004186,local_20,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001ad4 @ 0x00001ad4 size=104
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (2): FUN_00002804@0x00002804, FUN_00002944@0x00002944
+
+void FUN_00001ad4(int param_1)
+
+{
+  short sVar1;
+  undefined2 local_18 [2];
+  int *local_14;
+  int local_10 [2];
+  
+  local_18[0] = *(undefined2 *)(param_1 + 0x1c);
+  local_14 = local_10;
+  sVar1 = FUN_00002804(&DAT_00004187,local_18,0);
+  *(int *)(param_1 + 0x18) = (int)sVar1;
+  if (sVar1 == 0) {
+    if (local_10[0] != 0) {
+      FUN_00002944(param_1 + 0x1e,local_10[0],0x100);
+    }
+  }
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001b3c @ 0x00001b3c size=144
+CALLERS (2): FUN_0000131c@0x0000131c, FUN_00000ea4@0x00000ea4
+CALLEES (1): FUN_00002850@0x00002850
+
+undefined4 FUN_00001b3c(undefined4 param_1)
+
+{
+  undefined4 uVar1;
+  undefined4 local_10 [2];
+  
+  switch(param_1) {
+  case 0:
+    local_10[0] = 0xcf;
+    break;
+  case 1:
+    local_10[0] = 1;
+    break;
+  case 2:
+    local_10[0] = 2;
+    break;
+  case 3:
+    local_10[0] = 4;
+    break;
+  case 4:
+    local_10[0] = 8;
+    break;
+  default:
+    return 0xffffffff;
+  }
+  uVar1 = FUN_00002850(9,local_10,4);
+  return uVar1;
+}
+
+
+================================================================
+FUNCTION FUN_00001bcc @ 0x00001bcc size=52
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002848@0x00002848
+
+void FUN_00001bcc(undefined4 *param_1)
+
+{
+  undefined4 uVar1;
+  undefined4 local_10 [2];
+  
+  uVar1 = FUN_00002848(local_10);
+  param_1[6] = uVar1;
+  *param_1 = local_10[0];
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001c00 @ 0x00001c00 size=704
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002838@0x00002838
+
+void FUN_00001c00(uint *param_1)
+
+{
+  uint uVar1;
+  int iVar2;
+  uint *puVar3;
+  uint *puVar4;
+  uint *puVar5;
+  uint uVar6;
+  uint uVar7;
+  uint uVar8;
+  
+  uVar8 = *param_1;
+  if (uVar8 < 4) {
+    uVar1 = FUN_00002838(&DAT_00003df0,0xc30);
+    puVar3 = param_1 + 10;
+    param_1[6] = uVar1;
+    iVar2 = uVar8 * 0x30c;
+    puVar4 = (uint *)(&DAT_00003dfc + iVar2);
+    param_1[7] = (&DAT_00003df0)[uVar8 * 0xc3];
+    param_1[8] = *(uint *)(&DAT_00003df4 + iVar2);
+    param_1[9] = *(uint *)(&DAT_00003df8 + iVar2);
+    if (((uint)puVar3 & 3) == 0) {
+      do {
+        uVar1 = puVar4[1];
+        uVar6 = puVar4[2];
+        uVar7 = puVar4[3];
+        *puVar3 = *puVar4;
+        puVar3[1] = uVar1;
+        puVar3[2] = uVar6;
+        puVar3[3] = uVar7;
+        puVar4 = puVar4 + 4;
+        puVar3 = puVar3 + 4;
+      } while (puVar4 != (uint *)(&DAT_00003efc + iVar2));
+    }
+    else {
+      do {
+        uVar1 = puVar4[1];
+        uVar6 = puVar4[2];
+        uVar7 = puVar4[3];
+        *puVar3 = *puVar4;
+        puVar3[1] = uVar1;
+        puVar3[2] = uVar6;
+        puVar3[3] = uVar7;
+        puVar4 = puVar4 + 4;
+        puVar3 = puVar3 + 4;
+      } while (puVar4 != (uint *)(&DAT_00003efc + iVar2));
+    }
+    puVar5 = param_1 + 0x4a;
+    puVar3 = (uint *)(&DAT_00003efc + uVar8 * 0x30c);
+    puVar4 = (uint *)(uVar8 * 0x30c + 0x3ffc);
+    if (((uint)puVar5 & 3) == 0) {
+      do {
+        uVar1 = puVar3[1];
+        uVar6 = puVar3[2];
+        uVar7 = puVar3[3];
+        *puVar5 = *puVar3;
+        puVar5[1] = uVar1;
+        puVar5[2] = uVar6;
+        puVar5[3] = uVar7;
+        puVar3 = puVar3 + 4;
+        puVar5 = puVar5 + 4;
+      } while (puVar3 != puVar4);
+    }
+    else {
+      do {
+        uVar1 = puVar3[1];
+        uVar6 = puVar3[2];
+        uVar7 = puVar3[3];
+        *puVar5 = *puVar3;
+        puVar5[1] = uVar1;
+        puVar5[2] = uVar6;
+        puVar5[3] = uVar7;
+        puVar3 = puVar3 + 4;
+        puVar5 = puVar5 + 4;
+      } while (puVar3 != puVar4);
+    }
+    param_1 = param_1 + 0x8a;
+    puVar4 = (uint *)(uVar8 * 0x30c + 0x3ffc);
+    if (((uint)param_1 & 3) == 0) {
+      do {
+        uVar1 = puVar4[1];
+        uVar6 = puVar4[2];
+        uVar7 = puVar4[3];
+        *param_1 = *puVar4;
+        param_1[1] = uVar1;
+        param_1[2] = uVar6;
+        param_1[3] = uVar7;
+        puVar4 = puVar4 + 4;
+        param_1 = param_1 + 4;
+      } while (puVar4 != &DAT_000040fc + uVar8 * 0xc3);
+    }
+    else {
+      do {
+        uVar1 = puVar4[1];
+        uVar6 = puVar4[2];
+        uVar7 = puVar4[3];
+        *param_1 = *puVar4;
+        param_1[1] = uVar1;
+        param_1[2] = uVar6;
+        param_1[3] = uVar7;
+        puVar4 = puVar4 + 4;
+        param_1 = param_1 + 4;
+      } while (puVar4 != &DAT_000040fc + uVar8 * 0xc3);
+    }
+  }
+  else {
+    param_1[6] = 0xffffffff;
+  }
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00001ec0 @ 0x00001ec0 size=368
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (2): FUN_00002840@0x00002840, FUN_00002838@0x00002838
+
+void FUN_00001ec0(uint *param_1)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  int iVar3;
+  int iVar4;
+  uint uVar5;
+  uint uVar6;
+  
+  uVar5 = *param_1;
+  uVar6 = 0xffffffff;
+  if ((3 < uVar5) || (uVar6 = FUN_00002840(uVar5), uVar6 != 0)) goto LAB_00002014;
+  iVar1 = FUN_00002838(&DAT_00003df0,0xc30);
+  iVar3 = 0;
+  if (0 < iVar1) {
+    iVar4 = 0;
+    do {
+      if (*(uint *)((int)&DAT_00003df0 + iVar4) == uVar5) break;
+      iVar3 = iVar3 + 1;
+      iVar4 = iVar4 + 0x30c;
+    } while (iVar3 < iVar1);
+  }
+  if (iVar1 == iVar3) {
+    param_1[6] = 0xffffffff;
+    return;
+  }
+  iVar3 = iVar3 * 0x30c;
+  if (*(int *)(&DAT_00003df8 + iVar3) == 0) {
+    iVar1 = *(int *)(&DAT_00003df4 + iVar3);
+    if (iVar1 == 1) {
+      DAT_00002c64 = iVar1;
+      param_1[6] = 0;
+      return;
+    }
+    if (1 < iVar1) goto LAB_00002014;
+    uVar2 = 4;
+joined_r0x00001fb8:
+    if (iVar1 != 0) goto LAB_00002014;
+  }
+  else {
+    if (*(int *)(&DAT_00003df8 + iVar3) != 1) {
+      param_1[6] = 0;
+      return;
+    }
+    iVar1 = *(int *)(&DAT_00003df4 + iVar3);
+    if (iVar1 != 1) {
+      if (1 < iVar1) goto LAB_00002014;
+      uVar2 = 5;
+      goto joined_r0x00001fb8;
+    }
+    uVar2 = 2;
+  }
+  DAT_00002c64 = uVar2;
+LAB_00002014:
+  param_1[6] = uVar6;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002030 @ 0x00002030 size=52
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002850@0x00002850
+
+void FUN_00002030(int param_1)
+
+{
+  undefined4 uVar1;
+  
+  uVar1 = FUN_00002850(*(undefined4 *)(param_1 + 0x1c),param_1 + 0x24,
+                       *(undefined4 *)(param_1 + 0x20));
+  *(undefined4 *)(param_1 + 0x18) = uVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002064 @ 0x00002064 size=52
+CALLERS (1): FUN_00002098@0x00002098
+CALLEES (1): FUN_00002858@0x00002858
+
+void FUN_00002064(int param_1)
+
+{
+  undefined4 uVar1;
+  
+  uVar1 = FUN_00002858(*(undefined4 *)(param_1 + 0x1c),param_1 + 0x24,
+                       *(undefined4 *)(param_1 + 0x20));
+  *(undefined4 *)(param_1 + 0x18) = uVar1;
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002098 @ 0x00002098 size=1140
+CALLERS (0): 
+CALLEES (66): FUN_00001a78@0x00001a78, FUN_00001100@0x00001100, FUN_00002064@0x00002064, FUN_00001744@0x00001744, FUN_000016c4@0x000016c4, FUN_000004e8@0x000004e8, FUN_00000c8c@0x00000c8c, FUN_00000208@0x00000208, FUN_00000168@0x00000168, FUN_00000724@0x00000724, FUN_00001820@0x00001820, FUN_000019a8@0x000019a8, FUN_000002a4@0x000002a4, FUN_00001780@0x00001780, FUN_00002030@0x00002030, FUN_00000930@0x00000930, FUN_00000b74@0x00000b74, FUN_0000150c@0x0000150c, FUN_00000264@0x00000264, FUN_00000c38@0x00000c38, FUN_00000834@0x00000834, FUN_0000159c@0x0000159c, FUN_00000d9c@0x00000d9c, FUN_000009c0@0x000009c0, FUN_00000304@0x00000304, FUN_0000019c@0x0000019c, FUN_00000ea4@0x00000ea4, FUN_000013b8@0x000013b8, FUN_00000630@0x00000630, FUN_000014c4@0x000014c4, FUN_0000097c@0x0000097c, FUN_00001ad4@0x00001ad4, FUN_000015d8@0x000015d8, FUN_000006a4@0x000006a4, FUN_0000113c@0x0000113c, FUN_0000122c@0x0000122c, FUN_000010b8@0x000010b8, FUN_00001bcc@0x00001bcc, FUN_000003d8@0x000003d8, FUN_00000448@0x00000448, FUN_00000564@0x00000564, FUN_00000364@0x00000364, FUN_00000e54@0x00000e54, FUN_000012cc@0x000012cc, FUN_00001a24@0x00001a24, FUN_000005ec@0x000005ec, FUN_00001c00@0x00001c00, FUN_0000131c@0x0000131c, FUN_00001560@0x00001560, FUN_0000146c@0x0000146c, FUN_000017d0@0x000017d0, FUN_00001184@0x00001184, FUN_00001648@0x00001648, FUN_000000a8@0x000000a8, FUN_000007dc@0x000007dc, FUN_00001898@0x00001898, FUN_000013f4@0x000013f4, FUN_00001ec0@0x00001ec0, FUN_00002918@0x00002918, FUN_00000b18@0x00000b18, FUN_000018d4@0x000018d4, FUN_000011d8@0x000011d8, FUN_00001370@0x00001370, FUN_00001430@0x00001430, FUN_000005a8@0x000005a8, FUN_00000bf4@0x00000bf4
+
+int FUN_00002098(undefined4 param_1,int param_2)
+
+{
+  switch(param_1) {
+  case 0:
+    FUN_0000019c(param_2);
+    break;
+  case 1:
+    FUN_00000208(param_2);
+    break;
+  case 2:
+    FUN_00000264(param_2);
+    break;
+  case 3:
+    FUN_000002a4(param_2);
+    break;
+  case 4:
+    FUN_00000304(param_2);
+    break;
+  case 5:
+    FUN_000000a8(param_2);
+    break;
+  case 6:
+    FUN_00000168(param_2);
+    break;
+  case 7:
+    FUN_00000364(param_2);
+    break;
+  case 8:
+    FUN_000003d8(param_2);
+    break;
+  case 9:
+    FUN_00000448(param_2);
+    break;
+  case 10:
+    FUN_000004e8(param_2);
+    break;
+  case 0xb:
+    FUN_00000564(param_2);
+    break;
+  case 0xc:
+    FUN_000005a8(param_2);
+    break;
+  case 0xd:
+    FUN_000005ec(param_2);
+    break;
+  case 0xe:
+    FUN_00000630(param_2);
+    break;
+  case 0xf:
+    FUN_000006a4(param_2);
+    break;
+  case 0x10:
+    FUN_00000724(param_2);
+    break;
+  default:
+    FUN_00002918("ave_wrap: !!FATAL ERROR!! Undefined function called -> %d\n",param_1);
+    *(undefined4 *)(param_2 + 0x18) = 0xffffd8f1;
+    break;
+  case 0x13:
+    FUN_000007dc(param_2);
+    break;
+  case 0x14:
+    FUN_00000834(param_2);
+    break;
+  case 0x15:
+    FUN_00000930(param_2);
+    break;
+  case 0x16:
+    FUN_0000097c(param_2);
+    break;
+  case 0x1e:
+    FUN_00000c38(param_2);
+    break;
+  case 0x1f:
+    FUN_00000c8c(param_2);
+    break;
+  case 0x21:
+    FUN_00000d9c(param_2);
+    break;
+  case 0x22:
+    FUN_00000e54(param_2);
+    break;
+  case 0x23:
+    FUN_00000ea4(param_2);
+    break;
+  case 0x24:
+    FUN_000010b8(param_2);
+    break;
+  case 0x25:
+    FUN_00001100(param_2);
+    break;
+  case 0x26:
+    FUN_0000113c(param_2);
+    break;
+  case 0x27:
+    FUN_00001184(param_2);
+    break;
+  case 0x28:
+    FUN_000011d8(param_2);
+    break;
+  case 0x29:
+    FUN_0000122c(param_2);
+    break;
+  case 0x2a:
+    FUN_000012cc(param_2);
+    break;
+  case 0x2b:
+    FUN_0000131c(param_2);
+    break;
+  case 0x2c:
+    FUN_00001370(param_2);
+    break;
+  case 0x2d:
+    FUN_000013b8(param_2);
+    break;
+  case 0x2e:
+    FUN_000013f4(param_2);
+    break;
+  case 0x2f:
+    FUN_00001430(param_2);
+    break;
+  case 0x30:
+    FUN_0000146c(param_2);
+    break;
+  case 0x31:
+    FUN_000014c4(param_2);
+    break;
+  case 0x32:
+    FUN_0000150c(param_2);
+    break;
+  case 0x33:
+    FUN_00001560(param_2);
+    break;
+  case 0x34:
+    FUN_0000159c(param_2);
+    break;
+  case 0x35:
+    FUN_000015d8(param_2);
+    break;
+  case 0x36:
+    FUN_00001648(param_2);
+    break;
+  case 0x37:
+    FUN_000016c4(param_2);
+    break;
+  case 0x38:
+    FUN_00001744(param_2);
+    break;
+  case 0x39:
+    FUN_00001780(param_2);
+    break;
+  case 0x3a:
+    FUN_000017d0(param_2);
+    break;
+  case 0x3b:
+    FUN_00001820(param_2);
+    break;
+  case 0x3c:
+    FUN_00001898(param_2);
+    break;
+  case 0x3d:
+    FUN_000018d4(param_2);
+    break;
+  case 0x3e:
+    FUN_000019a8(param_2);
+    break;
+  case 0x3f:
+    FUN_00001a24(param_2);
+    break;
+  case 0x40:
+    FUN_00001a78(param_2);
+    break;
+  case 0x41:
+    FUN_00001ad4(param_2);
+    break;
+  case 0x46:
+    FUN_00001bcc(param_2);
+    break;
+  case 0x47:
+    FUN_00001c00(param_2);
+    break;
+  case 0x48:
+    FUN_00001ec0(param_2);
+    break;
+  case 0x49:
+    FUN_00002030(param_2);
+    break;
+  case 0x4a:
+    FUN_00002064(param_2);
+    break;
+  case 0x51:
+    FUN_00000b18(param_2);
+    break;
+  case 0x52:
+    FUN_00000bf4(param_2);
+    break;
+  case 0x53:
+    FUN_00000b74(param_2);
+    break;
+  case 0x54:
+    FUN_000009c0(param_2);
+  }
+  return param_2;
+}
+
+
+================================================================
+FUNCTION FUN_0000250c @ 0x0000250c size=124
+CALLERS (0): 
+CALLEES (4): FUN_00002988@0x00002988, FUN_000028e4@0x000028e4, FUN_000028dc@0x000028dc, FUN_000028d4@0x000028d4
+
+undefined4 FUN_0000250c(void)
+
+{
+  undefined4 uVar1;
+  
+  DAT_000030cc = 0;
+  uVar1 = FUN_00002988();
+  FUN_000028dc(&DAT_00003070,uVar1);
+  FUN_000028d4(&DAT_00003088,0x1270030,FUN_00002098,&DAT_00002c68,0,0,&DAT_00003070);
+  FUN_000028e4(&DAT_00003070);
+  return 0;
+}
+
+
+================================================================
+FUNCTION FUN_00002588 @ 0x00002588 size=308
+CALLERS (1): FUN_00002770@0x00002770
+CALLEES (7): FUN_00002884@0x00002884, FUN_0000287c@0x0000287c, FUN_00002978@0x00002978, FUN_000028a8@0x000028a8, FUN_00002968@0x00002968, FUN_00002918@0x00002918, FUN_000029ac@0x000029ac
+
+undefined4 FUN_00002588(void)
+
+{
+  int iVar1;
+  undefined4 local_38;
+  undefined4 local_34;
+  code *local_30;
+  undefined4 local_2c;
+  undefined4 local_28;
+  undefined4 local_20;
+  undefined4 local_1c;
+  undefined4 local_18;
+  undefined4 local_14;
+  undefined4 local_10 [2];
+  
+  FUN_0000287c(local_10);
+  iVar1 = FUN_000028a8(&DAT_000027b0);
+  FUN_00002884(local_10[0]);
+  if (iVar1 == 0) {
+    local_20 = 0;
+    local_18 = 1;
+    local_14 = 1;
+    local_1c = 0;
+    DAT_00004db0 = FUN_000029ac(&local_20);
+    if (-1 < DAT_00004db0) {
+      local_38 = 0x2000000;
+      local_30 = FUN_0000250c;
+      local_28 = 9;
+      DAT_00004a24 = 0;
+      local_2c = 0x4000;
+      local_34 = 0;
+      iVar1 = FUN_00002968(&local_38);
+      if (0 < iVar1) {
+        FUN_00002978(iVar1,0);
+        DAT_00004a20 = iVar1;
+        FUN_00002918("Ave wrapper 2004.01.07-%d-%d(%d-%d)/%c%c%c%c%c%c%c%c%c%c%c%c\n",9,9,1,8,0x2d,
+                     0x2d,0x44,0x2d,0x56,0x2d,0x2d,0x2d,0x55,0x49,0x2d,0x2e);
+        return 2;
+      }
+    }
+  }
+  return 1;
+}
+
+
+================================================================
+FUNCTION FUN_000026bc @ 0x000026bc size=180
+CALLERS (1): FUN_00002770@0x00002770
+CALLEES (8): FUN_00002970@0x00002970, FUN_00002884@0x00002884, FUN_000028f4@0x000028f4, FUN_0000287c@0x0000287c, FUN_00002980@0x00002980, FUN_000029b4@0x000029b4, FUN_000028b0@0x000028b0, FUN_000028ec@0x000028ec
+
+undefined4 FUN_000026bc(void)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  undefined4 local_10 [2];
+  
+  FUN_0000287c(local_10);
+  iVar1 = FUN_000028b0(&DAT_000027b0);
+  FUN_00002884(local_10[0]);
+  if ((iVar1 == 0) || (uVar2 = 2, iVar1 == -0xd5)) {
+    iVar1 = FUN_000028ec(&DAT_00003088,&DAT_00003070);
+    uVar2 = 2;
+    if (iVar1 != 0) {
+      iVar1 = FUN_000028f4(&DAT_00003070);
+      uVar2 = 2;
+      if (iVar1 != 0) {
+        FUN_00002980(DAT_00004a20);
+        FUN_00002970(DAT_00004a20);
+        FUN_000029b4(DAT_00004db0);
+        uVar2 = 1;
+      }
+    }
+  }
+  return uVar2;
+}
+
+
+================================================================
+FUNCTION FUN_00002770 @ 0x00002770 size=52
+CALLERS (0): 
+CALLEES (2): FUN_00002588@0x00002588, FUN_000026bc@0x000026bc
+
+void FUN_00002770(int param_1)
+
+{
+  if (param_1 < 0) {
+    FUN_000026bc(-param_1);
+  }
+  else {
+    FUN_00002588();
+  }
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002804 @ 0x00002804 size=8
+CALLERS (58): FUN_00001a78@0x00001a78, FUN_00001100@0x00001100, FUN_00001744@0x00001744, FUN_000016c4@0x000016c4, FUN_000004e8@0x000004e8, FUN_00000c8c@0x00000c8c, FUN_00000208@0x00000208, FUN_00000724@0x00000724, FUN_00001820@0x00001820, FUN_000019a8@0x000019a8, FUN_000002a4@0x000002a4, FUN_00001780@0x00001780, FUN_00000930@0x00000930, FUN_00000b74@0x00000b74, FUN_0000150c@0x0000150c, FUN_00000264@0x00000264, FUN_00000c38@0x00000c38, FUN_00000834@0x00000834, FUN_0000159c@0x0000159c, FUN_00000d9c@0x00000d9c, FUN_00000304@0x00000304, FUN_0000019c@0x0000019c, FUN_00000ea4@0x00000ea4, FUN_00000010@0x00000010, FUN_000013b8@0x000013b8, FUN_00000630@0x00000630, FUN_000014c4@0x000014c4, FUN_0000097c@0x0000097c, FUN_00001ad4@0x00001ad4, FUN_000015d8@0x000015d8, FUN_000006a4@0x000006a4, FUN_0000113c@0x0000113c, FUN_0000122c@0x0000122c, FUN_000010b8@0x000010b8, FUN_000003d8@0x000003d8, FUN_00000564@0x00000564, FUN_00000364@0x00000364, FUN_00000e54@0x00000e54, FUN_000012cc@0x000012cc, FUN_00001a24@0x00001a24, FUN_000005ec@0x000005ec, FUN_0000131c@0x0000131c, FUN_00001560@0x00001560, FUN_0000146c@0x0000146c, FUN_000017d0@0x000017d0, FUN_00001184@0x00001184, FUN_00001648@0x00001648, FUN_000000a8@0x000000a8, FUN_000007dc@0x000007dc, FUN_00001898@0x00001898, FUN_000013f4@0x000013f4, FUN_00000b18@0x00000b18, FUN_000018d4@0x000018d4, FUN_000011d8@0x000011d8, FUN_00001370@0x00001370, FUN_00001430@0x00001430, FUN_000005a8@0x000005a8, FUN_00000bf4@0x00000bf4
+CALLEES (0): 
+
+void FUN_00002804(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000280c @ 0x0000280c size=8
+CALLERS (1): FUN_00000168@0x00000168
+CALLEES (0): 
+
+void FUN_0000280c(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002814 @ 0x00002814 size=8
+CALLERS (1): FUN_000000a8@0x000000a8
+CALLEES (0): 
+
+void FUN_00002814(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002838 @ 0x00002838 size=8
+CALLERS (2): FUN_00001ec0@0x00001ec0, FUN_00001c00@0x00001c00
+CALLEES (0): 
+
+void FUN_00002838(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002840 @ 0x00002840 size=8
+CALLERS (1): FUN_00001ec0@0x00001ec0
+CALLEES (0): 
+
+void FUN_00002840(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002848 @ 0x00002848 size=8
+CALLERS (1): FUN_00001bcc@0x00001bcc
+CALLEES (0): 
+
+void FUN_00002848(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002850 @ 0x00002850 size=8
+CALLERS (4): FUN_000000a8@0x000000a8, FUN_00000ea4@0x00000ea4, FUN_00002030@0x00002030, FUN_00001b3c@0x00001b3c
+CALLEES (0): 
+
+void FUN_00002850(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002858 @ 0x00002858 size=8
+CALLERS (1): FUN_00002064@0x00002064
+CALLEES (0): 
+
+void FUN_00002858(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000287c @ 0x0000287c size=8
+CALLERS (2): FUN_00002588@0x00002588, FUN_000026bc@0x000026bc
+CALLEES (0): 
+
+void FUN_0000287c(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002884 @ 0x00002884 size=8
+CALLERS (2): FUN_00002588@0x00002588, FUN_000026bc@0x000026bc
+CALLEES (0): 
+
+void FUN_00002884(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000028a8 @ 0x000028a8 size=8
+CALLERS (1): FUN_00002588@0x00002588
+CALLEES (0): 
+
+void FUN_000028a8(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000028b0 @ 0x000028b0 size=8
+CALLERS (1): FUN_000026bc@0x000026bc
+CALLEES (0): 
+
+void FUN_000028b0(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000028d4 @ 0x000028d4 size=8
+CALLERS (1): FUN_0000250c@0x0000250c
+CALLEES (0): 
+
+void FUN_000028d4(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000028dc @ 0x000028dc size=8
+CALLERS (1): FUN_0000250c@0x0000250c
+CALLEES (0): 
+
+void FUN_000028dc(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000028e4 @ 0x000028e4 size=8
+CALLERS (1): FUN_0000250c@0x0000250c
+CALLEES (0): 
+
+void FUN_000028e4(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000028ec @ 0x000028ec size=8
+CALLERS (1): FUN_000026bc@0x000026bc
+CALLEES (0): 
+
+void FUN_000028ec(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000028f4 @ 0x000028f4 size=8
+CALLERS (1): FUN_000026bc@0x000026bc
+CALLEES (0): 
+
+void FUN_000028f4(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002918 @ 0x00002918 size=8
+CALLERS (2): FUN_00002098@0x00002098, FUN_00002588@0x00002588
+CALLEES (0): 
+
+void FUN_00002918(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000293c @ 0x0000293c size=8
+CALLERS (1): FUN_000009c0@0x000009c0
+CALLEES (0): 
+
+void FUN_0000293c(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002944 @ 0x00002944 size=8
+CALLERS (1): FUN_00001ad4@0x00001ad4
+CALLEES (0): 
+
+void FUN_00002944(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002968 @ 0x00002968 size=8
+CALLERS (1): FUN_00002588@0x00002588
+CALLEES (0): 
+
+void FUN_00002968(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002970 @ 0x00002970 size=8
+CALLERS (1): FUN_000026bc@0x000026bc
+CALLEES (0): 
+
+void FUN_00002970(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002978 @ 0x00002978 size=8
+CALLERS (1): FUN_00002588@0x00002588
+CALLEES (0): 
+
+void FUN_00002978(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002980 @ 0x00002980 size=8
+CALLERS (1): FUN_000026bc@0x000026bc
+CALLEES (0): 
+
+void FUN_00002980(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00002988 @ 0x00002988 size=8
+CALLERS (1): FUN_0000250c@0x0000250c
+CALLEES (0): 
+
+void FUN_00002988(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000029ac @ 0x000029ac size=8
+CALLERS (1): FUN_00002588@0x00002588
+CALLEES (0): 
+
+void FUN_000029ac(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000029b4 @ 0x000029b4 size=8
+CALLERS (1): FUN_000026bc@0x000026bc
+CALLEES (0): 
+
+void FUN_000029b4(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000029bc @ 0x000029bc size=8
+CALLERS (2): FUN_000009c0@0x000009c0, FUN_00000a6c@0x00000a6c
+CALLEES (0): 
+
+void FUN_000029bc(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000029c4 @ 0x000029c4 size=8
+CALLERS (2): FUN_000009c0@0x000009c0, FUN_00000a6c@0x00000a6c
+CALLEES (0): 
+
+void FUN_000029c4(void)
+
+{
+  return;
+}
+
+

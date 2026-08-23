@@ -1,0 +1,18 @@
+FUNCTION FUN_00009470 @ 0x00009470 size=72
+CALLERS (8): FUN_00003988@0x00003988, FUN_00001198@0x00001198, FUN_00008614@0x00008614, FUN_000036ac@0x000036ac, FUN_00003060@0x00003060, FUN_000026a0@0x000026a0, FUN_00008f28@0x00008f28, FUN_00000da8@0x00000da8
+CALLEES (3): FUN_00009574@0x00009574, FUN_0000956c@0x0000956c, FUN_00009514@0x00009514
+
+undefined4 FUN_00009470(undefined4 param_1)
+
+{
+  undefined4 uVar1;
+  undefined4 local_10 [2];
+  
+  FUN_0000956c(local_10);
+  uVar1 = FUN_00009514(0,param_1,0);
+  FUN_00009574(local_10[0]);
+  return uVar1;
+}
+
+
+================================================================

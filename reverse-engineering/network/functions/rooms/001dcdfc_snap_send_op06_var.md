@@ -1,0 +1,34 @@
+# 0x001dcdfc snap_send_op06_var
+
+| field | value |
+|---|---|
+| Original address | 0x001dcdfc |
+| Binary / overlay | SLES_533.19 |
+| Module | main-ee |
+| Original generated name | FUN_001dcdfc |
+| Resolved name | snap_send_op06_var |
+| Subsystem | rooms |
+| Relevance | core |
+| Status | classified (record from evidence-based classification; corrected pseudocode pending for non-core) |
+| Confidence | High |
+| Runtime validated | no |
+
+**Callers:** —
+**Callees:** FUN_00109eb8, FUN_001d4d24, FUN_001d5288, FUN_001e180c, FUN_001ec9e0, FUN_001ed2c0
+**Referenced globals:** 0x0025b78c(conn-ptr); 0x0025b790(errno); conn+0x50c; conn+0x520; conn+0x619(seq)
+**Referenced strings:** —
+**Referenced opcodes:** 0x06
+**State vars:** 0x50c(send-lock); 0x619(seq); DAT_0025b790(errno)
+
+## Behavioral explanation
+Builds/sends opcode-6 (len 0x18, who 0xa000): two htonl u32 + optional string; completion cb 0x22, seq conn+0x619.
+
+## Notes / uncertainty
+op06 variant, 0x18 body: two htonl(u32) + optional 16-byte string; who 0xa000, cb 0x22, seq 0x619 (distinct from the DATA joins). Roles of the two u32 fields inferred.
+
+## Raw decompilation
+`sources/executables/transport-decompile/FUN_001dcdfc.c`  — untouched decompiler output.
+
+## Evidence
+- Classified from the raw decompile via the fan-out pass (callers/callees/globals/strings/control-flow).
+- Confidence **High**. Runtime validation pending. Promote to `reconstructed`/`validated` with corrected pseudocode + a trace.

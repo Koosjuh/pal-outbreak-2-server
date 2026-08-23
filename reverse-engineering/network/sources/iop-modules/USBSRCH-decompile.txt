@@ -1,0 +1,511 @@
+Program: USBSRCH.IRX, image base: 00000000
+
+================================================================
+FUNCTION FUN_00000158 @ 0x00000158 size=40
+CALLERS (0): 
+CALLEES (0): 
+
+undefined4 FUN_00000158(void)
+
+{
+  return 0;
+}
+
+
+================================================================
+FUNCTION FUN_00000180 @ 0x00000180 size=40
+CALLERS (0): 
+CALLEES (0): 
+
+undefined4 FUN_00000180(void)
+
+{
+  return 0;
+}
+
+
+================================================================
+FUNCTION FUN_000001a8 @ 0x000001a8 size=764
+CALLERS (0): 
+CALLEES (4): FUN_00000a40@0x00000a40, FUN_000008dc@0x000008dc, FUN_00000a38@0x00000a38, FUN_0000099c@0x0000099c
+
+int * FUN_000001a8(int param_1,int *param_2)
+
+{
+  int iVar1;
+  int local_18;
+  int local_14;
+  undefined4 local_10 [2];
+  
+  if (param_1 == 0) {
+    local_18 = 0;
+    FUN_00000a40(DAT_00000b60);
+    for (local_14 = 0; local_14 < 0x21; local_14 = local_14 + 1) {
+      if (*(int *)(local_14 * 0x10 + 0xbc8) != -1) {
+        iVar1 = FUN_000008dc(local_14,local_10);
+        if (iVar1 == 0) {
+          *(undefined4 *)(local_14 * 0x10 + 0xbd4) = local_10[0];
+          local_18 = local_18 + 1;
+        }
+        else {
+          *(undefined4 *)(local_14 * 0x10 + 0xbc8) = 0xffffffff;
+          *(undefined4 *)(local_14 * 0x10 + 0xbcc) = 0xffffffff;
+          *(undefined4 *)(local_14 * 0x10 + 0xbd0) = 0xffffffff;
+          *(undefined4 *)(local_14 * 0x10 + 0xbd4) = 0xffffffff;
+        }
+      }
+    }
+    FUN_00000a38(DAT_00000b60);
+    *param_2 = local_18;
+  }
+  else if (param_1 == 1) {
+    iVar1 = *param_2;
+    if ((-1 < iVar1) && (iVar1 < 0x21)) {
+      FUN_00000a40(DAT_00000b60);
+      *param_2 = *(int *)(iVar1 * 0x10 + 0xbc8);
+      param_2[1] = *(int *)(iVar1 * 0x10 + 0xbcc);
+      param_2[2] = *(int *)(iVar1 * 0x10 + 0xbd0);
+      param_2[3] = *(int *)(iVar1 * 0x10 + 0xbd4);
+      FUN_00000a38(DAT_00000b60);
+    }
+  }
+  else {
+    FUN_0000099c(0xa74,param_1);
+  }
+  return param_2;
+}
+
+
+================================================================
+FUNCTION FUN_000004a4 @ 0x000004a4 size=136
+CALLERS (0): 
+CALLEES (4): FUN_00000960@0x00000960, FUN_00000a04@0x00000a04, FUN_00000968@0x00000968, FUN_00000958@0x00000958
+
+undefined4 FUN_000004a4(void)
+
+{
+  undefined4 uVar1;
+  
+  uVar1 = FUN_00000a04();
+  FUN_00000960(0xb68,uVar1);
+  FUN_00000958(0xb80,0x1270010,0x1a8,0xb18,0,0,0xb68);
+  FUN_00000968(0xb68);
+  return 0;
+}
+
+
+================================================================
+FUNCTION FUN_0000052c @ 0x0000052c size=80
+CALLERS (1): FUN_0000057c@0x0000057c
+CALLEES (1): FUN_00000a28@0x00000a28
+
+undefined4 FUN_0000052c(void)
+
+{
+  undefined4 uVar1;
+  undefined4 local_18;
+  undefined4 local_14;
+  undefined4 local_10;
+  undefined4 local_c;
+  
+  local_18 = 0;
+  local_10 = 1;
+  local_c = 1;
+  local_14 = 0;
+  uVar1 = FUN_00000a28(&local_18);
+  return uVar1;
+}
+
+
+================================================================
+FUNCTION FUN_0000057c @ 0x0000057c size=324
+CALLERS (1): FUN_000007f0@0x000007f0
+CALLEES (9): FUN_0000092c@0x0000092c, FUN_00000900@0x00000900, FUN_000009f4@0x000009f4, FUN_0000052c@0x0000052c, FUN_0000099c@0x0000099c, FUN_000008c4@0x000008c4, FUN_00000908@0x00000908, FUN_000009e4@0x000009e4, FUN_000009c0@0x000009c0
+
+undefined4 FUN_0000057c(void)
+
+{
+  undefined4 uVar1;
+  undefined4 local_30;
+  undefined4 local_2c;
+  undefined4 local_28;
+  undefined4 local_24;
+  undefined4 local_20;
+  int local_18;
+  undefined4 local_14;
+  int local_10;
+  
+  FUN_00000900(&local_14);
+  local_18 = FUN_0000092c(0x880);
+  FUN_00000908(local_14);
+  if (local_18 == 0) {
+    FUN_000009c0(0xbc8,0xff,0x210);
+    DAT_00000b60 = FUN_0000052c();
+    if (DAT_00000b60 < 1) {
+      uVar1 = 1;
+    }
+    else {
+      local_20 = 0x40;
+      local_24 = 0x800;
+      local_28 = 0x4a4;
+      local_30 = 0x2000000;
+      local_2c = 0;
+      local_10 = FUN_000009e4(&local_30);
+      if (local_10 < 1) {
+        uVar1 = 1;
+      }
+      else {
+        FUN_000009f4(local_10,0);
+        DAT_00000bc4 = local_10;
+        FUN_000008c4(0xae8);
+        FUN_0000099c(0xab4,0x40,0x55,0x2e);
+        uVar1 = 2;
+      }
+    }
+  }
+  else {
+    uVar1 = 1;
+  }
+  return uVar1;
+}
+
+
+================================================================
+FUNCTION FUN_000006c0 @ 0x000006c0 size=304
+CALLERS (1): FUN_000007f0@0x000007f0
+CALLEES (9): FUN_00000970@0x00000970, FUN_00000900@0x00000900, FUN_00000934@0x00000934, FUN_000008cc@0x000008cc, FUN_00000978@0x00000978, FUN_00000908@0x00000908, FUN_000009fc@0x000009fc, FUN_000009ec@0x000009ec, FUN_00000a30@0x00000a30
+
+undefined4 FUN_000006c0(void)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  undefined4 local_14;
+  undefined4 local_10;
+  
+  FUN_00000900(&local_14);
+  iVar1 = FUN_00000934(0x880);
+  FUN_00000908(local_14);
+  if ((((iVar1 == 0) || (iVar1 == -0xd5)) && (iVar1 = FUN_00000970(0xb80,0xb68), iVar1 != 0)) &&
+     (iVar1 = FUN_00000978(0xb68), iVar1 != 0)) {
+    FUN_000008cc(0xae8);
+    local_10 = FUN_000009fc(DAT_00000bc4);
+    local_10 = FUN_000009ec(DAT_00000bc4);
+    FUN_00000a30(DAT_00000b60);
+    uVar2 = 1;
+  }
+  else {
+    uVar2 = 2;
+  }
+  return uVar2;
+}
+
+
+================================================================
+FUNCTION FUN_000007f0 @ 0x000007f0 size=128
+CALLERS (0): 
+CALLEES (2): FUN_0000057c@0x0000057c, FUN_000006c0@0x000006c0
+
+undefined4 FUN_000007f0(int param_1,undefined4 param_2)
+
+{
+  undefined4 uVar1;
+  
+  if (param_1 < 0) {
+    uVar1 = FUN_000006c0(-param_1,param_2);
+  }
+  else {
+    uVar1 = FUN_0000057c(param_1,param_2);
+  }
+  return uVar1;
+}
+
+
+================================================================
+FUNCTION FUN_000008c4 @ 0x000008c4 size=8
+CALLERS (1): FUN_0000057c@0x0000057c
+CALLEES (0): 
+
+void FUN_000008c4(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000008cc @ 0x000008cc size=8
+CALLERS (1): FUN_000006c0@0x000006c0
+CALLEES (0): 
+
+void FUN_000008cc(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000008d4 @ 0x000008d4 size=8
+CALLERS (0): 
+CALLEES (0): 
+
+void FUN_000008d4(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000008dc @ 0x000008dc size=8
+CALLERS (1): FUN_000001a8@0x000001a8
+CALLEES (0): 
+
+void FUN_000008dc(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000900 @ 0x00000900 size=8
+CALLERS (2): FUN_0000057c@0x0000057c, FUN_000006c0@0x000006c0
+CALLEES (0): 
+
+void FUN_00000900(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000908 @ 0x00000908 size=8
+CALLERS (2): FUN_0000057c@0x0000057c, FUN_000006c0@0x000006c0
+CALLEES (0): 
+
+void FUN_00000908(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000092c @ 0x0000092c size=8
+CALLERS (1): FUN_0000057c@0x0000057c
+CALLEES (0): 
+
+void FUN_0000092c(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000934 @ 0x00000934 size=8
+CALLERS (1): FUN_000006c0@0x000006c0
+CALLEES (0): 
+
+void FUN_00000934(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000958 @ 0x00000958 size=8
+CALLERS (1): FUN_000004a4@0x000004a4
+CALLEES (0): 
+
+void FUN_00000958(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000960 @ 0x00000960 size=8
+CALLERS (1): FUN_000004a4@0x000004a4
+CALLEES (0): 
+
+void FUN_00000960(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000968 @ 0x00000968 size=8
+CALLERS (1): FUN_000004a4@0x000004a4
+CALLEES (0): 
+
+void FUN_00000968(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000970 @ 0x00000970 size=8
+CALLERS (1): FUN_000006c0@0x000006c0
+CALLEES (0): 
+
+void FUN_00000970(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000978 @ 0x00000978 size=8
+CALLERS (1): FUN_000006c0@0x000006c0
+CALLEES (0): 
+
+void FUN_00000978(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_0000099c @ 0x0000099c size=8
+CALLERS (2): FUN_000001a8@0x000001a8, FUN_0000057c@0x0000057c
+CALLEES (0): 
+
+void FUN_0000099c(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000009c0 @ 0x000009c0 size=8
+CALLERS (1): FUN_0000057c@0x0000057c
+CALLEES (0): 
+
+void FUN_000009c0(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000009e4 @ 0x000009e4 size=8
+CALLERS (1): FUN_0000057c@0x0000057c
+CALLEES (0): 
+
+void FUN_000009e4(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000009ec @ 0x000009ec size=8
+CALLERS (1): FUN_000006c0@0x000006c0
+CALLEES (0): 
+
+void FUN_000009ec(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000009f4 @ 0x000009f4 size=8
+CALLERS (1): FUN_0000057c@0x0000057c
+CALLEES (0): 
+
+void FUN_000009f4(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_000009fc @ 0x000009fc size=8
+CALLERS (1): FUN_000006c0@0x000006c0
+CALLEES (0): 
+
+void FUN_000009fc(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000a04 @ 0x00000a04 size=8
+CALLERS (1): FUN_000004a4@0x000004a4
+CALLEES (0): 
+
+void FUN_00000a04(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000a28 @ 0x00000a28 size=8
+CALLERS (1): FUN_0000052c@0x0000052c
+CALLEES (0): 
+
+void FUN_00000a28(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000a30 @ 0x00000a30 size=8
+CALLERS (1): FUN_000006c0@0x000006c0
+CALLEES (0): 
+
+void FUN_00000a30(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000a38 @ 0x00000a38 size=8
+CALLERS (1): FUN_000001a8@0x000001a8
+CALLEES (0): 
+
+void FUN_00000a38(void)
+
+{
+  return;
+}
+
+
+================================================================
+FUNCTION FUN_00000a40 @ 0x00000a40 size=8
+CALLERS (1): FUN_000001a8@0x000001a8
+CALLEES (0): 
+
+void FUN_00000a40(void)
+
+{
+  return;
+}
+
+

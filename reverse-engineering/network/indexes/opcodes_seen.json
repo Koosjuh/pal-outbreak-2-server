@@ -1,0 +1,1667 @@
+[
+ {
+  "opcode": "0x01",
+  "functions": [
+   {
+    "addr": "0x001c3c90",
+    "name": "build_packet_header",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001ef540",
+    "name": "snap_req_op01_session_open",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005c4d20",
+    "name": "send_op01_to_conn",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x005d7420",
+    "name": "build_req_op01",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005d76b0",
+    "name": "build_req_op01_sub2",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x02",
+  "functions": [
+   {
+    "addr": "0x001c3c90",
+    "name": "build_packet_header",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001dbd0c",
+    "name": "snap_send_close",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001dbe60",
+    "name": "snap_close",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001ef5c0",
+    "name": "snap_req_op02",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x005c5ff0",
+    "name": "send_op02",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x10",
+  "functions": [
+   {
+    "addr": "0x001c3c90",
+    "name": "build_packet_header",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001de9e8",
+    "name": "snap_send_op10_multi",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001ded08",
+    "name": "snap_send_op10_multi_ptr",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001df380",
+    "name": "snap_send_op10_multi_unrel",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001df66c",
+    "name": "snap_send_op10_multi_unrel_ptr",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001ef9a0",
+    "name": "snap_send_op10_roominfo",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x005c5c70",
+    "name": "send_op10_room_info",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x0e",
+  "functions": [
+   {
+    "addr": "0x001c4070",
+    "name": "snap_send_op0e_flush",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x001ddc60",
+    "name": "snap_send_op0e",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001ef830",
+    "name": "snap_req_op0e_query3",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005bc790",
+    "name": "handle_name_reply_simple",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x005c6150",
+    "name": "send_op0e",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x00",
+  "functions": [
+   {
+    "addr": "0x001c4100",
+    "name": "snap_send_session_hello",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x18",
+  "functions": [
+   {
+    "addr": "0x001c42d0",
+    "name": "snap_send_op18_request",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001efee0",
+    "name": "snap_req_op18",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x1a",
+  "functions": [
+   {
+    "addr": "0x001c43c0",
+    "name": "snap_send_op1a_request",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x16",
+  "functions": [
+   {
+    "addr": "0x001c4560",
+    "name": "snap_send_op16_request",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001efcf0",
+    "name": "snap_req_op16_query3",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x0f",
+  "functions": [
+   {
+    "addr": "0x001c46a0",
+    "name": "snap_send_op0f_request",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001de840",
+    "name": "snap_send_op0f",
+    "subsystem": "chat"
+   },
+   {
+    "addr": "0x001df1d8",
+    "name": "snap_send_op0f_unrel",
+    "subsystem": "chat"
+   },
+   {
+    "addr": "0x001ef8d0",
+    "name": "snap_send_op0f_data",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x005c61b0",
+    "name": "send_op0f",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x12",
+  "functions": [
+   {
+    "addr": "0x001c48c0",
+    "name": "snap_send_op12_named_request",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001c4960",
+    "name": "recv_download_setup_A",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001df9a8",
+    "name": "snap_send_op12",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001efa70",
+    "name": "snap_recv_op12_data",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x14",
+  "functions": [
+   {
+    "addr": "0x001c4c80",
+    "name": "snap_send_op14_chunk_request_A",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001c4d40",
+    "name": "recv_download_chunk_A",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001dfda0",
+    "name": "snap_send_op14",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x39",
+  "functions": [
+   {
+    "addr": "0x001c4fb0",
+    "name": "snap_send_op39_request",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001c5040",
+    "name": "recv_download_setup_B",
+    "subsystem": "lobby"
+   }
+  ]
+ },
+ {
+  "opcode": "0x3b",
+  "functions": [
+   {
+    "addr": "0x001c51a0",
+    "name": "snap_send_op3b_chunk_request_B",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001c5260",
+    "name": "recv_download_chunk_B",
+    "subsystem": "lobby"
+   }
+  ]
+ },
+ {
+  "opcode": "0x3d",
+  "functions": [
+   {
+    "addr": "0x001c5480",
+    "name": "snap_send_op3d_request",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001c5510",
+    "name": "recv_download_setup_C",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001d9b6c",
+    "name": "snap_keyexchange_reply",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x3f",
+  "functions": [
+   {
+    "addr": "0x001c5630",
+    "name": "snap_send_op3f_chunk_request_C",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001c56f0",
+    "name": "recv_download_chunk_C",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001e0774",
+    "name": "snap_send_op3f",
+    "subsystem": "chat"
+   }
+  ]
+ },
+ {
+  "opcode": "0x26",
+  "functions": [
+   {
+    "addr": "0x001c5900",
+    "name": "snap_send_op26_create_prepare",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x2d",
+  "functions": [
+   {
+    "addr": "0x001c5a20",
+    "name": "recv_op2d_transfer_setup",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001c5c90",
+    "name": "recv_conn_data_chunk",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001c5ea0",
+    "name": "snap_send_op2d_request",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x2b",
+  "functions": [
+   {
+    "addr": "0x001c5bd0",
+    "name": "snap_send_op2b_enter_request",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x2f",
+  "functions": [
+   {
+    "addr": "0x001c6060",
+    "name": "snap_send_op2f_chunk_request_D",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001c6130",
+    "name": "recv_download_chunk_D",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x005c1f30",
+    "name": "build_msg_op6e_variant",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x31",
+  "functions": [
+   {
+    "addr": "0x001c6330",
+    "name": "snap_send_op31_request",
+    "subsystem": "lobby"
+   }
+  ]
+ },
+ {
+  "opcode": "0x33",
+  "functions": [
+   {
+    "addr": "0x001c64f0",
+    "name": "snap_send_op33_chunk_request_E",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001c65c0",
+    "name": "recv_download_chunk_E",
+    "subsystem": "lobby"
+   }
+  ]
+ },
+ {
+  "opcode": "0x28",
+  "functions": [
+   {
+    "addr": "0x001c67b0",
+    "name": "snap_send_op28_reply",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x45",
+  "functions": [
+   {
+    "addr": "0x001c69b0",
+    "name": "snap_send_op45_request",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x47",
+  "functions": [
+   {
+    "addr": "0x001c6b90",
+    "name": "snap_send_op47_chunk_request",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001c6c60",
+    "name": "recv_op47_download_chunk",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001ddda0",
+    "name": "snap_send_op47",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x1c",
+  "functions": [
+   {
+    "addr": "0x001c6dc0",
+    "name": "snap_send_op1c_roomlist_request",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001efe00",
+    "name": "snap_req_op1c",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x20",
+  "functions": [
+   {
+    "addr": "0x001c7000",
+    "name": "snap_send_op20_request",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x1e",
+  "functions": [
+   {
+    "addr": "0x001c7580",
+    "name": "snap_send_op1e_detail_request",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x22",
+  "functions": [
+   {
+    "addr": "0x001c7980",
+    "name": "snap_send_op22_request",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x24",
+  "functions": [
+   {
+    "addr": "0x001c85c0",
+    "name": "snap_send_op24_member_batch",
+    "subsystem": "roster"
+   }
+  ]
+ },
+ {
+  "opcode": "0x35",
+  "functions": [
+   {
+    "addr": "0x001c8b60",
+    "name": "snap_send_op35_record",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005c1e70",
+    "name": "build_msg_register_variant",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x05",
+  "functions": [
+   {
+    "addr": "0x001c8dd0",
+    "name": "snap_send_op05_or_finalize",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001dc804",
+    "name": "snap_send_op05",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x005c5d30",
+    "name": "send_op05",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005c6500",
+    "name": "room_roster_sync_sm",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005d71e0",
+    "name": "build_req_enter_or_prev",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005d7760",
+    "name": "session_enter_dispatch",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x0a",
+  "functions": [
+   {
+    "addr": "0x001c8f50",
+    "name": "snap_send_op0a_memberlist_req",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x001d0230",
+    "name": "send_op0a_member_list",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x001ddee8",
+    "name": "snap_send_memberlist",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x001de0c0",
+    "name": "snap_send_memberlist_unrel",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x001ef710",
+    "name": "snap_req_op0a_member_list",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005bc430",
+    "name": "roster_member_list_fill_and_redraw",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005c3370",
+    "name": "roster_list_reply_cb",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005c5f10",
+    "name": "send_op0a_member_list",
+    "subsystem": "roster"
+   }
+  ]
+ },
+ {
+  "opcode": "0x0d",
+  "functions": [
+   {
+    "addr": "0x001c94c0",
+    "name": "snap_send_op0d_data_chunk",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001de648",
+    "name": "snap_send_op0d",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005bc590",
+    "name": "handle_name_register_reply",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   }
+  ]
+ },
+ {
+  "opcode": "0x1f",
+  "functions": [
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x11",
+  "functions": [
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001dfbf8",
+    "name": "snap_send_op11",
+    "subsystem": "chat"
+   },
+   {
+    "addr": "0x005c60d0",
+    "name": "send_op11",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x00628110",
+    "name": "query_op11_send_step",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x29",
+  "functions": [
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x37",
+  "functions": [
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x4a",
+  "functions": [
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001efc90",
+    "name": "snap_req_op4a",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x4b",
+  "functions": [
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x54",
+  "functions": [
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x55",
+  "functions": [
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x59",
+  "functions": [
+   {
+    "addr": "0x001c9b00",
+    "name": "snap_app_sm_pump",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x62",
+  "functions": [
+   {
+    "addr": "0x001ca410",
+    "name": "snap_lookup_query_sm",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x63",
+  "functions": [
+   {
+    "addr": "0x001ca410",
+    "name": "snap_lookup_query_sm",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x64",
+  "functions": [
+   {
+    "addr": "0x001ca410",
+    "name": "snap_lookup_query_sm",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x09",
+  "functions": [
+   {
+    "addr": "0x001cf8e0",
+    "name": "send_op09_register_member",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x001dd5f8",
+    "name": "snap_send_op09_unrel",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001dd840",
+    "name": "snap_send_op09",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005b25c0",
+    "name": "lobby_init_and_register_handlers",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005c5cd0",
+    "name": "send_op09_register",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005c6500",
+    "name": "room_roster_sync_sm",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x00627d40",
+    "name": "msg_task_init_op09",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x006290e0",
+    "name": "charsel_register_send_step",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x06",
+  "functions": [
+   {
+    "addr": "0x001cfa30",
+    "name": "send_op06_member_join",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001d0fe0",
+    "name": "close_op06_join_channel",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001dc9fc",
+    "name": "snap_send_join",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001dcbf4",
+    "name": "snap_send_join_named",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001dcdfc",
+    "name": "snap_send_op06_var",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001ef4f0",
+    "name": "snap_req_op06_join",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005b3ed0",
+    "name": "roomjoin_state2_enter",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005bb670",
+    "name": "room_member_leave_and_roster_refresh",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x005c3490",
+    "name": "room_enter_commit_sm",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005c5db0",
+    "name": "send_op06_member_join",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005c6500",
+    "name": "room_roster_sync_sm",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005c9690",
+    "name": "room_enter_state_handler",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005ca0a0",
+    "name": "inroom_member_tick",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005d70b0",
+    "name": "build_req_enter_or_create",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005d71e0",
+    "name": "build_req_enter_or_prev",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005d7320",
+    "name": "build_req_op06_refresh",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005d7760",
+    "name": "session_enter_dispatch",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005d7e00",
+    "name": "txn_begin_enter",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x08",
+  "functions": [
+   {
+    "addr": "0x001cfb30",
+    "name": "send_op08_message",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001dd33c",
+    "name": "snap_send_register",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001ef690",
+    "name": "snap_req_op08_leave",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x005c5eb0",
+    "name": "send_op08_leave",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005c6500",
+    "name": "room_roster_sync_sm",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x07",
+  "functions": [
+   {
+    "addr": "0x001cfc90",
+    "name": "send_op07_and_load_table",
+    "subsystem": "menus"
+   },
+   {
+    "addr": "0x001dd07c",
+    "name": "snap_send_leave",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001dd1dc",
+    "name": "snap_send_leave_unrel",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001ef610",
+    "name": "snap_req_op07_leave",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005bb980",
+    "name": "lobby_area_population_decrement",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x005c5e30",
+    "name": "send_op07_leave",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005c6500",
+    "name": "room_roster_sync_sm",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005ce530",
+    "name": "room_confirm_nav_input",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x04",
+  "functions": [
+   {
+    "addr": "0x001d0040",
+    "name": "send_op04_create_slot",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001dc310",
+    "name": "snap_send_create_slot",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001dc508",
+    "name": "snap_send_create_room",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005b41b0",
+    "name": "roomjoin_state3_create",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x005c5c10",
+    "name": "send_op04_create_slot",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005d70b0",
+    "name": "build_req_enter_or_create",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005d7760",
+    "name": "session_enter_dispatch",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x00603d90",
+    "name": "roster_ctx_finish_by_opcode",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x00603e40",
+    "name": "roster_ctx_state_machine",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x0b",
+  "functions": [
+   {
+    "addr": "0x001d0400",
+    "name": "send_op0b_small",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001dda88",
+    "name": "snap_send_op0b",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001ef770",
+    "name": "snap_req_op0b",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005bc590",
+    "name": "handle_name_register_reply",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x005c5f70",
+    "name": "send_op0b",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005cf1e0",
+    "name": "room_exit_input_handler",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x48",
+  "functions": [
+   {
+    "addr": "0x001d84cc",
+    "name": "bswap_name_record",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x001d861c",
+    "name": "bswap_name_record_at8",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001e094c",
+    "name": "snap_send_name_query",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005bca90",
+    "name": "send_name_query",
+    "subsystem": "roster"
+   }
+  ]
+ },
+ {
+  "opcode": "0x2a",
+  "functions": [
+   {
+    "addr": "0x001d9678",
+    "name": "snap_connect_reply_handler",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x41",
+  "functions": [
+   {
+    "addr": "0x001d9b6c",
+    "name": "snap_keyexchange_reply",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005c1f30",
+    "name": "build_msg_op6e_variant",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x03",
+  "functions": [
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001dbefc",
+    "name": "snap_send_op03",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005bb8e0",
+    "name": "lobby_area_population_increment",
+    "subsystem": "lobby"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   },
+   {
+    "addr": "0x005c5bb0",
+    "name": "send_op03",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005c6500",
+    "name": "room_roster_sync_sm",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005d74a0",
+    "name": "build_req_op03",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x0c",
+  "functions": [
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001de470",
+    "name": "snap_send_prepare",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x001ef7d0",
+    "name": "snap_req_op0c_prepare",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x005c3490",
+    "name": "room_enter_commit_sm",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005c6050",
+    "name": "send_op0c_prepare",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x00603d90",
+    "name": "roster_ctx_finish_by_opcode",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x00603e40",
+    "name": "roster_ctx_state_machine",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x00604180",
+    "name": "member_sync_state_machine",
+    "subsystem": "roster"
+   }
+  ]
+ },
+ {
+  "opcode": "0x2e",
+  "functions": [
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x40",
+  "functions": [
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x44",
+  "functions": [
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x46",
+  "functions": [
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x001dc0b8",
+    "name": "snap_send_op46",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x6b",
+  "functions": [
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x75",
+  "functions": [
+   {
+    "addr": "0x001d9f78",
+    "name": "snap_app_msg_dispatch",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x2c",
+  "functions": [
+   {
+    "addr": "0x001db7e8",
+    "name": "snap_session_open",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x43",
+  "functions": [
+   {
+    "addr": "0x001de298",
+    "name": "snap_send_op43",
+    "subsystem": "menus"
+   },
+   {
+    "addr": "0x005c2080",
+    "name": "build_msg_op70_variant",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x32",
+  "functions": [
+   {
+    "addr": "0x001df044",
+    "name": "snap_send_op32_unrel",
+    "subsystem": "chat"
+   }
+  ]
+ },
+ {
+  "opcode": "0x13",
+  "functions": [
+   {
+    "addr": "0x001dfad0",
+    "name": "snap_send_op13",
+    "subsystem": "session"
+   },
+   {
+    "addr": "0x001efb80",
+    "name": "snap_recv_op13_data",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x005bba20",
+    "name": "inroom_subevent_dispatcher",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   }
+  ]
+ },
+ {
+  "opcode": "0x25",
+  "functions": [
+   {
+    "addr": "0x001dff7c",
+    "name": "snap_send_op25",
+    "subsystem": "rooms"
+   }
+  ]
+ },
+ {
+  "opcode": "0x34",
+  "functions": [
+   {
+    "addr": "0x001e0188",
+    "name": "snap_send_op34",
+    "subsystem": "chat"
+   }
+  ]
+ },
+ {
+  "opcode": "0x3e",
+  "functions": [
+   {
+    "addr": "0x001e05c8",
+    "name": "snap_send_op3e",
+    "subsystem": "chat"
+   },
+   {
+    "addr": "0x005c2080",
+    "name": "build_msg_op70_variant",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x49",
+  "functions": [
+   {
+    "addr": "0x001e0ed8",
+    "name": "snap_build_op49_roomlist_register",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005c1e70",
+    "name": "build_msg_register_variant",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x17",
+  "functions": [
+   {
+    "addr": "0x001efda0",
+    "name": "snap_req_op17",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x1d",
+  "functions": [
+   {
+    "addr": "0x001efe70",
+    "name": "snap_req_op1d",
+    "subsystem": "session"
+   }
+  ]
+ },
+ {
+  "opcode": "0x19",
+  "functions": [
+   {
+    "addr": "0x001eff60",
+    "name": "snap_send_op19_data_padded",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x15",
+  "functions": [
+   {
+    "addr": "0x005bc860",
+    "name": "register_snap_message_handlers",
+    "subsystem": "transport"
+   }
+  ]
+ },
+ {
+  "opcode": "0x7b",
+  "functions": [
+   {
+    "addr": "0x005c02b0",
+    "name": "send_register_maxi",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005c1e70",
+    "name": "build_msg_register_variant",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x6e",
+  "functions": [
+   {
+    "addr": "0x005c04f0",
+    "name": "send_op6e_with_name",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005c05c0",
+    "name": "on_reply_create_enter_op6e",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005c1f30",
+    "name": "build_msg_op6e_variant",
+    "subsystem": "packets"
+   },
+   {
+    "addr": "0x005c1ff0",
+    "name": "build_msg_op6e_data",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x70",
+  "functions": [
+   {
+    "addr": "0x005c0750",
+    "name": "room_commit_send_stat_op70",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005c2080",
+    "name": "build_msg_op70_variant",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x91",
+  "functions": [
+   {
+    "addr": "0x005c08b0",
+    "name": "build_msg_op91",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x86",
+  "functions": [
+   {
+    "addr": "0x005c0a00",
+    "name": "request_member_list_op86",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005c0ae0",
+    "name": "on_reply_member_list",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x005c0dc0",
+    "name": "build_msg_op86",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0xd3",
+  "functions": [
+   {
+    "addr": "0x005c2120",
+    "name": "send_op_d3",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005c21c0",
+    "name": "on_reply_op_d3",
+    "subsystem": "rooms"
+   },
+   {
+    "addr": "0x005c2250",
+    "name": "build_msg_op_d3",
+    "subsystem": "packets"
+   }
+  ]
+ },
+ {
+  "opcode": "0x23",
+  "functions": [
+   {
+    "addr": "0x00627d60",
+    "name": "member_op23_task_dispatch",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x00627ea0",
+    "name": "member_list_send_init",
+    "subsystem": "roster"
+   },
+   {
+    "addr": "0x00627f20",
+    "name": "member_list_reply_process",
+    "subsystem": "roster"
+   }
+  ]
+ }
+]

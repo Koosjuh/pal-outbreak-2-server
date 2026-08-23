@@ -1,0 +1,106 @@
+# Ignore build outputs, local settings, secrets, and copyrighted/private binary material.
+
+bin/
+# ...but the composed V2 server's entry point is source, not a build output.
+!server-v2/bin/
+!server-v2/bin/**
+obj/
+.vs/
+.vscode/*
+!.vscode/extensions.json
+*.user
+*.suo
+*.log
+
+# Secrets and credentials — kept on disk for local runs, NEVER tracked.
+# (server/certs/*, server/accounts.json, archived keys, etc.)
+.env
+*.key
+*.pem
+*.pfx
+*.crt
+secrets.*
+appsettings.Production.json
+/server/certs/
+/server/accounts.json
+*.env
+openai_key.txt
+secrets.json
+tools/outbreak_mcp/config/secrets.json
+
+# Large or copyrighted/private artifacts
+*.iso
+*.bin
+*.elf
+*.bios
+*.rom
+*.dump
+*.dmp
+*.raw
+
+# Packet captures can be large. Track only curated evidence intentionally.
+*.pcap
+*.pcapng
+!docs/evidence/pcaps/.gitkeep
+# Intentionally tracked: curated real captures migrated from the legacy workspace.
+!docs/evidence/pcaps/*.pcapng
+
+# Keep evidence folder structure.
+docs/evidence/pcaps/.gitkeep
+docs/evidence/logs/.gitkeep
+docs/evidence/screenshots/.gitkeep
+docs/evidence/notes/.gitkeep
+
+# Server runtime capture output (start_all.js writes these during test runs).
+/captures/dnas443/
+/captures/dns53/
+/captures/udp9090/
+/captures/dumps/
+/captures/pktmon/
+/captures/lobby_entries/
+/captures/snap_session*.txt
+/captures/*.jsonl
+
+# ---------------------------------------------------------------------------
+# Local-only large / copyrighted / toolchain assets.
+# Physically present on disk so RE work can continue, but NEVER tracked
+# (game ISO, extracted ISO, game/memory binaries, KDDI reference tree,
+# Ghidra/PCSX2 installs, Ghidra project databases). See docs/decisions/
+# ADR-0003-local-binary-assets.md. Each tree keeps a tracked README.md only.
+# ---------------------------------------------------------------------------
+/binaries/original/
+/binaries/patched/
+/references/*
+!/references/README.md
+/vendor/*
+!/vendor/README.md
+/ghidra-projects/*
+!/ghidra-projects/README.md
+
+# ---------------------------------------------------------------------------
+# Repo cleanup 2026-07-01 — regenerable runtime output. Present on disk so RE
+# work continues, but NEVER tracked (was polluting the code tree / git history).
+# ---------------------------------------------------------------------------
+/server/packets/
+/server/session_store.json
+/captures/lobby_diag/
+/captures/namedslot_diag/
+/captures/gate_poll/
+# Scratch working area: Ghidra project DB, local Pi/runtime backups, throwaway helpers.
+/scratch/
+
+
+# Node dependencies — regenerate with `npm install`.
+node_modules/
+
+# Python bytecode + MCP runtime logs
+__pycache__/
+*.pyc
+/tools/outbreak_mcp/logs/
+# Claude local-only settings (keep agents/ + shared settings tracked)
+.claude/settings.local.json
+# Kaitai: downloaded compiler (Java app) + generated parsers (regenerate from .ksy)
+/vendor/kaitai/
+/docs/specs/kaitai/generated/
+# Legacy MCP orchestration fact-store scratch (retired — FACTS.md/GOALS.md are the source of truth)
+/.mcp-state/

@@ -1,0 +1,11 @@
+FUNCTION FUN_00009744 @ 0x00009744 size=8
+CALLERS (1): FUN_00000d10@0x00000d10
+CALLEES (0): 
+
+void FUN_00009744(void)
+
+{
+  return;
+}
+
+

@@ -1,0 +1,1796 @@
+[
+ {
+  "string": "PS2_DVD_INIT",
+  "referenced_by": [
+   "0x001c0230"
+  ]
+ },
+ {
+  "string": "(DAT_00248458)",
+  "referenced_by": [
+   "0x001c0230"
+  ]
+ },
+ {
+  "string": "(fmt 0x248470)",
+  "referenced_by": [
+   "0x001c0e60"
+  ]
+ },
+ {
+  "string": "(fmt 0x2484a0)",
+  "referenced_by": [
+   "0x001c2770"
+  ]
+ },
+ {
+  "string": "(0x248740 cfg)",
+  "referenced_by": [
+   "0x001c2da0"
+  ]
+ },
+ {
+  "string": "(0x248760 host)",
+  "referenced_by": [
+   "0x001c2f80"
+  ]
+ },
+ {
+  "string": "(0x248790 host)",
+  "referenced_by": [
+   "0x001c2f80"
+  ]
+ },
+ {
+  "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef... (base64 alphabet)",
+  "referenced_by": [
+   "0x001c3590"
+  ]
+ },
+ {
+  "string": "TUlOQU1JT0g (base64 crypto key -> 'MINAMIOH')",
+  "referenced_by": [
+   "0x001c3650"
+  ]
+ },
+ {
+  "string": "TUlOQU1JT0g (crypto key)",
+  "referenced_by": [
+   "0x001c3750"
+  ]
+ },
+ {
+  "string": "0x3c9580",
+  "referenced_by": [
+   "0x001c4100"
+  ]
+ },
+ {
+  "string": "0x245e38",
+  "referenced_by": [
+   "0x001c4100",
+   "0x005b25c0"
+  ]
+ },
+ {
+  "string": "0x361a50",
+  "referenced_by": [
+   "0x001c5900"
+  ]
+ },
+ {
+  "string": "0x248830",
+  "referenced_by": [
+   "0x001c5900"
+  ]
+ },
+ {
+  "string": "DATA/ROM/TEX/... (via PTR_s_DATA_ROM_TEX)",
+  "referenced_by": [
+   "0x001cbda0"
+  ]
+ },
+ {
+  "string": "0x24c878/0x24c888/0x24c898 fmt strings",
+  "referenced_by": [
+   "0x001cbda0"
+  ]
+ },
+ {
+  "string": "0x24c8a0/0x24c8b0/0x24c878/0x24c888 fmt",
+  "referenced_by": [
+   "0x001cbe50"
+  ]
+ },
+ {
+  "string": "0x24c898",
+  "referenced_by": [
+   "0x001cbe50",
+   "0x001cbf80",
+   "0x001cc010",
+   "0x001cc090",
+   "0x001cc100"
+  ]
+ },
+ {
+  "string": "0x24c8c0 fmt",
+  "referenced_by": [
+   "0x001cbf80"
+  ]
+ },
+ {
+  "string": "0x24c8e0 fmt",
+  "referenced_by": [
+   "0x001cc010"
+  ]
+ },
+ {
+  "string": "0x24c900 fmt",
+  "referenced_by": [
+   "0x001cc090"
+  ]
+ },
+ {
+  "string": "0x24c910 fmt",
+  "referenced_by": [
+   "0x001cc100"
+  ]
+ },
+ {
+  "string": "DATA/ROM/TEX/IT/OBJSxx",
+  "referenced_by": [
+   "0x001cc170"
+  ]
+ },
+ {
+  "string": "DATA/ROM/MODEL/...",
+  "referenced_by": [
+   "0x001cc170"
+  ]
+ },
+ {
+  "string": "DATA/ROM/ETC/DE01",
+  "referenced_by": [
+   "0x001cc170"
+  ]
+ },
+ {
+  "string": "DATA/ROM/TEX/EM_E00 / EM_HE00 (enemy)",
+  "referenced_by": [
+   "0x001cc170"
+  ]
+ },
+ {
+  "string": "0x24c990, 0x24c9a0 (file extensions)",
+  "referenced_by": [
+   "0x001ccb10"
+  ]
+ },
+ {
+  "string": "0x24c9b0 (extension/suffix appended per entry)",
+  "referenced_by": [
+   "0x001ccb80"
+  ]
+ },
+ {
+  "string": "0x24c9b8, 0x24c9c0 (texture/model suffixes)",
+  "referenced_by": [
+   "0x001cce80"
+  ]
+ },
+ {
+  "string": "0x24c9c8, 0x24c9d8",
+  "referenced_by": [
+   "0x001cd010"
+  ]
+ },
+ {
+  "string": "0x24c9e0.. (asset filename formats)",
+  "referenced_by": [
+   "0x001cd160"
+  ]
+ },
+ {
+  "string": "0x24c9b0, 0x24ca58, 0x24ca60",
+  "referenced_by": [
+   "0x001cd820"
+  ]
+ },
+ {
+  "string": "0x24ca68, 0x24c9b8, 0x24c9c0",
+  "referenced_by": [
+   "0x001ce090"
+  ]
+ },
+ {
+  "string": "0x24ca70 template",
+  "referenced_by": [
+   "0x001ce740"
+  ]
+ },
+ {
+  "string": "0x24ca90 template",
+  "referenced_by": [
+   "0x001ce740"
+  ]
+ },
+ {
+  "string": "0x24cab0 template",
+  "referenced_by": [
+   "0x001cf0b0"
+  ]
+ },
+ {
+  "string": "0x24cae0 template",
+  "referenced_by": [
+   "0x001cf100"
+  ]
+ },
+ {
+  "string": "0x24cb10 template",
+  "referenced_by": [
+   "0x001cf150"
+  ]
+ },
+ {
+  "string": "0x24cb40 template",
+  "referenced_by": [
+   "0x001cf150"
+  ]
+ },
+ {
+  "string": "0x24cb68 template",
+  "referenced_by": [
+   "0x001cf2b0"
+  ]
+ },
+ {
+  "string": "0x24cb80 template",
+  "referenced_by": [
+   "0x001cfb30"
+  ]
+ },
+ {
+  "string": "0x24cb90 template",
+  "referenced_by": [
+   "0x001cfb30"
+  ]
+ },
+ {
+  "string": "0x24cba0 template",
+  "referenced_by": [
+   "0x001cfb30"
+  ]
+ },
+ {
+  "string": "0x24cbb0 template",
+  "referenced_by": [
+   "0x001cfc90"
+  ]
+ },
+ {
+  "string": "0x24cbd0 template",
+  "referenced_by": [
+   "0x001cfc90"
+  ]
+ },
+ {
+  "string": "0x24cbf0",
+  "referenced_by": [
+   "0x001cfc90"
+  ]
+ },
+ {
+  "string": "0x24cc10",
+  "referenced_by": [
+   "0x001cfc90"
+  ]
+ },
+ {
+  "string": "0x24cc30",
+  "referenced_by": [
+   "0x001cfc90"
+  ]
+ },
+ {
+  "string": "0x24cc40 (progress/download UI text)",
+  "referenced_by": [
+   "0x001cfc90"
+  ]
+ },
+ {
+  "string": "0x24cc50 template",
+  "referenced_by": [
+   "0x001d0040"
+  ]
+ },
+ {
+  "string": "0x24cc60 template",
+  "referenced_by": [
+   "0x001d0040"
+  ]
+ },
+ {
+  "string": "0x24cc80 template",
+  "referenced_by": [
+   "0x001d0040"
+  ]
+ },
+ {
+  "string": "0x24cc90 template",
+  "referenced_by": [
+   "0x001d0230"
+  ]
+ },
+ {
+  "string": "0x24cca0 template",
+  "referenced_by": [
+   "0x001d0230"
+  ]
+ },
+ {
+  "string": "0x24ccc0 template",
+  "referenced_by": [
+   "0x001d0230"
+  ]
+ },
+ {
+  "string": "0x24ccd0 template",
+  "referenced_by": [
+   "0x001d0b00"
+  ]
+ },
+ {
+  "string": "0x24cd00 template",
+  "referenced_by": [
+   "0x001d0b90"
+  ]
+ },
+ {
+  "string": "0x24cd30 template",
+  "referenced_by": [
+   "0x001d0c00"
+  ]
+ },
+ {
+  "string": "0x24cd60 template",
+  "referenced_by": [
+   "0x001d0c90"
+  ]
+ },
+ {
+  "string": "0x24cd90 template",
+  "referenced_by": [
+   "0x001d0d50"
+  ]
+ },
+ {
+  "string": "0x24cdc0 template",
+  "referenced_by": [
+   "0x001d0d50"
+  ]
+ },
+ {
+  "string": "0x24cdf0 template",
+  "referenced_by": [
+   "0x001d0d50"
+  ]
+ },
+ {
+  "string": "0x24ce20 template",
+  "referenced_by": [
+   "0x001d0e90"
+  ]
+ },
+ {
+  "string": "0x24ce50 template",
+  "referenced_by": [
+   "0x001d1050",
+   "0x001d1410"
+  ]
+ },
+ {
+  "string": "0x24ce90 template",
+  "referenced_by": [
+   "0x001d1110"
+  ]
+ },
+ {
+  "string": "0x24ceb8/0x24ced0/0x24cef0 templates",
+  "referenced_by": [
+   "0x001d1110"
+  ]
+ },
+ {
+  "string": "0x24cf00 template",
+  "referenced_by": [
+   "0x001d12c0"
+  ]
+ },
+ {
+  "string": "0x24cf20 template",
+  "referenced_by": [
+   "0x001d12c0"
+  ]
+ },
+ {
+  "string": "(path format strings @0x24d000/0x24d030)",
+  "referenced_by": [
+   "0x001d2b30"
+  ]
+ },
+ {
+  "string": "(path fmt @0x24d120)",
+  "referenced_by": [
+   "0x001d2e00",
+   "0x001d2e90"
+  ]
+ },
+ {
+  "string": "(path @0x24d130)",
+  "referenced_by": [
+   "0x001d2f20"
+  ]
+ },
+ {
+  "string": "(path fmts @0x24d160/70/80)",
+  "referenced_by": [
+   "0x001d3020"
+  ]
+ },
+ {
+  "string": "(path fmt @0x24d190)",
+  "referenced_by": [
+   "0x001d30b0"
+  ]
+ },
+ {
+  "string": "(path fmt @0x24d1a0)",
+  "referenced_by": [
+   "0x001d30f0"
+  ]
+ },
+ {
+  "string": "(path affixes @0x24d1b0/0x24d1c8)",
+  "referenced_by": [
+   "0x001d31b0"
+  ]
+ },
+ {
+  "string": "(path fmts @0x24d1d0/e0/f8)",
+  "referenced_by": [
+   "0x001d3240"
+  ]
+ },
+ {
+  "string": "(path fmts @0x24d208/20/38)",
+  "referenced_by": [
+   "0x001d3310"
+  ]
+ },
+ {
+  "string": "(path fmts @0x24d248/60/78)",
+  "referenced_by": [
+   "0x001d33d0"
+  ]
+ },
+ {
+  "string": "(path fmts @0x24d288/98/a8)",
+  "referenced_by": [
+   "0x001d3500"
+  ]
+ },
+ {
+  "string": "(path fmts @0x24d310/40/60/90/b0/e0/400/430)",
+  "referenced_by": [
+   "0x001d35d0"
+  ]
+ },
+ {
+  "string": "(path fmts @0x24d450/70)",
+  "referenced_by": [
+   "0x001d3ac0"
+  ]
+ },
+ {
+  "string": "(path fmts @0x24d480/90/a8)",
+  "referenced_by": [
+   "0x001d3b40"
+  ]
+ },
+ {
+  "string": "(path fmts @0x24d4c0/e0/500/520/540/560)",
+  "referenced_by": [
+   "0x001d3df0"
+  ]
+ },
+ {
+  "string": "(path fmts @0x24d578/90)",
+  "referenced_by": [
+   "0x001d3f60"
+  ]
+ },
+ {
+  "string": "data/rom/netwk/pal/lobby_01.tm2 (and sibling lobby texture paths @0x24d8b0)",
+  "referenced_by": [
+   "0x001d3fd0"
+  ]
+ },
+ {
+  "string": "data/rom/netwk/player_11.tm2 (player texture path table @0x24da30)",
+  "referenced_by": [
+   "0x001d40e0"
+  ]
+ },
+ {
+  "string": "(paths @0x24da58/0x24da60)",
+  "referenced_by": [
+   "0x001d41c0"
+  ]
+ },
+ {
+  "string": "SNAP-SWAN (built byte-by-byte 0x53 0x4e 0x41 0x50 0x2d 0x53 0x57 0x41 0x4e)",
+  "referenced_by": [
+   "0x001d46ec"
+  ]
+ },
+ {
+  "string": "MR (via 0x259290)",
+  "referenced_by": [
+   "0x001d46ec"
+  ]
+ },
+ {
+  "string": "CL (via 0x2592a0)",
+  "referenced_by": [
+   "0x001d46ec"
+  ]
+ },
+ {
+  "string": "MR (tag 0x4d52)",
+  "referenced_by": [
+   "0x001d6ee0"
+  ]
+ },
+ {
+  "string": "LC (tag 0x4c43)",
+  "referenced_by": [
+   "0x001d6ee0"
+  ]
+ },
+ {
+  "string": "NAME (0x4e414d45)",
+  "referenced_by": [
+   "0x001d84cc",
+   "0x001d861c"
+  ]
+ },
+ {
+  "string": "0x2592b0 (IP printf format)",
+  "referenced_by": [
+   "0x001d9678"
+  ]
+ },
+ {
+  "string": "0x4c43 'LC' TLV tag",
+  "referenced_by": [
+   "0x001db7e8"
+  ]
+ },
+ {
+  "string": "0x4d52 'MR' TLV tag",
+  "referenced_by": [
+   "0x001db7e8"
+  ]
+ },
+ {
+  "string": "'NAME' (0x4e414d45 tag literal)",
+  "referenced_by": [
+   "0x001dd33c"
+  ]
+ },
+ {
+  "string": "\".\" (delimiter table at 0x25b7b0)",
+  "referenced_by": [
+   "0x001e2928"
+  ]
+ },
+ {
+  "string": "clock/date printf format strings at 0x2596a8..0x259718",
+  "referenced_by": [
+   "0x001e4728"
+  ]
+ },
+ {
+  "string": "ptr 0x24e3c0 (overflow/error msg)",
+  "referenced_by": [
+   "0x001efa70",
+   "0x001efb80"
+  ]
+ },
+ {
+  "string": "ptr 0x24e3f0 (error msg)",
+  "referenced_by": [
+   "0x001eff60"
+  ]
+ },
+ {
+  "string": "ses_Titels_",
+  "referenced_by": [
+   "0x005affb0"
+  ]
+ },
+ {
+  "string": "0x8710f1",
+  "referenced_by": [
+   "0x005b25c0"
+  ]
+ },
+ {
+  "string": "0x8710e0",
+  "referenced_by": [
+   "0x005b25c0"
+  ]
+ },
+ {
+  "string": "DUMMY (via PTR_s_DUMMY_00638f20)",
+  "referenced_by": [
+   "0x005b6f90"
+  ]
+ },
+ {
+  "string": "(format template @0x639d50)",
+  "referenced_by": [
+   "0x005b8880"
+  ]
+ },
+ {
+  "string": "0x639d60",
+  "referenced_by": [
+   "0x005b9150"
+  ]
+ },
+ {
+  "string": "0x639d68",
+  "referenced_by": [
+   "0x005b9150",
+   "0x005ba5b0"
+  ]
+ },
+ {
+  "string": "0x639d70 (printf format templates)",
+  "referenced_by": [
+   "0x005b9150"
+  ]
+ },
+ {
+  "string": "0x6c9d33",
+  "referenced_by": [
+   "0x005ba2e0"
+  ]
+ },
+ {
+  "string": "0x874f3c",
+  "referenced_by": [
+   "0x005ba5b0"
+  ]
+ },
+ {
+  "string": "0x639e10",
+  "referenced_by": [
+   "0x005ba5b0"
+  ]
+ },
+ {
+  "string": "0x639e18",
+  "referenced_by": [
+   "0x005ba8d0"
+  ]
+ },
+ {
+  "string": "0x639e40",
+  "referenced_by": [
+   "0x005baa70"
+  ]
+ },
+ {
+  "string": "0x639e48",
+  "referenced_by": [
+   "0x005baa70"
+  ]
+ },
+ {
+  "string": "0x639e50",
+  "referenced_by": [
+   "0x005bac80",
+   "0x005bb270"
+  ]
+ },
+ {
+  "string": "0x639d58",
+  "referenced_by": [
+   "0x005bb270"
+  ]
+ },
+ {
+  "string": "0x639e58",
+  "referenced_by": [
+   "0x005bb270"
+  ]
+ },
+ {
+  "string": "0x639e60",
+  "referenced_by": [
+   "0x005bb270"
+  ]
+ },
+ {
+  "string": "NAME (0x4e414d45 tag)",
+  "referenced_by": [
+   "0x005bca90"
+  ]
+ },
+ {
+  "string": "DIOL (0x4c4f4944)",
+  "referenced_by": [
+   "0x005bf470"
+  ]
+ },
+ {
+  "string": "STAT (0x53544154)",
+  "referenced_by": [
+   "0x005bf470",
+   "0x005c28f0"
+  ]
+ },
+ {
+  "string": "USER (0x55534552)",
+  "referenced_by": [
+   "0x005bf470",
+   "0x005bf740",
+   "0x005bffa0",
+   "0x005c0060"
+  ]
+ },
+ {
+  "string": "!",
+  "referenced_by": [
+   "0x005bf470"
+  ]
+ },
+ {
+  "string": "' (0x27) error tag",
+  "referenced_by": [
+   "0x005bf830",
+   "0x005bfb40",
+   "0x005bfe90"
+  ]
+ },
+ {
+  "string": "MAXI (0x4d415849)",
+  "referenced_by": [
+   "0x005c0060"
+  ]
+ },
+ {
+  "string": "MAXI",
+  "referenced_by": [
+   "0x005c02b0"
+  ]
+ },
+ {
+  "string": "STAT",
+  "referenced_by": [
+   "0x005c0750",
+   "0x005c14a0",
+   "0x005c1770",
+   "0x005c56a0",
+   "0x005c7320",
+   "0x005c75d0"
+  ]
+ },
+ {
+  "string": "NAME",
+  "referenced_by": [
+   "0x005c0ff0",
+   "0x005c7020"
+  ]
+ },
+ {
+  "string": "LOID",
+  "referenced_by": [
+   "0x005c14a0",
+   "0x005c1770",
+   "0x005c7320",
+   "0x005c75d0"
+  ]
+ },
+ {
+  "string": "No. of Players",
+  "referenced_by": [
+   "0x005c2e90"
+  ]
+ },
+ {
+  "string": "defficulity control",
+  "referenced_by": [
+   "0x005c2e90"
+  ]
+ },
+ {
+  "string": "DIO (0x4f494400)",
+  "referenced_by": [
+   "0x005c40a0"
+  ]
+ },
+ {
+  "string": "str@0x36842c",
+  "referenced_by": [
+   "0x005c4dc0",
+   "0x005c4e60"
+  ]
+ },
+ {
+  "string": "fmt@0x6405b0",
+  "referenced_by": [
+   "0x005c4f40"
+  ]
+ },
+ {
+  "string": "fmt@0x6405b8",
+  "referenced_by": [
+   "0x005c4fd0"
+  ]
+ },
+ {
+  "string": "fmt@0x6405c0",
+  "referenced_by": [
+   "0x005c5810"
+  ]
+ },
+ {
+  "string": "fmt@0x6405c8",
+  "referenced_by": [
+   "0x005c5810"
+  ]
+ },
+ {
+  "string": "str@0x642e00",
+  "referenced_by": [
+   "0x005d1e80"
+  ]
+ },
+ {
+  "string": "str@0x642e30",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642e40",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642e50",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642e60",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642e80",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642ec0",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642ee0",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642f00",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642f20",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642f40",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642d80",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642f60",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642f78",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642ea0",
+  "referenced_by": [
+   "0x005d3930"
+  ]
+ },
+ {
+  "string": "str@0x642f80",
+  "referenced_by": [
+   "0x005d47f0"
+  ]
+ },
+ {
+  "string": "str@0x642f88",
+  "referenced_by": [
+   "0x005d47f0"
+  ]
+ },
+ {
+  "string": "str@0x642f90",
+  "referenced_by": [
+   "0x005d47f0"
+  ]
+ },
+ {
+  "string": "str@0x642f98",
+  "referenced_by": [
+   "0x005d47f0"
+  ]
+ },
+ {
+  "string": "str@0x642fa0",
+  "referenced_by": [
+   "0x005d47f0"
+  ]
+ },
+ {
+  "string": "str@0x642fa8",
+  "referenced_by": [
+   "0x005d47f0"
+  ]
+ },
+ {
+  "string": "str@0x642fb8",
+  "referenced_by": [
+   "0x005d47f0"
+  ]
+ },
+ {
+  "string": "str@0x642fc0",
+  "referenced_by": [
+   "0x005d5640"
+  ]
+ },
+ {
+  "string": "str@0x642c20 field-key",
+  "referenced_by": [
+   "0x005d5640"
+  ]
+ },
+ {
+  "string": "str@0x642c28 field-key",
+  "referenced_by": [
+   "0x005d5640"
+  ]
+ },
+ {
+  "string": "str@0x642c20",
+  "referenced_by": [
+   "0x005d5900"
+  ]
+ },
+ {
+  "string": "str@0x642c28",
+  "referenced_by": [
+   "0x005d5900"
+  ]
+ },
+ {
+  "string": "str@0x642fc8",
+  "referenced_by": [
+   "0x005d5cc0"
+  ]
+ },
+ {
+  "string": "str@0x642fd0",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x642fe0",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x642ff0",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x643000",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x643010",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x643020",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x643030",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x643040",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x643050",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x643060",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x643070",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x643080",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x643090",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x6430a0",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x6430b0",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x6430c0",
+  "referenced_by": [
+   "0x005d60a0"
+  ]
+ },
+ {
+  "string": "str@0x8710fc",
+  "referenced_by": [
+   "0x005d6390"
+  ]
+ },
+ {
+  "string": "str@0x6430d0 template",
+  "referenced_by": [
+   "0x005d6560"
+  ]
+ },
+ {
+  "string": "str@0x6432d0 template",
+  "referenced_by": [
+   "0x005d6560"
+  ]
+ },
+ {
+  "string": "str@0x643220 footer",
+  "referenced_by": [
+   "0x005d6560"
+  ]
+ },
+ {
+  "string": "str@0x643260 footer",
+  "referenced_by": [
+   "0x005d6560"
+  ]
+ },
+ {
+  "string": "<html><head><title>",
+  "referenced_by": [
+   "0x005d81b0"
+  ]
+ },
+ {
+  "string": "</title></head><body><h2>",
+  "referenced_by": [
+   "0x005d81b0"
+  ]
+ },
+ {
+  "string": "</h2><hr>",
+  "referenced_by": [
+   "0x005d81b0"
+  ]
+ },
+ {
+  "string": "</body></html>",
+  "referenced_by": [
+   "0x005d81b0"
+  ]
+ },
+ {
+  "string": "' ...' (ellipsis bytes 0x20 0x2e 0x2e 0x2e)",
+  "referenced_by": [
+   "0x005d8b00"
+  ]
+ },
+ {
+  "string": "(two sentinel strings at 0x643380/0x643388)",
+  "referenced_by": [
+   "0x005d8b90"
+  ]
+ },
+ {
+  "string": "(format string @0x643390)",
+  "referenced_by": [
+   "0x005d9890"
+  ]
+ },
+ {
+  "string": "(default string @0x643398)",
+  "referenced_by": [
+   "0x005dc1e0"
+  ]
+ },
+ {
+  "string": "Esci",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "Quitter",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "salir",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "Verlassen",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "exit",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "A connection error has occurred",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "Address",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "Reload",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "Ricarica",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "Recargar",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "Neu laden",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "Recharger",
+  "referenced_by": [
+   "0x005de330"
+  ]
+ },
+ {
+  "string": "javascript:",
+  "referenced_by": [
+   "0x005df640"
+  ]
+ },
+ {
+  "string": "0123456789ABCDEF",
+  "referenced_by": [
+   "0x005dfa90"
+  ]
+ },
+ {
+  "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef",
+  "referenced_by": [
+   "0x005dfb00"
+  ]
+ },
+ {
+  "string": "0x648518 (4-byte cmp const)",
+  "referenced_by": [
+   "0x005e93f0"
+  ]
+ },
+ {
+  "string": "0x6482b0 (0x48-byte lookup table)",
+  "referenced_by": [
+   "0x005e94c0"
+  ]
+ },
+ {
+  "string": "'#' (system-message prefix)",
+  "referenced_by": [
+   "0x005e9940"
+  ]
+ },
+ {
+  "string": "0x648520 (default const string)",
+  "referenced_by": [
+   "0x005e9c30"
+  ]
+ },
+ {
+  "string": "0x648528 (7-char keyword literal)",
+  "referenced_by": [
+   "0x005e9ea0"
+  ]
+ },
+ {
+  "string": "0x648320 (align keyword table, len 0x20)",
+  "referenced_by": [
+   "0x005ea190"
+  ]
+ },
+ {
+  "string": "0x648320 (keyword table, len 0x20)",
+  "referenced_by": [
+   "0x005eb300"
+  ]
+ },
+ {
+  "string": "0x648350 (keyword table, len 0x20)",
+  "referenced_by": [
+   "0x005eb350"
+  ]
+ },
+ {
+  "string": "0x648320 (keyword table)",
+  "referenced_by": [
+   "0x005eb990"
+  ]
+ },
+ {
+  "string": "0x648350 (keyword table)",
+  "referenced_by": [
+   "0x005eb9f0"
+  ]
+ },
+ {
+  "string": "ALICEBLUE (+ X11/CSS color-name table)",
+  "referenced_by": [
+   "0x005ec4f0"
+  ]
+ },
+ {
+  "string": "% (percent suffix, char 0x25)",
+  "referenced_by": [
+   "0x005ec6d0"
+  ]
+ },
+ {
+  "string": "+ / - (size sign)",
+  "referenced_by": [
+   "0x005ec800"
+  ]
+ },
+ {
+  "string": "<asset filename @0x649610>",
+  "referenced_by": [
+   "0x005f4250"
+  ]
+ },
+ {
+  "string": "<asset filename @0x649630>",
+  "referenced_by": [
+   "0x005f42c0"
+  ]
+ },
+ {
+  "string": "<banned words @0x87b268>",
+  "referenced_by": [
+   "0x005f5a40"
+  ]
+ },
+ {
+  "string": "(format string @0x649768)",
+  "referenced_by": [
+   "0x005f84c0"
+  ]
+ },
+ {
+  "string": "0x649878",
+  "referenced_by": [
+   "0x005fbbf0",
+   "0x005fcc70"
+  ]
+ },
+ {
+  "string": "0x649870",
+  "referenced_by": [
+   "0x005fbbf0"
+  ]
+ },
+ {
+  "string": "0x649880",
+  "referenced_by": [
+   "0x005fbbf0",
+   "0x005fcc70"
+  ]
+ },
+ {
+  "string": "0x649888",
+  "referenced_by": [
+   "0x005fbbf0",
+   "0x005fcc70",
+   "0x005fd9e0"
+  ]
+ },
+ {
+  "string": "0x649ae0",
+  "referenced_by": [
+   "0x005fcc70",
+   "0x005fd9e0"
+  ]
+ },
+ {
+  "string": "0x649ae8",
+  "referenced_by": [
+   "0x005fcc70",
+   "0x005fd9e0"
+  ]
+ },
+ {
+  "string": "0x600de0",
+  "referenced_by": [
+   "0x005fe500"
+  ]
+ },
+ {
+  "string": "0x600f50",
+  "referenced_by": [
+   "0x005fe500"
+  ]
+ },
+ {
+  "string": "0x600ff0",
+  "referenced_by": [
+   "0x005fe500"
+  ]
+ },
+ {
+  "string": "0x601060",
+  "referenced_by": [
+   "0x005fe500"
+  ]
+ },
+ {
+  "string": "0x601170",
+  "referenced_by": [
+   "0x005fe500"
+  ]
+ },
+ {
+  "string": "fmt @0x64a020",
+  "referenced_by": [
+   "0x00604e70"
+  ]
+ },
+ {
+  "string": "fmt @0x64a030",
+  "referenced_by": [
+   "0x00604e70"
+  ]
+ },
+ {
+  "string": "fmt @0x64a040",
+  "referenced_by": [
+   "0x00604e70"
+  ]
+ },
+ {
+  "string": "fmt @0x64a048",
+  "referenced_by": [
+   "0x006050d0"
+  ]
+ },
+ {
+  "string": "fmt @0x64a078",
+  "referenced_by": [
+   "0x00605790"
+  ]
+ },
+ {
+  "string": "fmt @0x64a080",
+  "referenced_by": [
+   "0x00605790"
+  ]
+ },
+ {
+  "string": "0x6970b2",
+  "referenced_by": [
+   "0x00605a90"
+  ]
+ },
+ {
+  "string": "0x6970a2",
+  "referenced_by": [
+   "0x00605a90"
+  ]
+ },
+ {
+  "string": "host:port buffer @0x70bfb0",
+  "referenced_by": [
+   "0x00606000"
+  ]
+ },
+ {
+  "string": "server host/config @0x6c5520",
+  "referenced_by": [
+   "0x006064c0"
+  ]
+ },
+ {
+  "string": "@0x8710f1",
+  "referenced_by": [
+   "0x00606780"
+  ]
+ },
+ {
+  "string": "0x64a0f8 (format)",
+  "referenced_by": [
+   "0x006080d0"
+  ]
+ },
+ {
+  "string": "0x64a100 (format)",
+  "referenced_by": [
+   "0x006080d0"
+  ]
+ },
+ {
+  "string": "0x8711fd (fmt)",
+  "referenced_by": [
+   "0x00608300"
+  ]
+ },
+ {
+  "string": "0x8710fc (fmt)",
+  "referenced_by": [
+   "0x00608300"
+  ]
+ },
+ {
+  "string": "0x64a110 (fmt)",
+  "referenced_by": [
+   "0x00608300",
+   "0x006088b0"
+  ]
+ },
+ {
+  "string": "invalid block type",
+  "referenced_by": [
+   "0x00608c80"
+  ]
+ },
+ {
+  "string": "too many length or distance symbols",
+  "referenced_by": [
+   "0x00608c80"
+  ]
+ },
+ {
+  "string": "invalid stored block lengths",
+  "referenced_by": [
+   "0x00608c80"
+  ]
+ },
+ {
+  "string": "invalid literal/length code",
+  "referenced_by": [
+   "0x00609c60",
+   "0x0060a670"
+  ]
+ },
+ {
+  "string": "invalid distance code",
+  "referenced_by": [
+   "0x00609c60",
+   "0x0060a670"
+  ]
+ },
+ {
+  "string": "1.1.4",
+  "referenced_by": [
+   "0x0060acb0"
+  ]
+ },
+ {
+  "string": "unknown compression method",
+  "referenced_by": [
+   "0x0060ae40"
+  ]
+ },
+ {
+  "string": "invalid window size",
+  "referenced_by": [
+   "0x0060ae40"
+  ]
+ },
+ {
+  "string": "incorrect header check",
+  "referenced_by": [
+   "0x0060ae40"
+  ]
+ },
+ {
+  "string": "need dictionary",
+  "referenced_by": [
+   "0x0060ae40"
+  ]
+ },
+ {
+  "string": "incorrect data check",
+  "referenced_by": [
+   "0x0060ae40"
+  ]
+ },
+ {
+  "string": "oversubscribed dynamic bit lengths",
+  "referenced_by": [
+   "0x0060b930"
+  ]
+ },
+ {
+  "string": "incomplete dynamic bit lengths tree",
+  "referenced_by": [
+   "0x0060b930"
+  ]
+ },
+ {
+  "string": "oversubscribed literal/length tree",
+  "referenced_by": [
+   "0x0060ba40"
+  ]
+ },
+ {
+  "string": "incomplete literal/length tree",
+  "referenced_by": [
+   "0x0060ba40"
+  ]
+ },
+ {
+  "string": "oversubscribed distance tree",
+  "referenced_by": [
+   "0x0060ba40"
+  ]
+ },
+ {
+  "string": "incomplete distance tree",
+  "referenced_by": [
+   "0x0060ba40"
+  ]
+ },
+ {
+  "string": "empty distance tree with lengths",
+  "referenced_by": [
+   "0x0060ba40"
+  ]
+ },
+ {
+  "string": "<0x64b770 path>",
+  "referenced_by": [
+   "0x0060e160"
+  ]
+ },
+ {
+  "string": "<0x64b790 path>",
+  "referenced_by": [
+   "0x0060e160"
+  ]
+ },
+ {
+  "string": "fmt @0x654150",
+  "referenced_by": [
+   "0x006140d0"
+  ]
+ },
+ {
+  "string": "fmt @0x654160",
+  "referenced_by": [
+   "0x006140d0"
+  ]
+ },
+ {
+  "string": "\"...\" (0x2e2e2e)",
+  "referenced_by": [
+   "0x00614870"
+  ]
+ },
+ {
+  "string": "fmt @0x654168",
+  "referenced_by": [
+   "0x006150b0"
+  ]
+ },
+ {
+  "string": "fmt @0x654178",
+  "referenced_by": [
+   "0x006150b0"
+  ]
+ },
+ {
+  "string": "s_eefgis_00654188 (\"eefgis\")",
+  "referenced_by": [
+   "0x006154b0"
+  ]
+ },
+ {
+  "string": "0x693930 (7-byte compare prefix)",
+  "referenced_by": [
+   "0x00616570"
+  ]
+ },
+ {
+  "string": "0x693db8 (error/log fmt when channel down)",
+  "referenced_by": [
+   "0x00616ab0"
+  ]
+ },
+ {
+  "string": "0x654390",
+  "referenced_by": [
+   "0x00617c30"
+  ]
+ },
+ {
+  "string": "0x654398",
+  "referenced_by": [
+   "0x00617c30"
+  ]
+ },
+ {
+  "string": "0x6543a0",
+  "referenced_by": [
+   "0x00617c30"
+  ]
+ },
+ {
+  "string": "0x6543a8 (printf fmt strings)",
+  "referenced_by": [
+   "0x00617c30"
+  ]
+ },
+ {
+  "string": "password mask char '*'",
+  "referenced_by": [
+   "0x0061eab0"
+  ]
+ },
+ {
+  "string": "format strings @0x669d10/0x669d40 (page counter)",
+  "referenced_by": [
+   "0x0061eab0"
+  ]
+ },
+ {
+  "string": "DUMMY",
+  "referenced_by": [
+   "0x0062b500"
+  ]
+ },
+ {
+  "string": "0x66af60 fmt",
+  "referenced_by": [
+   "0x0062f5b0"
+  ]
+ },
+ {
+  "string": "0x66afa0 count fmt",
+  "referenced_by": [
+   "0x0062fa80"
+  ]
+ },
+ {
+  "string": "AFTER (0068b6e0 wordlist region)",
+  "referenced_by": [
+   "0x00632d20"
+  ]
+ },
+ {
+  "string": "%d/%d style counter (0068f2d8)",
+  "referenced_by": [
+   "0x00633c10"
+  ]
+ }
+]

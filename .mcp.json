@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "outbreak-tools": {
+      "command": "python",
+      "args": [
+        "tools/outbreak_mcp/server.py"
+      ],
+      "cwd": "."
+    }
+  }
+}

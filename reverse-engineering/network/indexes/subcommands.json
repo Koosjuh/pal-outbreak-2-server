@@ -1,0 +1,15 @@
+[
+ {
+  "opcode": "0x10",
+  "kind": "sub",
+  "sel": "0x5",
+  "fns": [
+   {
+    "addr": "0x005bc0e0",
+    "name": "inroom_set_player_counts",
+    "subsystem": "rooms",
+    "summary": "Sub-event 5: when in-room, copies two scenario-selection bytes (payload+5 and payload+4) into 0x6ff2b3/0x6ff2b4."
+   }
+  ]
+ }
+]

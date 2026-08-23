@@ -1,0 +1,71 @@
+{
+  "_comment": "Seeded from tests/knowledge/snap-commands.json and RE_SERVER_RESPONSE_FUNCTION_MAP.md. Names are labels for investigation, not proof of original server semantics.",
+  "udp9090": {
+    "wire_note": "SN@P header decode used by outbreak-tools: type=byte0>>4, length=((byte0&0x0f)<<8)|byte1, opcode=bytes2-3 big-endian. Body offset is treated as 0x10 when present.",
+    "opcodes": {
+      "0x0001": {
+        "name": "post_register_state_packet",
+        "confidence": "Observation",
+        "notes": "Seen after REGISTER in prior findings; exact application meaning remains constrained by current evidence."
+      },
+      "0x002c": {
+        "name": "REGISTER",
+        "handler_or_sender": "snap_register_request_sender 0x001db7e8",
+        "confidence": "Runtime-confirmed mechanism",
+        "notes": "Client REGISTER request sender."
+      },
+      "0x002d": {
+        "name": "REGISTER_OK",
+        "handler_or_sender": "snap_register_ok_handler 0x001d9678",
+        "confidence": "Runtime-confirmed mechanism",
+        "notes": "Handler decrypts response, compares auth, stores host/port/tail fields."
+      },
+      "0x000a": {
+        "name": "selector_family_or_state_push",
+        "confidence": "Strong evidence",
+        "notes": "Routes through dispatcher paths described in prior findings; use current packet timeline and callback ownership before interpretation."
+      },
+      "0x0028": {
+        "name": "selector_family_dispatch",
+        "confidence": "Strong evidence",
+        "notes": "Prior findings tie selector body parsing to slot routing. Do not assume current callback ownership without snapshot evidence."
+      },
+      "0x0031": {
+        "name": "connection_establish_result_family",
+        "confidence": "High",
+        "notes": "Prior findings show timing/callback ownership matters. Pokes are diagnostics, not proof."
+      },
+      "0x0048": {
+        "name": "named_slot_query",
+        "confidence": "High",
+        "notes": "Used in select-time query flow; exact consumer must be confirmed with current runtime state."
+      }
+    }
+  },
+  "tcp10127": {
+    "frame_note": "0x00 u16_be payloadLen | 0x02 u8 dir | 0x03 u16_be cmd | 0x05 u8 p5 | 0x06 u8 err | 0x07 u8 p7 | 0x08.. payload",
+    "directions": {
+      "0x01": "client ask",
+      "0x02": "server tell",
+      "0x10": "server challenge/broadcast"
+    },
+    "commands": {
+      "0x1004": { "name": "POST_LOBBY_ACK", "iso": "0x001c8e90", "confidence": "runtime-confirmed" },
+      "0x1007": { "name": "LOBBY_INIT", "iso": null, "confidence": "runtime-confirmed" },
+      "0x6001": { "name": "CONNCHECK", "iso": "0x001c92d0", "confidence": "strong" },
+      "0x6101": { "name": "LOGIN", "iso": "0x001c5a20", "confidence": "strong" },
+      "0x6103": { "name": "CHECKVERSION", "iso": null, "confidence": "runtime-confirmed" },
+      "0x6104": { "name": "CHUNK_FETCH", "iso": "0x001c6130", "confidence": "strong" },
+      "0x6110": { "name": "SESSION_VERIFY", "iso": "0x001c6840", "confidence": "strong" },
+      "0x6203": { "name": "AREACOUNT", "iso": "0x001c4960", "confidence": "runtime-confirmed" },
+      "0x6211": { "name": "LEAVEAGL_reference_label", "iso": "0x001c45f0", "confidence": "strong" },
+      "0x6212": { "name": "AGLPLAYERCNT", "iso": "0x001c4360", "confidence": "runtime-confirmed" },
+      "0x6213": { "name": "AGLSTATS", "iso": null, "confidence": "strong" },
+      "0x6501": { "name": "LOBBY_HEADER", "iso": "0x001c6e80", "confidence": "runtime-confirmed" },
+      "0x6502": { "name": "LOBBY_SLOT", "iso": "0x001c7680", "confidence": "strong" },
+      "0x6503": { "name": "LOBBY_HEADER_DETAILS", "iso": "0x001c70b0", "confidence": "correlation" },
+      "0x6504": { "name": "LOBBY_SLOT_DETAILS", "iso": "0x001c7a70", "confidence": "runtime-confirmed" },
+      "0x6510": { "name": "LOBBY_LIST_CHUNK", "iso": "0x001c8790", "confidence": "runtime-confirmed" }
+    }
+  }
+}

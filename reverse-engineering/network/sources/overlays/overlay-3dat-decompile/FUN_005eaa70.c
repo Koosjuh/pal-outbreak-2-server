@@ -1,0 +1,22 @@
+FUNCTION FUN_005eaa70 @ 0x005eaa70  size=88
+CALLERS (0): 
+CALLEES (2): FUN_005ec650@0x005ec650, FUN_005ec1b0@0x005ec1b0
+----------------------------------------------------------------
+
+undefined8 FUN_005eaa70(undefined8 param_1)
+
+{
+  undefined2 uVar1;
+  undefined1 auStack_110 [272];
+  
+  FUN_005ec1b0(param_1,auStack_110,0x100);
+  if (*(char *)(iRam007012a0 + 0x186) == -10) {
+    uVar1 = FUN_005ec650(auStack_110);
+    *(undefined2 *)(iRam007012a0 + 0xe00) = uVar1;
+  }
+  return 0;
+}
+
+
+
+================================================================

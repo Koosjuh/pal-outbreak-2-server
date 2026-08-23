@@ -1,0 +1,17 @@
+{
+  "headline": "Log in or create an account. Then select Go Online from the in-game menu to continue.",
+  "ticker": [
+    "PAL Outbreak File 2 network. Unofficial revival.",
+    "DNAS auth and the browser flow are confirmed working.",
+    "New: RE findings show the lobby chain loads via demo.bin then netwk.bin. Testing now."
+  ],
+  "panelTitle": "Server Status",
+  "panelItems": [
+    "DNAS auth (port 443): confirmed working from captures.",
+    "SN@P boot (port 10127): opens in-game browser correctly.",
+    "HTTP browser flow: login, account creation, CRS-GAME-START, LBS all functional.",
+    "Post-browser: netwk.bin loading chain identified — testing live now.",
+    "If Go Online stays grey after login, check the server console for SN@P lobby connection."
+  ],
+  "footer": "Create an account, log in, then use the in-game lobby flow."
+}

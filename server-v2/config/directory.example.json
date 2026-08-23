@@ -1,0 +1,143 @@
+{
+  "_comment": [
+    "Operator-authored directory for the composed V2 server.",
+    "",
+    "STRUCTURE is proven (session log T17, 2026-08-02): entries of stride 0x260, each",
+    "owning records of stride 0x134. Every field maps to an exact offset and every",
+    "bound is enforced.",
+    "",
+    "ENTRY fields are carried by 0x6503 (session log T31, corpus 001c70b0):",
+    "  host        <= 0x3e  the CONNECT TARGET. Lands at entry +0x00. On selection the",
+    "                       client parses it as a dotted quad and otherwise resolves it",
+    "                       by DNS (T30 runtime, T31 disassembly). A literal IP bypasses",
+    "                       DNS entirely, which is why the rig uses one.",
+    "  name        <= 0x0f  display name",
+    "  raw8        exactly 8 bytes, MEANING UNKNOWN - keep zero",
+    "  description <= 0xff  display description",
+    "At most 16 entries; a 0x6503 declaring 0 entries is a terminal client error.",
+    "",
+    "TWO ENTRIES IS THE MINIMUM FOR A USABLE SERVER SELECT. FUN_00606fc0 substate 1",
+    "AUTO-SELECTS entry 1 and resolves immediately when the entry count is 0 or 1; the",
+    "interactive list is drawn only at count >= 2 (SERVER-SELECT-SPEC-2026-08-05.md",
+    "C.1/D.3). With one entry the player never chooses anything, and a host that fails",
+    "to resolve takes the harder screen-state-5 error path instead of the dialog.",
+    "Every entry needs at least one record: 0x6502 mode 0 skips a recordless entry, and",
+    "FUN_005c7bd0 dereferences entry+0x160 unconditionally when it fills the UI row.",
+    "",
+    "RECORD bounds: unknownField0/unknownField1 <= 15, unknownRaw8 exactly 8,",
+    "unknownField2 <= 255, at most 64 records per entry. unknownField0 is the key the",
+    "client echoes in its 0x6510 request, so it must be unique within an entry.",
+    "Strings are latin1; use { \"hex\": \"...\" } for raw bytes.",
+    "",
+    "unknownWord1 is MAXIMUM PLAYERS (record +0x12a); unknownWord6510 is CURRENT",
+    "PLAYERS (record +0x12c). Corpus 005c7bd0 fills the UI from cur(+0x12c)/max(+0x12a).",
+    "MAXIMUM PLAYERS IS A LIVE GATE, NOT A LABEL: FUN_005bc990 sums the per-area player",
+    "counts and refuses the lobby with \"Server full. You cannot participate.\" when that",
+    "sum reaches FUN_005c5060 = the SELECTED entry's FIRST record's +0x12a. So 0 is a",
+    "permanently full server, and a small number turns real players away.",
+    "The 256 below is not a fixture value: it is PAL_V2_MAXIMUM_PLAYERS, which defaults",
+    "to the server's own lobby-connection ceiling because a player occupies exactly one",
+    "connection. Startup REFUSES any entry pointing at this server whose records",
+    "disagree with it (application.js assertDirectoryCapacityIsConfigured), so this",
+    "number cannot drift back into being a leftover. It replaced 4, which came from V1's",
+    "trace (session6_trace.log:91) and would have refused the lobby at four players.",
+    "",
+    "The client holds only 64 records resident across all entries at once; a larger",
+    "directory is legal and is walked in windows.",
+    "",
+    "provenance MUST be \"operator\" for the production server to start.",
+    "",
+    "TWO ENTRIES, BOTH POINTING AT THE SAME RIG SERVER. The count matters: ",
+    "FUN_00606fc0 substate 1 AUTO-SELECTS entry 1 when the count is 0 or 1, so the ",
+    "interactive list is only drawn at count >= 2 and the player can never actually ",
+    "choose. Both hosts are 192.0.2.121 on purpose - the rig runs ONE server, and an ",
+    "entry advertising a host with nothing behind it would fail to connect if selected, ",
+    "which would look like a protocol fault rather than a fixture choice. In production ",
+    "these are distinct machines.",
+    "",
+    "rigFixture DECLARES THIS FILE AS THE DEVELOPMENT RIG'S. It exempts the file from",
+    "the rig-fixture gate, which otherwise refuses private/loopback hosts, placeholder",
+    "strings, a zero player cap and non-zero undecoded flag bytes. A PRODUCTION file",
+    "omits it and must then pass that gate. See docs/PROTOCOL-VALUE-INVENTORY.md:",
+    "every value marked RIG there must be replaced before going live.",
+    "",
+    "(A paragraph here used to say entry-1's host was a second address on the rig LAN,",
+    "and that two entries sharing a host would make the choice meaningless. Commit",
+    "746b43cd pointed both entries at 192.0.2.121 and explained why above; the old",
+    "text was left behind and contradicted the data below. It is corrected rather than",
+    "silently dropped: what makes the list interactive is the entry COUNT, and a second",
+    "host with nothing behind it would fail to connect when selected - which on a rig",
+    "run reads as a protocol fault rather than a fixture choice.)"
+  ],
+  "provenance": "operator",
+  "rigFixture": true,
+  "entries": [
+    {
+      "entryId": "entry-0",
+      "host": "192.0.2.121",
+      "name": "PAL V2 RIG",
+      "raw8": {
+        "hex": "0000000000000000"
+      },
+      "description": "Development rig server (not production)",
+      "pageField": "PAL-V2-0",
+      "command6502Unknown0": 0,
+      "command6502Unknown1": 0,
+      "records": [
+        {
+          "recordId": "record-0",
+          "unknownField0": "E0R0",
+          "unknownField1": "F1",
+          "unknownRaw8": {
+            "hex": "0000000000000000"
+          },
+          "unknownField2": "RECORD-0",
+          "unknownWord0": 0,
+          "unknownWord1": 256,
+          "unknownDword": 0,
+          "unknownWord6510": 0
+        },
+        {
+          "recordId": "record-1",
+          "unknownField0": "E0R1",
+          "unknownField1": "F1",
+          "unknownRaw8": {
+            "hex": "0000000000000000"
+          },
+          "unknownField2": "RECORD-1",
+          "unknownWord0": 0,
+          "unknownWord1": 256,
+          "unknownDword": 0,
+          "unknownWord6510": 0
+        }
+      ]
+    },
+    {
+      "entryId": "entry-1",
+      "host": "192.0.2.121",
+      "name": "PAL V2 RIG 2",
+      "raw8": {
+        "hex": "0000000000000000"
+      },
+      "description": "Second rig target - the list is only selectable with two entries",
+      "pageField": "PAL-V2-1",
+      "command6502Unknown0": 0,
+      "command6502Unknown1": 0,
+      "records": [
+        {
+          "recordId": "record-0",
+          "unknownField0": "E1R0",
+          "unknownField1": "F1",
+          "unknownRaw8": {
+            "hex": "0000000000000000"
+          },
+          "unknownField2": "RECORD-0",
+          "unknownWord0": 0,
+          "unknownWord1": 256,
+          "unknownDword": 0,
+          "unknownWord6510": 0
+        }
+      ]
+    }
+  ]
+}

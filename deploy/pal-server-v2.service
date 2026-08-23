@@ -1,0 +1,31 @@
+# Requires Node >= 22.5 (node:sqlite); add --experimental-sqlite on 22.5-22.12.
+# The Pi's recorded runtime is 20.19.2 and must be upgraded first.
+[Unit]
+Description=PAL Outbreak File #2 server V2
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pal
+Group=pal
+WorkingDirectory=/opt/pal-server-v2
+EnvironmentFile=/etc/pal-server-v2/env
+ExecStart=/usr/bin/node /opt/pal-server-v2/server-v2/bin/pal-server-v2.js
+Restart=always
+RestartSec=2
+KillSignal=SIGTERM
+TimeoutStopSec=15
+
+# Port 53 and 443 without running as root.
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/pal-server-v2
+StateDirectory=pal-server-v2
+
+[Install]
+WantedBy=multi-user.target

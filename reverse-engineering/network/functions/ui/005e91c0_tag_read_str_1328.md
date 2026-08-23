@@ -1,0 +1,34 @@
+# 0x005e91c0 tag_read_str_1328
+
+| field | value |
+|---|---|
+| Original address | 0x005e91c0 |
+| Binary / overlay | 3.DAT |
+| Module | overlay-3dat |
+| Original generated name | FUN_005e91c0 |
+| Resolved name | tag_read_str_1328 |
+| Subsystem | ui |
+| Relevance | unrelated |
+| Status | classified (record from evidence-based classification; corrected pseudocode pending for non-core) |
+| Confidence | High |
+| Runtime validated | no |
+
+**Callers:** —
+**Callees:** FUN_005ec1b0
+**Referenced globals:** +0x1328 (string field)
+**Referenced strings:** —
+**Referenced opcodes:** —
+**State vars:** —
+
+## Behavioral explanation
+Markup tag handler: extracts a 256-byte string arg into render-ctx field +0x1328.
+
+## Notes / uncertainty
+256B string ctx+0x1328, 2nd draw arg of FUN_005ee470. Twin of +0x1428; relative role inferred.
+
+## Raw decompilation
+`sources/overlays/overlay-3dat-decompile/FUN_005e91c0.c`  — untouched decompiler output.
+
+## Evidence
+- Classified from the raw decompile via the fan-out pass (callers/callees/globals/strings/control-flow).
+- Confidence **High**. Runtime validation pending. Promote to `reconstructed`/`validated` with corrected pseudocode + a trace.

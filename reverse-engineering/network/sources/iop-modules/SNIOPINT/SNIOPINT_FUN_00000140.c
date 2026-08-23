@@ -1,0 +1,18 @@
+FUNCTION FUN_00000140 @ 0x00000140 size=136
+CALLERS (0): 
+CALLEES (2): FUN_00003818@0x00003818, FUN_00003810@0x00003810
+
+void FUN_00000140(undefined2 param_1,ushort param_2)
+
+{
+  FUN_00003818(DAT_00009464);
+  if (param_2 < 3) {
+    *(undefined2 *)(&DAT_00009438 + (short)param_2 * 0x14) = param_1;
+    (&DAT_00009436)[(short)param_2 * 10] = 1;
+  }
+  FUN_00003810(DAT_00009464);
+  return;
+}
+
+
+================================================================

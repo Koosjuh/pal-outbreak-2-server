@@ -1,0 +1,13 @@
+{
+  "name": "pal-outbreak-file2-server-v2",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Corpus-driven PAL Resident Evil Outbreak File #2 multiplayer server",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}
