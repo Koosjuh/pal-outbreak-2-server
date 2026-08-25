@@ -6,8 +6,7 @@ play online again after changing only its DNS. It pairs a Node.js private server
 evidence-backed reverse-engineering corpus of Sega's **SN@P** network middleware and the game's
 lobby/room protocol.
 
-The official service closed in 2007, and the PAL release never had a working online service
-outside Japan's Bioserver ecosystem. The hard constraint of this project: **fixes go in the
+The official service closed in 2007. The hard constraint of this project: **fixes go in the
 server, the protocol implementation, or the research tooling — never in the game.** No ISO
 patching, no modchip, no homebrew client. The client is retail; only the server is ours.
 
