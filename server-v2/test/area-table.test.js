@@ -180,8 +180,8 @@ test('every enabled area publishes its rule mask in BOTH +0x14 and +0x18', () =>
   const published = [];
   for (let index = 0; index < AREA_TABLE_LAYOUT.areaCount; index += 1) {
     const at = index * AREA_TABLE_LAYOUT.recordStride;
-    const gated = blob.readUInt32BE(at + AREA_TABLE_LAYOUT.progressGatedModeMaskOffset);
-    const always = blob.readUInt32BE(at + AREA_TABLE_LAYOUT.alwaysAvailableModeMaskOffset);
+    const gated = blob.readUInt32LE(at + AREA_TABLE_LAYOUT.progressGatedModeMaskOffset);
+    const always = blob.readUInt32LE(at + AREA_TABLE_LAYOUT.alwaysAvailableModeMaskOffset);
     assert.equal(gated, always,
       `area ${index}: both fields carry the same mask - we have no evidence about which modes ` +
       'belong behind progression, and a split would make two consoles differ inexplicably');
@@ -199,15 +199,15 @@ test('every enabled area publishes its rule mask in BOTH +0x14 and +0x18', () =>
 test('the mask PLUMBING still works, so publishing them later is a constant edit', () => {
   // The withholding is a value decision, not a removal. Everything needed to ship
   // a mask is present and exercised: the field round-trips through the encoder at
-  // the offset the layout names, in BE32 as the client's byteswap requires.
+  // the offset the layout names, in LE32 as the client's native word load requires (corrected 2026-08-24: the TCP 0x6204 path has NO byteswap; analysis/area-table-scenario-mask-LE-2026-08-24.md).
   const table = testTable({
     areas: Array.from({ length: AREA_TABLE_LAYOUT.areaCount },
       (_unused, index) => testArea({ alwaysAvailableModeMask: index === 0 ? 0x7ff : 0x003 }))
   });
   const blob = table.serialize();
-  assert.equal(blob.readUInt32BE(AREA_TABLE_LAYOUT.alwaysAvailableModeMaskOffset), 0x7ff);
+  assert.equal(blob.readUInt32LE(AREA_TABLE_LAYOUT.alwaysAvailableModeMaskOffset), 0x7ff);
   assert.equal(
-    blob.readUInt32BE(AREA_TABLE_LAYOUT.recordStride + AREA_TABLE_LAYOUT.alwaysAvailableModeMaskOffset),
+    blob.readUInt32LE(AREA_TABLE_LAYOUT.recordStride + AREA_TABLE_LAYOUT.alwaysAvailableModeMaskOffset),
     0x003
   );
 });
@@ -267,7 +267,7 @@ test('the shipped table declares the chunk table V1 declared', () => {
    * feeds a hardcoded V1 string, so without this `OBAREA-VX` or nine bytes of
    * garbage would satisfy every other assertion here.
    */
-  assert.equal(table.version.toString('latin1'), 'OBAREA-V3',
+  assert.equal(table.version.toString('latin1'), 'OBAREA-W3',
     'the shipped version is pinned: nothing else in the suite constrains its content');
   assert.equal(table.version.length, version.length);
   const chunkTable = declaration.payload.subarray(1 + 4 + version.length);

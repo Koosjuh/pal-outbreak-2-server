@@ -37,11 +37,11 @@ From the repository root:
 ```sh
 PAL_V2_MASTER_KEY="$(openssl rand -base64 32)" \
 PAL_V2_DATA_DIR=/var/lib/pal-server-v2 \
-PAL_V2_SELF_HOST=192.0.2.121 \
-PAL_V2_SNAP_HOST=192.0.2.121 \
+PAL_V2_SELF_HOST=192.168.2.121 \
+PAL_V2_SNAP_HOST=192.168.2.121 \
 PAL_V2_DIRECTORY_FILE=/etc/pal-server-v2/directory.json \
 PAL_V2_LOBBY_NAME='PAL V2' \
-PAL_V2_DNS_RECORDS='snap01.capcom.client.sf.yav4.com=192.0.2.121' \
+PAL_V2_DNS_RECORDS='snap01.capcom.client.sf.yav4.com=192.168.2.121' \
 PAL_V2_DNAS_CERT=/etc/pal-server-v2/dnas/server.crt \
 PAL_V2_DNAS_CA_CERT=/etc/pal-server-v2/dnas/ca.crt \
 PAL_V2_DNAS_KEY=/etc/pal-server-v2/dnas/server.key \
@@ -59,8 +59,8 @@ turned off and the emulator pointed straight at the host:
 ```sh
 PAL_V2_MASTER_KEY="$(openssl rand -base64 32)" \
 PAL_V2_DATA_DIR=./.v2-data \
-PAL_V2_SELF_HOST=192.0.2.121 \
-PAL_V2_SNAP_HOST=192.0.2.121 \
+PAL_V2_SELF_HOST=192.168.2.121 \
+PAL_V2_SNAP_HOST=192.168.2.121 \
 PAL_V2_DIRECTORY_FILE=server-v2/config/directory.example.json \
 PAL_V2_LOBBY_NAME='PAL V2' \
 PAL_V2_ENABLE_DNS=false \
@@ -139,7 +139,17 @@ byte-for-byte and must be the only variable of the run that turns it on),
 the op-0x49 record flags word `+0x1c`), `SNAP_GAME_BEACON_ECHO` (false —
 proven fatal on the rig, RS1-A; leave off for owner-facing runs),
 `SNAP_GAME_BEACON_RELAY` (false), `SNAP_EXIT_CLOSE_MIRROR` (false),
-`SNAP_COMPLETION_SEQ_ECHO` (false).
+`SNAP_COMPLETION_SEQ_ECHO` (false), `SNAP_CHANNEL_BIT_ECHO` (false — the C3
+exit-stall fix: the sel-7 leave completion echoes the request's DATA/0x1000 bit
+so a room-channel Exit gets a room-channel completion; scoped to sel-7 only per
+the 2026-08-24 nora review; rollback = unset the flag),
+`SNAP_ROOM_CHAT_SUB7` (false — room chat re-vehicled as op-0x10 sub-7 fragments;
+the in-room text surface reads FUN_005bc1c0's per-player buffers, not the
+op-0x0F scrollback; rollback = unset, room chat returns to the delivered-but-
+unrendered 0xA4xx relay), `SNAP_ROOM_STAT` (false — op-0x49 record +0x1c carries the create optionsWord so joiners decode the host's real scenario, (STAT>>1)&0xFF, instead of 0=Training; rollback = unset), `SNAP_MEMBER_ID_TOKEN` (false — the op-06 record about a joiner pushed to member R carries R's OWN endpoint token as memberId, so the host's game-start accept scan [FUN_005bbfc0 vs conn+0x44, savestate-confirmed = the token] matches and the 2-player start goes non-solo; the fix for a joiner frozen at 'Stand by'; 2-player only pending the N-player ingress check; rollback = unset), `SNAP_GAME_RELAY` (false — reliable game-channel
+op-0x0F packets relayed byte-identical to room members except the sender, the
+bioserver gameserver default-branch; the fix for a joiner parked at "Game to
+begin shortly" while the host plays; rollback = unset).
 
 ### `PAL_V2_DYNAMIC_DNAS_TOKEN` - an experiment, off by default
 

@@ -35,8 +35,11 @@ import {
  *   `FUN_005c4f00` block-select ambiguity (§7) is unresolved.
  */
 
-/** The rig-confirmed OBAREA-V3 blob, pinned before the option-label change. */
-const PINNED_V3_BLOB_MD5 = '4ba89c9572704b039ce924e13b2cc070';
+/** The rig-confirmed OBAREA-W3 blob, pinned before the option-label change. */
+// RE-PINNED 2026-08-24: mode-mask byte order corrected BE->LE at +0x14/+0x18
+// (analysis/area-table-scenario-mask-LE-2026-08-24.md) - a DELIBERATE wire change;
+// every other byte identical. Old pin 4ba89c9572704b039ce924e13b2cc070.
+const PINNED_V3_BLOB_MD5 = '434fb1187f01189501a1d7f275f65fe6';
 const PINNED_V3_BLOB_LENGTH = 0x1300;
 
 const STRIDE = AREA_TABLE_LAYOUT.recordStride;
@@ -103,8 +106,8 @@ test('flag ON: every fix byte lands at its exact offset, in BOTH parameter block
 
     // rec+0x14 and rec+0x18 = 0x7FF, the full scenario ring, on ENABLED areas.
     const expectedMask = DISABLED_AREAS.has(area) ? 0 : 0x7ff;
-    assert.equal(record.readUInt32BE(0x14), expectedMask, `area ${area}: +0x14 scenario mask`);
-    assert.equal(record.readUInt32BE(0x18), expectedMask, `area ${area}: +0x18 scenario mask`);
+    assert.equal(record.readUInt32LE(0x14), expectedMask, `area ${area}: +0x14 scenario mask`);
+    assert.equal(record.readUInt32LE(0x18), expectedMask, `area ${area}: +0x18 scenario mask`);
 
     // rec+0x16b = 0x03: Room Title (bit0) + Password (bit1) settable.
     assert.equal(record[0x16b], 0x03, `area ${area}: title/password byte at +0x16b`);
@@ -157,43 +160,28 @@ test('flag ON changes ONLY the documented offsets; every other byte is identical
   }
 });
 
-test('the version bump: V5 alone, V6 with option labels, all four distinct', () => {
+test('the version bump: W5 alone; option-label variants refused (bank overflow)', () => {
   const rules = createV1ObservedAreaTable({ publishAuthenticRuleMasks: true });
   assert.equal(rules.version.toString('latin1'), RULE_MASKS_AREA_TABLE_VERSION);
 
-  // The two flags stay independent: labels ON with rules ON must be its own
-  // version AND still append the zeroed label table over the same records.
-  const both = createV1ObservedAreaTable({
-    publishAuthenticRuleMasks: true,
-    publishOptionLabelTable: true
-  });
-  assert.equal(both.version.toString('latin1'), RULE_MASKS_OPTION_LABELS_AREA_TABLE_VERSION);
-  const bothBlob = both.serialize();
-  assert.equal(bothBlob.length, 0x1f5c);
-  assert.deepEqual(
-    bothBlob.subarray(0, PINNED_V3_BLOB_LENGTH - AREA_TABLE_LAYOUT.trailerLength),
-    rules.serialize().subarray(0, PINNED_V3_BLOB_LENGTH - AREA_TABLE_LAYOUT.trailerLength),
-    'the records are the same whether or not the label table follows'
-  );
-  assert.ok(bothBlob.subarray(0x12fc).every((byte) => byte === 0));
-
-  // Four byte images, four version strings - the client caches by version
-  // alone (FUN_001c4960.c:46-49), so any collision silently serves stale bytes.
+  /*
+   * Reduced 2026-08-24: any variant with publishOptionLabelTable would be
+   * 0x1f5c and is now REFUSED at construction (client bank 0 holds 0x1780;
+   * analysis/area-table-scenario-mask-LE-2026-08-24.md section 6). The four
+   * version STRINGS must still be pairwise distinct - the client caches by
+   * version alone (FUN_001c4960.c:46-49), so a collision serves stale bytes.
+   */
+  assert.throws(() => createV1ObservedAreaTable({
+    publishAuthenticRuleMasks: true, publishOptionLabelTable: true
+  }));
   const versions = [
     V1_OBSERVED_AREA_TABLE_VERSION,
     OPTION_LABELS_AREA_TABLE_VERSION,
     RULE_MASKS_AREA_TABLE_VERSION,
     RULE_MASKS_OPTION_LABELS_AREA_TABLE_VERSION
   ];
-  assert.equal(new Set(versions).size, 4, 'every blob shape has its own version');
-  for (const version of versions) {
-    assert.equal(
-      version.length, V1_OBSERVED_AREA_TABLE_VERSION.length,
-      'the declaration layout depends on the version length staying nine characters'
-    );
-  }
+  assert.equal(new Set(versions).size, versions.length, 'four distinct version strings');
 });
-
 test('the rules blob still walks the 0x2f2-slice transfer to a final slice', () => {
   const table = createV1ObservedAreaTable({ publishAuthenticRuleMasks: true });
   assert.deepEqual(table.chunkLengths(), [PINNED_V3_BLOB_LENGTH]);

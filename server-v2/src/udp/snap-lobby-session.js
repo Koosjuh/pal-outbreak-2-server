@@ -216,6 +216,7 @@ export class SnapLobbySession {
   #loginIdentity;
   #attachment;
   #endpointToken;
+  #reliableWindow;
 
   #wheel;
   #channel;
@@ -226,16 +227,23 @@ export class SnapLobbySession {
   #roomListProvider;
   #relayChat;
   #relayGameBeacon;
+  #gameRelay;
+  #relayGameChannel;
   #gameBeaconEcho;
   #gameBeaconRelay;
   #exitCloseMirror;
   #onClientClose;
   #completionSeqEcho;
+  #channelBitEcho;
   #joinLadder;
   #op10Relay;
   #op0aCount0;
   #memberInfo;
   #roomFlagsPublish;
+  #roomStat;
+  #memberIdToken;
+  #rosterToJoiner;
+  #hostReseat;
   #countPush;
   #pushAreaCount;
   #roomLifecycle;
@@ -325,6 +333,16 @@ export class SnapLobbySession {
     /** The beacon fan-out seam, like `relayChat`. Only consulted when relaying. */
     relayGameBeacon = null,
     /*
+     * SNAP_GAME_RELAY (2026-08-24): relay reliable game-channel op-0x0F
+     * packets to the sender's room, except the sender - the bioserver
+     * gameserver default-branch, openSNAP's game-packet model, and the fix for
+     * the joiner starving at "Game to begin shortly" while the in-game host
+     * pumps state. Session default OFF like every flag here.
+     */
+    gameRelay = false,
+    /** The game-packet fan-out seam, like `relayChat`. */
+    relayGameChannel = null,
+    /*
      * B3 FIX 1 (PORT-PLAN slice 3), default OFF: answer the client's op-0x02
      * close by mirroring it back and releasing this session. The exit-contract
      * RE says the 0xb000 close is a bidirectional handshake the dispatcher
@@ -343,6 +361,22 @@ export class SnapLobbySession {
      * accept and must not move without a flag.
      */
     completionSeqEcho = false,
+    /*
+     * C3 FIX (SESSION-LOG-2026-08-24 T1/T2), default OFF: the sel-7 LEAVE and
+     * sel-8 STAT completions echo the REQUEST's DATA bit (0x1000) instead of
+     * always setting it. Grounding: the in-room Exit sends op-0x07/op-0x08 on
+     * the ROOM channel (who 0xA0xx, DATA clear — RS1 pcap frame 5185), and the
+     * result dispatcher `FUN_001d9f78` case 6 routes BY that bit: DATA set ->
+     * slot 0x23 (lobby-leave cb), so a 0xB0xx reply to a 0xA0xx leave fires the
+     * wrong completion class and the client parks (the 144.8s park death).
+     * The AM SNAP client documents the same &0x1000 split (ResultLeaveRoom vs
+     * ResultLeaveLobby — openSNAP commands.py), and V1 answered op-0x07 with
+     * BOTH classes (game_udp_server.js:2065, slots 0x23/0x24) — V2 dropped the
+     * 0xA0 one. Off = byte-identical today: every rig-confirmed request on
+     * these paths arrives with DATA set, so the echo changes nothing for them.
+     * Flag `SNAP_CHANNEL_BIT_ECHO`.
+     */
+    channelBitEcho = false,
     /*
      * THE JOIN LADDER (PORT-PLAN slice 1b), flag `SNAP_JOIN_LADDER`. Session
      * default OFF so a directly constructed session keeps every previous byte;
@@ -391,6 +425,22 @@ export class SnapLobbySession {
      * until a rig run shows what the client does with anything else.
      */
     roomFlagsPublish = false,
+    /*
+     * SNAP_ROOM_STAT (2026-08-24): capture the create optionsWord into the
+     * room's op-0x49 +0x1c so joiners decode the host's real scenario
+     * (scenario=(STAT>>1)&0xFF) instead of 0=Training. Default OFF.
+     */
+    roomStat = false,
+    /*
+     * SNAP_MEMBER_ID_TOKEN (T17): the op-06 record about a member carries the
+     * RECIPIENT's endpoint token as memberId, so the host's sub-4 accept scan
+     * matches and the 2-player start goes non-solo. Default OFF.
+     */
+    memberIdToken = false,
+    /* SNAP_ROSTER_TO_JOINER (T19/seated-slot RE): op-06 each existing member to the joiner. */
+    rosterToJoiner = false,
+    /* SNAP_HOST_RESEAT (T20): re-seat the host on join so the start roster counts 2. */
+    hostReseat = false,
     /*
      * RS1-C C2, flag `SNAP_COUNT_PUSH` (config default ON; class default OFF):
      * the lobby-header count is latched from ONE op-0x09 USER answer at entry
@@ -457,6 +507,14 @@ export class SnapLobbySession {
     watchdogBudgetMs = null,
     successTransition = false,
     outboundSequence,
+    /*
+     * SNAP_RELIABLE_WINDOW (2026-08-25): max unacknowledged reliable messages before
+     * the channel refuses (drops). Default 32; raising it makes the in-game
+     * game-packet relay lossless for a higher-latency console (real PS2) whose
+     * reliable window drains slower - the channel retransmits unacked, so a bigger
+     * window queues instead of dropping. Confirmed cause of the ~38% emu->PS2 loss.
+     */
+    reliableWindow = 32,
     inboundReceiveBase = 0,
     idleTimeoutMs = DEFAULT_IDLE_TIMEOUT_MS,
     onIdle = null,
@@ -562,6 +620,8 @@ export class SnapLobbySession {
     this.#loginIdentity = loginIdentity;
     this.#attachment = attachment;
     this.#endpointToken = endpointToken >>> 0;
+    this.#reliableWindow = Number.isSafeInteger(reliableWindow) && reliableWindow >= 32
+      ? reliableWindow : 32;
     this.#wheel = wheel;
     this.#logger = logger;
     this.#areaDirectory = areaDirectory;
@@ -569,16 +629,23 @@ export class SnapLobbySession {
     this.#roomListProvider = roomListProvider;
     this.#relayChat = relayChat;
     this.#relayGameBeacon = relayGameBeacon;
+    this.#gameRelay = gameRelay === true;
+    this.#relayGameChannel = relayGameChannel;
     this.#gameBeaconEcho = gameBeaconEcho === true;
     this.#gameBeaconRelay = gameBeaconRelay === true;
     this.#exitCloseMirror = exitCloseMirror === true;
     this.#onClientClose = onClientClose;
     this.#completionSeqEcho = completionSeqEcho === true;
+    this.#channelBitEcho = channelBitEcho === true;
     this.#joinLadder = joinLadder === true;
     this.#op10Relay = op10Relay === true;
     this.#op0aCount0 = op0aCount0 === true;
     this.#memberInfo = memberInfo === true;
     this.#roomFlagsPublish = roomFlagsPublish === true;
+    this.#roomStat = roomStat === true;
+    this.#memberIdToken = memberIdToken === true;
+    this.#rosterToJoiner = rosterToJoiner === true;
+    this.#hostReseat = hostReseat === true;
     this.#countPush = countPush === true;
     this.#pushAreaCount = pushAreaCount;
     this.#appKeepalive = appKeepalive === true;
@@ -606,6 +673,7 @@ export class SnapLobbySession {
       onTransportDead,
       inboundReceiveBase,
       outboundSequence,
+      maximumUnacknowledged: this.#reliableWindow,
       /*
        * V1's dedicated keepalive counter started at 1
        * (`game_udp_server.js:1361`, `s.kaSeq = (s.kaSeq || 0) + 1`), and that is
@@ -1361,6 +1429,34 @@ export class SnapLobbySession {
       event: 'join-member-join',
       everyRefusalMatters: true
     });
+    /*
+     * SNAP_ROSTER_TO_JOINER (analysis/seated-slot-roster-RE-2026-08-25): the
+     * joiner must ALSO receive an op-06 for every EXISTING member so it seats
+     * them in ITS OWN 0x6c7c2c (FUN_005bb4d0 -> event 0x1f -> FUN_005b5ac0) -
+     * without this the joiner's member list shows nobody but itself (owner:
+     * "member data doesn't show the members who join"). Each existing member
+     * gets a DISTINCT characterId (join-order index) so the seat dedup
+     * (charstats +0xc8/+0xca in FUN_005b5ac0) does not collide on key 0.
+     * Default OFF (byte-identical: no extra pushes).
+     */
+    if (this.#rosterToJoiner) {
+      this.#membersOf(room).forEach((member, index) => {
+        if (member.memberId === playernum) return; // not the joiner's own row
+        const seatId = index + 0x10; // distinct, non-zero, != the joiner's playernum
+        this.#send({
+          opcode: LOBBY_OPCODE.MEMBER_JOIN,
+          subSelector: 0,
+          payload: buildMemberJoinPayload({
+            name: String(member.name).slice(0, 0x10),
+            memberId: member.memberId,
+            characterId: seatId
+          }),
+          flags: FLAG_SET,
+          event: `join-existing-member:${index}`,
+          everyRefusalMatters: true
+        });
+      });
+    }
     this.#send({
       opcode: LOBBY_OPCODE.ROOM_STATE,
       subSelector: 0,
@@ -1378,8 +1474,33 @@ export class SnapLobbySession {
      */
     if (this.#memberInfo) this.#sendPlayerInfo(0, 'join-player-info', true);
     const scope = { roomHandle: room.handle, except: this };
-    const joinFanout = this.#broadcast(scope, (peer) =>
-      peer.deliverRoomPush(LOBBY_OPCODE.MEMBER_JOIN, record, 'member-join-fanout'));
+    /*
+     * SNAP_MEMBER_ID_TOKEN (T17, wire-confirmed accept-scan fix): the record
+     * pushed to each existing member R about this joiner carries R's OWN
+     * endpoint token as the memberId. The host's start SM (FUN_005c6500 s6/7)
+     * marks a member accepted only when a roster slot's memberId equals the
+     * conn word on the relayed sub-4 accept - and that conn word is the
+     * recipient's own token (we stamp the recipient on relay). memberId and the
+     * header token are both writeUInt32BE and the client byteswaps both the
+     * same way, so equal endpointToken => equal +0x10 bytes => the scan matches
+     * and the joiner is admitted (0x6ff2b5[i]=1 -> 0x6ff2b3>=2 -> non-solo
+     * start -> the joiner's barrier 0x6ff2af is set). OFF = the shared record
+     * (memberId = playernum), byte-identical to today.
+     */
+    const joinFanout = this.#broadcast(scope, (peer) => {
+      // SNAP_HOST_RESEAT (T20): re-seat the existing member FIRST so it holds
+      // roster slot 0 (pre-accepted), then seat the joiner at slot 1 - the
+      // order the non-solo start count needs.
+      if (this.#hostReseat) peer.reseatSelf();
+      const perPeer = this.#memberIdToken
+        ? buildMemberJoinPayload({
+          name: this.#loginIdentity.slice(0, 0x10),
+          memberId: peer.endpointToken,
+          characterId: playernum
+        })
+        : record;
+      return peer.deliverRoomPush(LOBBY_OPCODE.MEMBER_JOIN, perPeer, 'member-join-fanout');
+    });
     const limitsFanout = this.#broadcast(scope, (peer) =>
       peer.deliverRoomPush(LOBBY_OPCODE.ROOM_STATE, limits, 'room-limits-fanout'));
     this.#logger?.info?.('udp9090 lobby-join-fanout', {
@@ -1670,7 +1791,10 @@ export class SnapLobbySession {
     const payload = buildChatRelayPayload({
       screenType: chat.screenType, name: chat.name, text: chat.text
     });
-    const relayed = this.#relayChat?.(this, payload) ?? 0;
+    // chat.text rides along so the sessions-level relay can re-vehicle ROOM
+    // chat as op-0x10 sub-7 fragments (SNAP_ROOM_CHAT_SUB7) - the in-room
+    // surface does not read the op-0x0F scrollback (ROOMCHAT-SCENARIO-WIRE §1).
+    const relayed = this.#relayChat?.(this, payload, chat.text) ?? 0;
     this.#logger?.info?.('udp9090 lobby-chat', {
       routingKey: this.#routingKey,
       loginIdentity: this.#loginIdentity,
@@ -1729,6 +1853,22 @@ export class SnapLobbySession {
   #onGameChannel(message) {
     if (!message.reliable) return this.#onGameBeacon(message);
     this.#gameChannelFrames += 1;
+    /*
+     * SNAP_GAME_RELAY (GAME-START-WIRE §3 + SESSION-LOG T13): the reliable
+     * game-channel op-0x0F stream is the in-game state the party runs on
+     * (receiver = the in-game slot-0x12 GamePacketRUDP callback, named by the
+     * AM/openSNAP table; slot-4 savestate imaged conn+0x590 holding it). The
+     * server's role, triangulated from bioserver's GameServerPacketHandler
+     * (broadcast raw bytes to the same gamenumber EXCLUDING the sender - no
+     * parsing) and openSNAP's game-packet relay: byte-identical fan-out to
+     * room members except the sender, each on the recipient's own reliable
+     * seq. The sender's copy is already transport-acked by the channel; a
+     * retransmit never reaches here (inbound window dedup), so a packet
+     * relays exactly once. Flag OFF = the prior consume-at-debug behavior.
+     */
+    const relayed = (this.#gameRelay && this.#relayGameChannel != null)
+      ? this.#relayGameChannel(this, message.payload)
+      : 0;
     this.#logger?.debug?.('udp9090 lobby-game-channel-0f', {
       routingKey: this.#routingKey,
       loginIdentity: this.#loginIdentity,
@@ -1737,8 +1877,12 @@ export class SnapLobbySession {
       bytes: message.payload.length,
       body: message.payload.toString('hex'),
       frames: this.#gameChannelFrames,
-      note: 'reliable op-0x0F with 0x0400 clear: game-module traffic (client handler slot 0x12), ' +
-        'not chat. Consumed; semantics Unknown - the raw body is the evidence a future RE needs'
+      relayed,
+      note: this.#gameRelay
+        ? 'reliable op-0x0F game packet: relayed byte-identical to room members except the ' +
+          'sender (SNAP_GAME_RELAY; bioserver GameServerPacketHandler default-branch analogue)'
+        : 'reliable op-0x0F with 0x0400 clear: game-module traffic (client handler slot 0x12), ' +
+          'not chat. Consumed; semantics Unknown - the raw body is the evidence a future RE needs'
     });
     return { opcode: message.opcode, answered: false, gameChannel: true };
   }
@@ -1797,6 +1941,27 @@ export class SnapLobbySession {
   deliverGameBeacon(payload, subSelector, flags) {
     if (this.#closed) return false;
     return this.#sendGameBeacon(payload, subSelector, flags);
+  }
+
+  /**
+   * Push one relayed reliable game packet to THIS session (SNAP_GAME_RELAY).
+   * Byte-identical payload, the sender's sub byte echoed, on this recipient's
+   * own reliable sequence. Flags FLAG_SET alone = who 0xA0xx, the same
+   * room-channel class the sender transmitted (0xA000 observed all night) and
+   * the class the in-game slot-0x12 GamePacketRUDP callback receives.
+   */
+  deliverGamePacket(payload) {
+    if (this.#closed) return false;
+    return this.#send({
+      opcode: LOBBY_OPCODE.CHAT,
+      // sub 0, like every other room push (deliverRoomPush): echoing the
+      // SENDER'S sub byte to a different recipient had no cited evidence and
+      // the wire+0x02 byte is load-bearing elsewhere (nora caveat 6).
+      subSelector: 0,
+      payload,
+      flags: FLAG_SET,
+      event: 'game-packet-relay'
+    });
   }
 
   #sendGameBeacon(payload, subSelector, flags) {
@@ -2105,7 +2270,17 @@ export class SnapLobbySession {
         host: this.#presenceRecord,
         boxId,
         name: request.name != null && request.name.length > 0 ? request.name : this.#roomName,
-        max: this.#roomCapacity
+        max: this.#roomCapacity,
+        /*
+         * SNAP_ROOM_STAT (2026-08-24, analysis/op10-gamechannel-blobs-RE): the
+         * create body's optionsWord (+0x28) IS the room STAT attribute the host
+         * chose - scenario, rule locks, password and area packed. The joiner
+         * reads it from the op-0x49 record +0x1c and computes scenario id =
+         * (STAT>>1)&0xFF (arithmetic-proved: tonight's 0x020b0a10 -> 8 = the
+         * host's ring value). Without it every joiner decodes 0 = Training.
+         * flags=0 when the flag is off or the client sent no word (byte-inert).
+         */
+        flags: (this.#roomStat && request.optionsWord != null) ? request.optionsWord : 0
       });
     } catch (error) {
       return this.#refuseCreate(message, `${error.code ?? error.name}: ${error.message}`, request);
@@ -2279,6 +2454,34 @@ export class SnapLobbySession {
   }
 
   /**
+   * Re-seat THIS host in its own 0x6c7c2c (SNAP_HOST_RESEAT, T20).
+   *
+   * The host self-seats at create, but the screen rebuild when a joiner arrives
+   * clears 0x6c7c2c (FUN_005aec20), leaving only the joiner's fresh seat - so
+   * the start roster (0x6ff70d ← 0x6c7c2c) counts 1, not 2, and the solo
+   * shortcut (0x6ff2b3 < 2) fires even though the joiner's accept matched
+   * (RIG slot 4: 0x6ff2b5=01, count=1). Re-emitting the host's own op-06
+   * BEFORE the joiner's fan-out puts the host back at slot 0 (pre-accepted at
+   * SM state 0) and the joiner at slot 1 (accepted via its sub-4) → count 2 →
+   * non-solo start. No-op for a non-host session.
+   */
+  reseatSelf() {
+    if (this.#createdRoom == null) return false;
+    return this.#send({
+      opcode: LOBBY_OPCODE.MEMBER_JOIN,
+      subSelector: 0,
+      payload: buildMemberJoinPayload({
+        name: this.#loginIdentity.slice(0, 0x10),
+        memberId: this.#createdRoom.handle,
+        characterId: 1
+      }),
+      flags: FLAG_SET,
+      event: 'host-reseat',
+      everyRefusalMatters: true
+    });
+  }
+
+  /**
    * The op-0x07 LEAVE - backing out of a room or an area.
    *
    * ## The same shape as the create freeze, and the same kind of fix
@@ -2309,6 +2512,26 @@ export class SnapLobbySession {
    * occupied, and the server cannot see that. So the presence cursor rises by ONE
    * level, which matches the client's single message instead of guessing.
    */
+  /**
+   * The flag word for a completion reply: default `FLAG_SET | FLAG_DATA` (who
+   * 0xB0xx — the rig-confirmed shape for every lobby-channel request), or,
+   * under `channelBitEcho`, `FLAG_SET` plus the REQUEST's own DATA bit — so a
+   * room-channel (0xA0xx, DATA clear) leave gets a room-channel completion and
+   * `FUN_001d9f78` case 6 routes it to the callback slot the client armed.
+   *
+   * SCOPED TO THE SEL-7 LEAVE ONLY (nora pre-deploy review 2026-08-24,
+   * caveat 1): room-query/re-entry/STAT also arrive DATA-clear (~17-27 replies
+   * per session), their dispatch is single-slot so 0xB0xx cannot mis-route,
+   * and their callbacks' reading of the header channel bit is UNREAD
+   * (FUN_005b52e0 and the sub-8/sub-0x0d consumers). Widen only with that
+   * evidence, or after a rig run proves the sel-7 flip and a second run covers
+   * create + re-entry explicitly.
+   */
+  #completionChannelFlags(message) {
+    if (!this.#channelBitEcho) return FLAG_SET | FLAG_DATA;
+    return FLAG_SET | (message.flags & FLAG_DATA);
+  }
+
   #onLeave(message) {
     const from = this.#presenceRecord.location();
     const depth = this.#presence.ascend(this.#presenceRecord);
@@ -2330,6 +2553,7 @@ export class SnapLobbySession {
     const answered = this.#send({
       opcode: LOBBY_OPCODE.COMPLETION,
       subSelector: message.subSelector,
+      flags: this.#completionChannelFlags(message),
       payload: buildCompletionPayload({
         selector: COMPLETION_SELECTOR.AREA_LEAVE,
         status: 0,

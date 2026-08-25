@@ -355,29 +355,29 @@ const V1_OBSERVED_AREAS = [
  * below it read `OBAREA-V2` - a reader grepping the doc would have concluded the
  * wrong thing. Keep the prose and the constant in one place.
  */
-export const V1_OBSERVED_AREA_TABLE_VERSION = 'OBAREA-V3';
+export const V1_OBSERVED_AREA_TABLE_VERSION = 'OBAREA-W3';
 
 /**
- * `OBAREA-V4`: the version served WITH the option-label table
+ * `OBAREA-W4`: the version served WITH the option-label table
  * (`SNAP_OPTION_LABELS`). A separate constant because the two blobs differ and
  * the client caches by version (`FUN_001c4960.c:46-49`): a console that fetched
  * V3 this power cycle must see a new string or it will keep rendering the
  * stale-memory option labels the table exists to blank. Same nine characters,
  * which the declaration layout depends on.
  */
-export const OPTION_LABELS_AREA_TABLE_VERSION = 'OBAREA-V4';
+export const OPTION_LABELS_AREA_TABLE_VERSION = 'OBAREA-W4';
 
 /**
- * `OBAREA-V5`: the version served with the rule-screen bytes
- * (`SNAP_RULE_MASKS_AUTHENTIC`) and WITHOUT the option-label table. `OBAREA-V6`
+ * `OBAREA-W5`: the version served with the rule-screen bytes
+ * (`SNAP_RULE_MASKS_AUTHENTIC`) and WITHOUT the option-label table. `OBAREA-W6`
  * is the fourth blob shape - both flags on - which exists only so the two flags
  * stay independent: the client caches by version string alone
  * (`FUN_001c4960.c:46-49`), so every distinct byte image MUST carry a distinct
  * string or a console that fetched one shape this power cycle silently keeps it.
  * Same nine characters, which the declaration layout depends on.
  */
-export const RULE_MASKS_AREA_TABLE_VERSION = 'OBAREA-V5';
-export const RULE_MASKS_OPTION_LABELS_AREA_TABLE_VERSION = 'OBAREA-V6';
+export const RULE_MASKS_AREA_TABLE_VERSION = 'OBAREA-W5';
+export const RULE_MASKS_OPTION_LABELS_AREA_TABLE_VERSION = 'OBAREA-W6';
 
 /**
  * A fresh instance per call. Not a module-level singleton: a service owns the
@@ -399,7 +399,7 @@ export const RULE_MASKS_OPTION_LABELS_AREA_TABLE_VERSION = 'OBAREA-V6';
  * `docs/design/v2-port/RULES-MASK-RE.md` §6.2 - both `+0x16c`/`+0x1a8` blocks
  * `F3 E2` + the per-area group-1 rows, `+0x16b = 0x03`, `+0x03 = 0xFF`,
  * `+0x04..0x13 = 0xFF`, and `+0x14`/`+0x18` = the full 0x7FF scenario ring on
- * enabled areas - under version OBAREA-V5 (V6 with the option-label table).
+ * enabled areas - under version OBAREA-W5 (V6 with the option-label table).
  * False serves the previous bytes identically. The two flags are independent:
  * either may be on without the other, and each pairing has its own version
  * string because the client caches by version alone.

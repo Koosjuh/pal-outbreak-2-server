@@ -16,7 +16,7 @@ Status legend: ✅ Confirmed · 🟡 Hypothesis · ⛔ Rejected (kept to prevent
 Addresses are main-ELF virtual addresses. Conn object base observed at EE `0x36d760`
 (`= *DAT_0025b78c`); "conn+X" = offset into that object.
 
-Last updated: 2026-07-02. Owner: RE. Scope of this revision: framing, crypto boundary, reliable
+Last updated: 2026-08-24 (channel-context bits 0x2000/0x1000 + 0x0400 STRING bit Confirmed; openSNAP cross-refs). Previous: 2026-07-02. Owner: RE. Scope of the 07-02 revision: framing, crypto boundary, reliable
 id/seq, ACK, windows, retransmit, buffer pool, session lifecycle, known/unknown, downgrades.
 
 ---
@@ -55,16 +55,34 @@ id/seq, ACK, windows, retransmit, buffer pool, session lifecycle, known/unknown,
 - **Production implication.** L1 encodes/decodes: `flags16 = (flagbits) | (len & 0x3ff)` at wire+0;
   token at +4; id at +8; ack at +0xc; body at +0x10; 4-byte trailer `ba 47 66 11` last.
 
-### 1.2 Flag bits (upper bits of the wire u16) ✅ Confirmed (bit meanings), 🟡 (routing bits)
+### 1.2 Flag bits (upper bits of the wire u16) ✅ Confirmed (all bits, 2026-08-24)
 - **0x8000** = RELIABLE (message is tracked/retransmitted). FUN_001e180c reliable path taken when
   `param_3 & 0x8000`. ✅
 - **0x4000** = carries-ACK (inbound frame frees a send). FUN_001d6988 invokes the ack-free path on
   this bit. ✅
 - **0x0800** = COALESCED (more sub-frames follow in the same datagram). FUN_001d6988 walks
   sub-frames when set. ✅
-- **0x2000 / 0x1000** = routing/"who" bits affecting dispatch metadata. e.g. who-byte `0xB0`
-  supplies the `0x1000` flag used by op28 selector routing; `0xF0` frames also set `0x4000`. 🟡
-  (effect on dispatch known case-by-case; general semantics not fully mapped).
+- **0x2000 / 0x1000** = the CHANNEL-CONTEXT bits — ✅ Confirmed 2026-08-24 (upgraded from 🟡).
+  `0x1000` distinguishes LOBBY-context (set, `0xB0xx`) from ROOM-context (clear, `0xA0xx`)
+  messages of the same opcode, on BOTH directions of the wire:
+  - **Send side:** matched sender pairs draw from separate per-channel reliable counters —
+    lobby-leave `FUN_001dd07c` (`0xb000`, ctr `conn+0x61a`, arms slot 0x23) vs room-leave
+    `FUN_001dd1dc` (`0xa000`, ctr `conn+0x61b`, arms slot 0x24). Explains "seq 0" on room-channel
+    firsts (fresh counter), previously misread as anomalous.
+  - **Receive side:** the op28 result dispatcher `FUN_001d9f78` routes the completion callback BY
+    the received frame's `0x1000` bit (case 6: set → `conn+0x5d4` slot 0x23, clear → `conn+0x5d8`
+    slot 0x24; same split cases 4/5 for sub 5/6; none for sub 4 create / sub 8 STAT).
+    **Production rule: an op-0x28 completion's `0x3000` bits must equal the request's** — a
+    lobby-flagged reply to a room-channel request fires the wrong callback class and parks the
+    client (the C3 exit stall). Evidence: `analysis/op28-channel-bit-dispatch-2026-08-24.md`.
+  - Independent cross-validation: the Auto Modellista SNAP client documents the identical
+    `&0x1000` split in its callback tables (openSNAP `protocol/commands.py`; see
+    `docs/findings/protocol/OPENSNAP-CROSSREF-2026-08-24.md` §2 — there `0x2000`=ROOM bit,
+    `0x1000`=LOBBY bit, lobby context = both set, matching all our observed kind bytes).
+- **0x0400** = STRING/relay bit (chat routing). ✅ Confirmed via v2 chat fix (RS1 round): the
+  client dispatcher has no branch for a `0x1000`-set/`0x0400`-clear op-0x0F; room chat = `0xA4xx`,
+  lobby/area chat = `0xB4xx` (`server-v2/src/udp/snap-lobby-session.js` `#onChat` notes). openSNAP
+  agrees (`kkSendTextChat`: room `0xa400` / lobby `0xb400`).
 - **Observed kind bytes (wire[0]):** `0x30` non-reliable DATA request; `0xB0` reliable DATA
   (0x8000|0x2000|0x1000, no ack bit); `0xB8` = `0xB0`|coalesce; `0x60` transport-ACK
   (0x4000|0x2000); `0xF0` reliable+ack DATA; `0xA1/0xE1` room-poll DATA. ✅ observed
@@ -298,10 +316,23 @@ post-decrypt coalescing (§2); per-connection reliable id stamping (§3.1); **pe
 
 **Unknown / Hypothesis (must validate before L1 relies on them):** two-direction seq detail and the
 server→client cumulative recv-base / in-order delivery mechanism (§3.2, §4.2, §5.2); the exact
-register/bind handshake bytes under a clean impl (§8.2); routing-bit (0x2000/0x1000) general
-semantics (§1.2); whether any range/cumulative ack exists alongside the per-id free (§4.2); the
-encryption key derivation exact algorithm (we know the "SNAP-SWAN" region works; the full key
-schedule is not documented here).
+register/bind handshake bytes under a clean impl (§8.2); ~~routing-bit (0x2000/0x1000) general
+semantics (§1.2)~~ — RESOLVED 2026-08-24, now Confirmed in §1.2; whether any range/cumulative ack
+exists alongside the per-id free (§4.2); the encryption key derivation exact algorithm (we know the
+"SNAP-SWAN" region works; the full key schedule is not documented here).
+
+**AM-derived leads (openSNAP, 2026-08-24) — discovery only, each needs its one-function PAL check
+before L1 relies on it** (`docs/findings/protocol/OPENSNAP-DEEP-DIVE-2026-08-24.md`):
+- Client reliable receive window = **16** (`kkCreateARUDPRevWindow(0x10)`, both SLUS builds).
+  PAL check: find the ARUDP window-create call in SLES_533.19 and its constant. Bears on v2's
+  in-flight caps (currently 32-based) — an overrun would silently drop server reliables.
+- Client retransmit = **200 ms cadence, oldest-pending only, retry gate < 5**, then park until a
+  **60 s** inbound-silence timeout (`kkSendOperation` +0x00c8). PAL check: FUN_001d5460's cadence
+  reload + `conn+0x518` default. Bears on v2's chosen RTO (1620 ms + 200/retry, cap 48 — graded
+  "a CHOICE, not an observation" in `reliable-channel.js:210-218`).
+- Client send-pool retirement reads the ack field **only from 0x4000-flagged frames**
+  (`kkSetRevAck`). Consistent with our bare-0x6010-only acking; a PAL check would additionally
+  license piggybacked acks (the one unclaimed reduction, `reliable-channel.js:72-80`).
 
 ---
 

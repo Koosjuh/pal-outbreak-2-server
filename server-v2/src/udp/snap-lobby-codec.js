@@ -13,7 +13,7 @@
  * Wire evidence, top rank first. Every layout below was read off the V1 session
  * that reached a rendered Area Select on real PS2 hardware,
  * `C:\dnas\pi-evidence-archive\extracted\captures\udp9090\`
- * `2026_07_30_14_52_53_udp_192_0_2_248_2000.log` (sanitized; referred to as "the archive"
+ * `2026_07_30_14_52_53_udp_192_168_2_248_2000.log` (referred to as "the archive"
  * throughout). Decompile citations name the client function that consumes each
  * field, and are there to explain WHY a field matters, not to establish its bytes.
  */
@@ -101,7 +101,7 @@ export const LOBBY_OPCODE = Object.freeze({
    * has been sending this since the first lobby run; we logged it as an unhandled
    * opcode and dropped it.
    *
-   * Wire, T35 22:15:53, 192.0.2.248 -> :9090 - user `test123` typing `abcde`:
+   * Wire, T35 22:15:53, 192.168.2.248 -> :9090 - user `test123` typing `abcde`:
    * flags `0xb422`, sub 0, op `0x0f`, body `02 00 07 05 00 00 "test123" "abcde"`.
    *
    * Not TCP. BioServer's CHATIN `0x6701` / CHATOUT `0x6702` both map onto this one
@@ -302,7 +302,7 @@ const NAME_QUERY_ENTRY_VALUE_BYTES = 16;
  *
  * The two values are `record[0].key + "01"` and `record[0].key + "10"`, where
  * `record[0].key` is the TCP-10127 `0x6504` key - in the archive
- * `"192.0.2.12101"` / `"192.0.2.12110"`. Nothing in the reply is derived
+ * `"192.168.2.12101"` / `"192.168.2.12110"`. Nothing in the reply is derived
  * from them (the reply enumerates the areas), so this decodes for correlation
  * and for the log: if these two strings are not what the directory published,
  * the TCP half and the UDP half are looking at different records and the later
@@ -1097,6 +1097,42 @@ export function buildAppKeepalivePayload({ handle = 0 } = {}) {
   payload.writeUInt32BE(1, 0x00);
   payload.writeUInt32BE(requireUint32(handle, 'handle'), 0x04);
   // payload[ROOM_EVENT_SUB_OFFSET] (0x08) stays 0x00 - the no-op sub byte.
+  return payload;
+}
+
+/* ---- op-0x10 sub-7, the IN-ROOM text fragment --------------------------- */
+
+/**
+ * The in-room chat vehicle (ROOMCHAT-SCENARIO-WIRE-2026-08-24.md §1): the
+ * in-room text surface does NOT read the op-0x0F scrollback - `FUN_005bba20`
+ * case 7 → `FUN_005bc1c0` memcpys `{slot@app+4, len@app+5, offset@app+6,
+ * data@app+8}` into the per-player buffer `0x6fffd1 + slot*0x114`, gated by
+ * `0x6ff2b1`. The app payload begins at the sub byte (message payload +0x08),
+ * so message-payload offsets are +0x08 higher. Header words mirror the other
+ * sub pushes (word0 = 1). Single fragment, offset 0.
+ *
+ * Grades: the receiver chain is decompile-Confirmed; the exact header-word
+ * echo and the 0-based slot (= playernum - 1, the presence-slot identity the
+ * allocator documents) are Inference pending one rig render — the PINE
+ * falsifier is a watch on `0x6fffd1 + slot*0x114` while a line is sent.
+ */
+export const ROOM_CHAT_FRAGMENT_MAX_TEXT = 0xff;
+
+export function buildRoomChatSub7Payload({ slot, text }) {
+  if (!Number.isSafeInteger(slot) || slot < 0 || slot > 3) {
+    fail('ROOM_CHAT_SUB7', `slot must be 0..3 (playernum-1), not ${slot}`);
+  }
+  if (!Buffer.isBuffer(text) || text.length < 1 || text.length > ROOM_CHAT_FRAGMENT_MAX_TEXT) {
+    fail('ROOM_CHAT_SUB7', `text must be 1..${ROOM_CHAT_FRAGMENT_MAX_TEXT} bytes`);
+  }
+  const payload = Buffer.alloc(0x10 + text.length);
+  payload.writeUInt32BE(1, 0x00);            // word0 = 1, as the sub-5/keepalive pushes
+  // word1 (0x04) stays 0
+  payload[0x08] = 0x07;                      // sub-event 7 -> FUN_005bc1c0
+  payload[0x0c] = slot;                      // app+4: per-player buffer index
+  payload[0x0d] = text.length;               // app+5: fragment length
+  // app+6 (0x0e..0x0f): fragment offset, 0 - single fragment
+  text.copy(payload, 0x10);                  // app+8: the text bytes
   return payload;
 }
 

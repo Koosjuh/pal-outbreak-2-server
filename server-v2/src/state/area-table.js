@@ -354,8 +354,16 @@ export const AREA_TABLE_TRANSFER = Object.freeze({
    */
   declaredChunkCount: 1,
   maximumChunkCount: 2,
-  /** `FUN_001c4960.c:76` makes any declared chunk length above this terminal. */
-  maximumChunkLength: 0x2000,
+  /**
+   * The CLIENT's own guard (`FUN_001c4960.c:76`) is 0x2000 — but the receiving
+   * BANK is smaller: `FUN_005aeb10` memcpys the declared blob length into bank 0
+   * whose usable size is 0x1780 (the bank-1 snapshot copies 0x177c; banks are
+   * `0x17bb & ~0x3f` apart, FUN_00606ea0). A blob in (0x1780, 0x2000] passes the
+   * client check and silently scribbles over bank 1 — e.g. option labels ON
+   * would be 0x1F5C. Tightened 0x2000 → 0x1780 on the 2026-08-24 trace
+   * (analysis/area-table-scenario-mask-LE-2026-08-24.md §6).
+   */
+  maximumChunkLength: 0x1780,
   /**
    * `FUN_001c4c80.c:11` writes 0x2f2 as the request's length word, and
    * `FUN_001c4d40.c:31` advances the client's cursor by exactly 0x2f2 whatever
@@ -935,13 +943,24 @@ export class AreaTable {
       if (area.extraCastPermission != null) {
         area.extraCastPermission.copy(record, AREA_TABLE_RULE_SCREEN.extraCastPermissionOffset);
       }
-      // BE32, like every other word in this blob: `FUN_001c4d40` copies the slice
-      // verbatim into `0x368474` and the accessors read it as a native word on a
-      // big-endian EE, so what is written here is what `FUN_005fe1e0` masks.
-      record.writeUInt32BE(
+      /*
+       * LITTLE-endian — CORRECTED 2026-08-24 (analysis/area-table-scenario-
+       * mask-LE-2026-08-24.md). The old comment here claimed "a native word on
+       * a big-endian EE"; the R5900 is LITTLE-endian (proved in-project by the
+       * slot-1 savestate: the bank pointer array reads 0x8d4000/0x8d5780/
+       * 0x8d6f00 only under LE, matching FUN_00606ea0's `+0x17bb & ~0x3f`
+       * arithmetic). The whole TCP 0x6204 path is memcpy-verbatim (FUN_001c4d40
+       * → FUN_006188b0 → FUN_005aeb10 — no byteswap, unlike the UDP SN@P path),
+       * so BE32 0x7ff arrived as native 0xFF070000: every bit outside the ring
+       * loop's tested 0..10 → count 0 → ring 0xFFFF → "Scenario (null)" —
+       * exactly the owner's create screen tonight. These two fields are the
+       * blob's ONLY multi-byte scalar loads (rules/cast are byte reads — which
+       * is why OBAREA-W5 fixed those while scenario stayed dead).
+       */
+      record.writeUInt32LE(
         area.progressGatedModeMask, AREA_TABLE_LAYOUT.progressGatedModeMaskOffset
       );
-      record.writeUInt32BE(
+      record.writeUInt32LE(
         area.alwaysAvailableModeMask, AREA_TABLE_LAYOUT.alwaysAvailableModeMaskOffset
       );
       area.name.copy(record, AREA_TABLE_LAYOUT.nameOffset);

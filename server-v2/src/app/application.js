@@ -404,7 +404,7 @@ export function createApplication({ config, logger, repositories = null }) {
      * labels); SNAP_RULE_MASKS_AUTHENTIC ON serves the RULES-MASK-RE.md
      * create-screen bytes - the rule rows, cast mask and scenario ring that
      * make the create screen selectable. The flags are independent, and each
-     * of the four byte images has its own version string (OBAREA-V3/V4/V5/V6)
+     * of the four byte images has its own version string (OBAREA-W3/V4/V5/V6)
      * because the client caches by version alone. Rollback for either = set it
      * false, which restores that dimension byte for byte.
      */
@@ -781,6 +781,14 @@ export function createApplication({ config, logger, repositories = null }) {
       gameBeaconRelay: config.snapLobby?.gameBeaconRelay === true,
       exitCloseMirror: config.snapLobby?.exitCloseMirror === true,
       completionSeqEcho: config.snapLobby?.completionSeqEcho === true,
+      channelBitEcho: config.snapLobby?.channelBitEcho === true,
+      roomChatSub7: config.snapLobby?.roomChatSub7 === true,
+      gameRelay: config.snapLobby?.gameRelay === true,
+      roomStat: config.snapLobby?.roomStat === true,
+      reliableWindow: config.snapLobby?.reliableWindow ?? 32,
+      memberIdToken: config.snapLobby?.memberIdToken === true,
+      rosterToJoiner: config.snapLobby?.rosterToJoiner === true,
+      hostReseat: config.snapLobby?.hostReseat === true,
       joinLadder: config.snapLobby?.joinLadder === true,
       op10Relay: config.snapLobby?.op10Relay === true,
       op0aCount0: config.snapLobby?.op0aCount0 === true,

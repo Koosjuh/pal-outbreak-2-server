@@ -5,7 +5,9 @@ import { PlayerProfileRegistry } from '../state/player-profile.js';
 import { PresenceRegistry } from '../state/presence.js';
 import { RoomLifecycleRegistry } from '../state/room-lifecycle.js';
 import { SlotAllocator } from '../state/slot-allocator.js';
-import { KEEPALIVE_PLAINTEXT_BYTES, LOBBY_OPCODE } from './snap-lobby-codec.js';
+import {
+  KEEPALIVE_PLAINTEXT_BYTES, LOBBY_OPCODE, buildRoomChatSub7Payload
+} from './snap-lobby-codec.js';
 import {
   DEFAULT_IDLE_TIMEOUT_MS,
   DEFAULT_KEEPALIVE_PERIOD_MS,
@@ -90,13 +92,21 @@ export class SnapLobbySessions {
   #successTransition;
   #gameBeaconEcho;
   #gameBeaconRelay;
+  #roomChatSub7;
+  #gameRelay;
   #exitCloseMirror;
   #completionSeqEcho;
+  #channelBitEcho;
   #joinLadder;
   #op10Relay;
   #op0aCount0;
   #memberInfo;
   #roomFlagsPublish;
+  #roomStat;
+  #reliableWindow;
+  #memberIdToken;
+  #rosterToJoiner;
+  #hostReseat;
   #countPush;
   #appKeepalive;
   #rooms;
@@ -155,6 +165,27 @@ export class SnapLobbySessions {
      * builders emit byte-identical 8-byte payloads. Flag `SNAP_COMPLETION_SEQ_ECHO`.
      */
     completionSeqEcho = false,
+    /*
+     * C3 fix (SESSION-LOG-2026-08-24): sel-7/sel-8 completions echo the
+     * request's DATA bit. Flag `SNAP_CHANNEL_BIT_ECHO`, default OFF; the
+     * session doc has the full grounding.
+     */
+    channelBitEcho = false,
+    /*
+     * 2026-08-24 fixes (ROOMCHAT-SCENARIO-WIRE / GAME-START-WIRE): re-vehicle
+     * ROOM chat as op-0x10 sub-7 fragments, and relay reliable game-channel
+     * op-0x0F packets to the room (bioserver gameserver default-branch).
+     * Flags `SNAP_ROOM_CHAT_SUB7` / `SNAP_GAME_RELAY`, default OFF.
+     */
+    roomChatSub7 = false,
+    gameRelay = false,
+    /* SNAP_ROOM_STAT: op-0x49 +0x1c carries the create optionsWord. */
+    roomStat = false,
+    reliableWindow = 32,
+    /* SNAP_MEMBER_ID_TOKEN: per-recipient memberId for the accept scan. */
+    memberIdToken = false,
+    rosterToJoiner = false,
+    hostReseat = false,
     /*
      * PORT-PLAN slices 1b/2a/2b. Table defaults OFF like every other flag here;
      * the composed config (`SNAP_JOIN_LADDER`, `SNAP_OP10_RELAY`) turns the
@@ -300,8 +331,16 @@ export class SnapLobbySessions {
     this.#successTransition = successTransition === true;
     this.#gameBeaconEcho = gameBeaconEcho === true;
     this.#gameBeaconRelay = gameBeaconRelay === true;
+    this.#roomChatSub7 = roomChatSub7 === true;
+    this.#gameRelay = gameRelay === true;
+    this.#roomStat = roomStat === true;
+    this.#reliableWindow = Number.isSafeInteger(reliableWindow) && reliableWindow >= 32 ? reliableWindow : 32;
+    this.#memberIdToken = memberIdToken === true;
+    this.#rosterToJoiner = rosterToJoiner === true;
+    this.#hostReseat = hostReseat === true;
     this.#exitCloseMirror = exitCloseMirror === true;
     this.#completionSeqEcho = completionSeqEcho === true;
+    this.#channelBitEcho = channelBitEcho === true;
     this.#joinLadder = joinLadder === true;
     this.#op10Relay = op10Relay === true;
     this.#op0aCount0 = op0aCount0 === true;
@@ -455,7 +494,7 @@ export class SnapLobbySessions {
    * every player their own messages twice. That is also why the owner saw chat as
    * "only local" and not as "chat missing": the local half always worked.
    */
-  #relayChat(from, payload) {
+  #relayChat(from, payload, text = null) {
     const at = from.presence?.location?.();
     if (at == null) return 0;
     const roomScope = at.roomHandle != null;
@@ -463,11 +502,47 @@ export class SnapLobbySessions {
       ? { roomHandle: at.roomHandle }
       : (at.boxId != null ? { boxId: at.boxId } : null);
     if (scope == null) return 0;
+    /*
+     * SNAP_ROOM_CHAT_SUB7 (ROOMCHAT-SCENARIO-WIRE-2026-08-24 §1): the in-room
+     * text surface reads op-0x10 sub-7 fragments (FUN_005bc1c0 into
+     * 0x6fffd1+slot*0x114), NOT the op-0x0F scrollback - room chat relayed as
+     * 0xA4xx was delivered and acked all night and never rendered. When the
+     * flag is on, room-scope chat re-vehicles as a sub-7 push; the slot byte is
+     * playernum-1 (the allocator's documented presence-slot identity). If the
+     * sender has no allocated playernum (engine off / pre-join), fall through
+     * to the op-0x0F relay rather than guess a slot.
+     */
+    if (roomScope && this.#roomChatSub7 && text != null && text.length > 0) {
+      const playernum = this.#profiles.get(from.loginIdentity)?.playernum ?? 0;
+      if (playernum >= 1 && playernum <= 4) {
+        const sub7 = buildRoomChatSub7Payload({ slot: playernum - 1, text });
+        return this.broadcast(
+          { ...scope, except: from },
+          (session) => session.deliverRoomPush(LOBBY_OPCODE.ROOM_STATE, sub7, 'room-chat-sub7')
+        );
+      }
+    }
     // The scope decision is ALSO the relayed frame's DATA bit (RS1-C §C1):
     // area chat goes out 0xB4xx, room chat 0xA4xx - the client's own shapes.
     return this.broadcast(
       { ...scope, except: from },
       (session) => session.deliverChat(payload, { roomScope })
+    );
+  }
+
+  /**
+   * The reliable game-packet relay (SNAP_GAME_RELAY): bioserver
+   * GameServerPacketHandler's default branch, translated - broadcast the raw
+   * payload to every session in the sender's room EXCEPT the sender. openSNAP
+   * documents the identical rule for AM. No parsing: the JP server never
+   * looked inside these bytes and neither do we.
+   */
+  #relayGameChannel(from, payload) {
+    const at = from.presence?.location?.();
+    if (at?.roomHandle == null) return 0;
+    return this.broadcast(
+      { roomHandle: at.roomHandle, except: from },
+      (session) => session.deliverGamePacket(payload)
     );
   }
 
@@ -771,13 +846,21 @@ export class SnapLobbySessions {
          * able to address that room. Room chat goes to the room; otherwise it goes
          * to the area.
          */
-        relayChat: (from, payload) => this.#relayChat(from, payload),
+        relayChat: (from, payload, text) => this.#relayChat(from, payload, text),
+        gameRelay: this.#gameRelay,
+        roomStat: this.#roomStat,
+        reliableWindow: this.#reliableWindow,
+        memberIdToken: this.#memberIdToken,
+        rosterToJoiner: this.#rosterToJoiner,
+        hostReseat: this.#hostReseat,
+        relayGameChannel: (from, payload) => this.#relayGameChannel(from, payload),
         gameBeaconEcho: this.#gameBeaconEcho,
         gameBeaconRelay: this.#gameBeaconRelay,
         relayGameBeacon: (from, payload, subSelector, flags) =>
           this.#relayGameBeacon(from, payload, subSelector, flags),
         exitCloseMirror: this.#exitCloseMirror,
         completionSeqEcho: this.#completionSeqEcho,
+        channelBitEcho: this.#channelBitEcho,
         /*
          * The join ladder + op-0x10 relay seams (PORT-PLAN slices 1b/2a/2b).
          * All bound to THIS table's registries and fan-out, so scope and

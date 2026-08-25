@@ -1001,7 +1001,14 @@ function sendMemberJoinOp06(s, msg, rinfo, dt, label, handle, name, attempt = 1)
   const push = Buffer.alloc(total);
   push[0] = 0xA0 | ((wireLen >> 8) & 0x03);          // who 0xA0 (reliable+0x2000, DATA 0x1000 CLEAR) -> outer case 3 -> slot 2
   push[1] = wireLen & 0xff; push[2] = 0x00; push[3] = 0x06;  // opcode 0x06 (member-JOIN into slot 2)
-  ((msg && msg.length >= 16) ? msg : s.addr16).copy(push, 4, 4, 16);  // session token + ack mirror (resends use the cached token)
+  // Session token + ack mirror. BUG FIX 2026-08-24: on the msg-less retry paths
+  // (armMemberJoinRetry / create-self-settle) s.addr16 is only 12 bytes and it
+  // ALREADY starts at the token, so copying its range [4,16) wrote addr16[4..7]
+  // into the token slot (wire+0x04) and left +0x08.. short - every retransmit of
+  // the create-self op06 carried a corrupted token. The sibling builders use
+  // .copy(push, 4, 0, 12); mirror that here on the retry branch.
+  if (msg && msg.length >= 16) msg.copy(push, 4, 4, 16);
+  else s.addr16.copy(push, 4, 0, 12);
   push.writeUInt32BE(txSeq >>> 0, 0x08);             // in-order reliable seq
   Buffer.from(String(name || 'CREATOR')).copy(push, 0x10, 0, 16);   // record+0x00 name[16] -> 0x6cd682
   push.writeUInt32BE((handle >>> 0) || 1, 0x20);     // record+0x10 handle -> FUN_005c50a0 -> 0x6cd672 (local id)
@@ -1075,7 +1082,11 @@ function buildRoomMemberListPacket(s, room, subByte, tokenSrc) {
   const ml = Buffer.alloc(total);
   ml[0] = 0xA0 | ((wireLen >> 8) & 0x03);              // DATA-CLEAR -> case 9 -> slot 0x18 (fill+count)
   ml[1] = wireLen & 0xff; ml[2] = subByte & 0xff; ml[3] = 0x28;
-  (tokenSrc || s.addr16).copy(ml, 4, 4, 16);           // session token mirror
+  // Token mirror. Same addr16 range bug as :1004 (nora caveat 4, 2026-08-24):
+  // a 12-byte addr16 already STARTS at the token — range [4,16) ships the seq
+  // word in the token slot. Branch on the source length like the fixed :1004.
+  { const tsrc = tokenSrc || s.addr16;
+    if (tsrc.length >= 16) tsrc.copy(ml, 4, 4, 16); else tsrc.copy(ml, 4, 0, 12); }
   ml.writeUInt32BE(nextTxSeq(s) >>> 0, 0x08);
   ml.writeUInt32BE(0x0000000A, 0x10);                  // body+0 = selector 0x0a
   ml.writeUInt32LE(n >>> 0, 0x18);                     // body+8 = entryCount (LE, proven)
@@ -1105,7 +1116,9 @@ function buildCount0x11Packet(s, count, tokenSrc) {
   const total = 0x24;                                  // 16 hdr + 16 body + 4 trailer
   const push = Buffer.alloc(total);
   push[0] = 0xA0; push[1] = 0x20; push[2] = 0x00; push[3] = 0x10;   // who 0xA0 -> slot 0x13
-  (tokenSrc || s.addr16).copy(push, 4, 4, 16);
+  // Token mirror — same addr16 range fix as :1004/:1085 (nora caveat 4).
+  { const tsrc = tokenSrc || s.addr16;
+    if (tsrc.length >= 16) tsrc.copy(push, 4, 4, 16); else tsrc.copy(push, 4, 0, 12); }
   push.writeUInt32BE(nextTxSeq(s) >>> 0, 0x08);
   push.writeUInt32BE(1, 0x10);                         // header word = 1 (mirror the proven sub pushes)
   push[0x18] = 0x11;                                   // SUB 0x11 = member-count update
@@ -1304,7 +1317,7 @@ function classifyIncoming(msg) {
   // friends-list / named-slot query. Awaiting Codex mapping.
   if (kindByte === 0xF0 && msg.length === 70 && msg[3] === 0x48) return 'named-slot-query';
   // 2026-07-02 T6 (SNAP_OP48_REPLY_ALL=1): the LOBBY op48 NAME queries arrive as kind 0xB0/0xB8
-  // (reliable, opcode 0x0048, entries "NAME"+flag+value "192.0.2.121xx") and in golden fell to
+  // (reliable, opcode 0x0048, entries "NAME"+flag+value "192.168.2.121xx") and in golden fell to
   // the catch-all register-reply (out-of-window => never app-delivered => the query NEVER
   // completes; consumer FUN_005c1220 sets ready_6ce5be, a shared lobby gate). Classify them as
   // named-slot-query so they get the structured echo-record reply (proven shape). Non-0xF0

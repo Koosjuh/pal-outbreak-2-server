@@ -368,6 +368,28 @@ export function loadServerConfig(env = process.env) {
        */
       completionSeqEcho: readBoolean(problems, env, 'SNAP_COMPLETION_SEQ_ECHO', false),
       /*
+       * C3 fix (SESSION-LOG-2026-08-24): sel-7/sel-8 completions echo the
+       * request's DATA bit, so the room-channel (0xA0xx) in-room Exit gets a
+       * room-channel completion. OFF keeps every reply byte-identical.
+       */
+      channelBitEcho: readBoolean(problems, env, 'SNAP_CHANNEL_BIT_ECHO', false),
+      /*
+       * 2026-08-24 wire fixes: room chat re-vehicled as op-0x10 sub-7 fragments
+       * (the in-room text surface does not read the op-0x0F scrollback), and
+       * the reliable game-packet relay (bioserver gameserver default-branch -
+       * the fix for a joiner starving at "Game to begin shortly").
+       */
+      roomChatSub7: readBoolean(problems, env, 'SNAP_ROOM_CHAT_SUB7', false),
+      gameRelay: readBoolean(problems, env, 'SNAP_GAME_RELAY', false),
+      /* op-0x49 +0x1c = the create optionsWord (scenario/rules STAT). */
+      roomStat: readBoolean(problems, env, 'SNAP_ROOM_STAT', false),
+      /* max unacked reliable messages before the channel drops; raise for lossless in-game relay. */
+      reliableWindow: readCount(problems, env, 'SNAP_RELIABLE_WINDOW', 32, { minimum: 32, maximum: 4096 }),
+      /* op-06 memberId = the recipient's token, so the host's accept scan matches. */
+      memberIdToken: readBoolean(problems, env, 'SNAP_MEMBER_ID_TOKEN', false),
+      rosterToJoiner: readBoolean(problems, env, 'SNAP_ROSTER_TO_JOINER', false),
+      hostReseat: readBoolean(problems, env, 'SNAP_HOST_RESEAT', false),
+      /*
        * PORT-PLAN slice 1b, the JOIN ladder: the DATA-clear room-ENTER op-0x06
        * routes through the slot-allocator guards, and the op-0x10 app-sub-0x02
        * join-request is answered with the rig-proven sub-0x0C join-confirm
@@ -456,8 +478,8 @@ export function loadServerConfig(env = process.env) {
       createConfig: readBoolean(problems, env, 'SNAP_CREATE_CONFIG', true),
       /*
        * The `+0x12fc` option-label table in the area blob (B5): ON serves the
-       * table region as eleven zero records (version OBAREA-V4), which blanks
-       * the stale-memory garbage labels; OFF serves the rig-confirmed OBAREA-V3
+       * table region as eleven zero records (version OBAREA-W4), which blanks
+       * the stale-memory garbage labels; OFF serves the rig-confirmed OBAREA-W3
        * blob byte-identically. The record fields the client reads are additive
        * bytes past the old 0x1300 end, inside the client's own 0x2000 static
        * buffer (FUN_001c2f80: 0x361a70/0x363a70).
@@ -475,7 +497,7 @@ export function loadServerConfig(env = process.env) {
        * per-area group-1 rule rows, `+0x16b = 0x03` (title/password settable),
        * `+0x03 = 0xFF` (all 8 base characters), `+0x04..0x13 = 0xFF` (extra
        * cast permitted, savedata-ANDed), and `+0x14`/`+0x18` = the full 0x7FF
-       * SCENARIO ring on enabled areas - served as OBAREA-V5 (V6 if the
+       * SCENARIO ring on enabled areas - served as OBAREA-W5 (V6 if the
        * option-label flag is also on; the two are independent). This is what
        * makes rules, cast and scenario selectable on the create screen at all -
        * the previous blob rendered every row red (RIG-SESSION-1 R1). Default ON
@@ -527,6 +549,13 @@ export const CONFIGURATION_KEYS = Object.freeze({
     'SNAP_GAME_BEACON_RELAY',     // fan the in-game beacon out to the sender's room (default false)
     'SNAP_EXIT_CLOSE_MIRROR',     // mirror the op-0x02 close and release the session (default false)
     'SNAP_COMPLETION_SEQ_ECHO',   // echo the request send-seq at completion +0xc (default false)
+    'SNAP_CHANNEL_BIT_ECHO',      // sel-7 leave completion echoes the request's DATA bit (default false)
+    'SNAP_ROOM_CHAT_SUB7',        // room chat relayed as op-0x10 sub-7 fragments (default false)
+    'SNAP_GAME_RELAY',            // relay reliable game-channel op-0x0F to room members (default false)
+    'SNAP_ROOM_STAT',             // op-0x49 +0x1c carries the create optionsWord so joiners see the scenario (default false)
+    'SNAP_MEMBER_ID_TOKEN',       // op-06 memberId = recipient token, unblocks the 2-player game start (default false)
+    'SNAP_ROSTER_TO_JOINER',      // push each existing member's op-06 to a joiner so its member list shows them (default false)
+    'SNAP_HOST_RESEAT',           // re-seat the host on join so the start roster counts 2 (non-solo start) (default false)
     /*
      * The PORT-PLAN slice 1b/2a/2b flags. The first two default ON (the stated
      * deviation from flags-start-OFF, by the owner's plan for the rig run) -
@@ -542,8 +571,8 @@ export const CONFIGURATION_KEYS = Object.freeze({
     'SNAP_APP_KEEPALIVE',         // the 30 s op-0x10 who-0xA000 app-liveness keepalive that holds off the client's ~145.7 s watchdog self-close (default TRUE; rollback = set false stops every push)
     'SNAP_ROOMFLAGS_PUBLISH',     // publish the authored room status in the op-0x49 flags word +0x1c (default false)
     'SNAP_CREATE_CONFIG',         // answer the TCP create-config rows 0x6407..0x6504 post-ladder (default TRUE; wire-inert until the client sends one there - unobserved in RS1's one session, not proven never; rollback = set false)
-    'SNAP_OPTION_LABELS',         // serve the +0x12fc option-label table as zero records, version OBAREA-V4 (default FALSE - the 11-slice transfer must not share a deploy with anything else; true enables)
-    'SNAP_RULE_MASKS_AUTHENTIC',  // serve the RULES-MASK-RE.md create-screen bytes (rule rows, cast, scenario ring) as OBAREA-V5/V6 (default TRUE; rollback = set false, byte-identical previous blob)
+    'SNAP_OPTION_LABELS',         // serve the +0x12fc option-label table as zero records, version OBAREA-W4 (default FALSE - the 11-slice transfer must not share a deploy with anything else; true enables)
+    'SNAP_RULE_MASKS_AUTHENTIC',  // serve the RULES-MASK-RE.md create-screen bytes (rule rows, cast, scenario ring) as OBAREA-W5/V6 (default TRUE; rollback = set false, byte-identical previous blob)
     'SNAP_LOBBY_BUTTONS',         // answer RANKINGS/GETINFO/BUDDYLIST/CHECKBUDDY post-ladder per the bioserver reference (default TRUE; wire-inert until the client sends one; rollback = set false)
     'PAL_V2_ENABLE_DNS',
     'PAL_V2_DNS_PORT',

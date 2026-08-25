@@ -7,7 +7,9 @@ to a function record (`functions/<subsystem>/<addr>_*.md`) or the packet/subcomm
 is per-record; runtime-Confirmed items are the safe foundation.
 
 > Read with: `protocols/PACKET_INDEX.md` (opcode→builder/parser/handler), `protocols/SUBCOMMAND_INDEX.md`
-> (op10/op28 sub-selectors), `structures/structure-layouts/` (wire structs), `SUBSYSTEM_MAP.md`.
+> (op10/op28 sub-selectors), `structures/structure-layouts/` (wire structs), `SUBSYSTEM_MAP.md`,
+> `indexes/OPCODE-NAME-MAP.md` (op ↔ SNAP middleware names via openSNAP/AM, graded per PAL evidence;
+> carries the CONFIRMED 0x1000 channel-context rule — completions must echo the request's 0x3000 bits).
 
 ---
 

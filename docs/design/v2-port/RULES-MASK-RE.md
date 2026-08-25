@@ -1,5 +1,16 @@
 # RULES-MASK-RE — how the create-room RULE screen decides red vs white
 
+> **CORRECTIONS 2026-08-24** (`analysis/area-table-scenario-mask-LE-2026-08-24.md`):
+> (1) **Byte order:** the `+0x14`/`+0x18` mode masks are loaded as NATIVE LITTLE-ENDIAN words —
+> the TCP `0x6204` path is memcpy-verbatim, no byteswap (unlike UDP SN@P). Serving BE32 `0x7ff`
+> gave the client `0xFF070000` → empty ring → `Scenario (null)` even after the rule/cast bytes
+> (byte reads) rendered. Serializer corrected to `writeUInt32LE`; versions bumped `OBAREA-V*` →
+> `OBAREA-W*`. (2) §5's ring-count falsifier address `0x6c4fca` is arithmetically wrong: screen
+> ctx base = `0x6c4b90`, so count = base+0x53a = **`0x6c50CA`**, ring `0x6c504A..0x6c5089`,
+> cursor `0x6c50CC`. Use `0x6c4b96` (id 1..11) + `0x6c50CA` (count) from now on. (3) The safe
+> `0x6204` blob ceiling is **`0x1780`** (the client bank size), not the client's own `0x2000`
+> guard — the single-chunk option-label table (0x1F5C) is now refused at construction.
+
 **Date:** 2026-08-08 · **Branch:** `feat/v2-bioserver-port` · **Scope:** the create-room
 RULE screen (`captures/create a room .png`): per-row settability, the Scenario row, the
 Character row, and exactly which served bytes change each one.
