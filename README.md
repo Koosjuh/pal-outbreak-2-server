@@ -205,9 +205,16 @@ game — it follows its normal connection flow to your server.
 - `PAL_V2_UDP_BIND_ADDRESS` must be the exact IPv4 the client dials — the client discards SN@P
   datagrams whose source address doesn't match, so a `0.0.0.0` bind on a multi-homed host presents
   as broken crypto.
+- **To get the rig-validated multiplayer behaviour, you MUST apply the tracked flag set** in
+  [`deploy/pal-server-v2.env.conf`](deploy/pal-server-v2.env.conf) (append its `SNAP_*` block to
+  your environment, or use the whole file with your own IPs/secrets filled in). Every behaviour
+  flag **defaults OFF** — a bare bring-up like the examples above runs the conservative server:
+  no game relay, solo starts, default characters, frozen enemies. That env file is the exact
+  configuration validated on the rig on 2026-08-26 (two consoles, correct characters, enemies
+  moving on both). Keep `SNAP_GAME_BEACON_ECHO=0` — the echo variant is proven fatal.
 - Behaviour flags (e.g. `SNAP_GAME_RELAY`, `SNAP_ROOM_STAT`, `SNAP_HOST_RESEAT`,
-  `SNAP_RELIABLE_WINDOW`) toggle individual protocol fixes; every one lists its default and rollback
-  in [`docs/runbooks/v2-server.md`](docs/runbooks/v2-server.md).
+  `SNAP_GAME_BEACON_RELAY`) toggle individual protocol fixes; every one lists its default and
+  rollback in [`docs/runbooks/v2-server.md`](docs/runbooks/v2-server.md).
 
 Full configuration, the systemd unit, and startup/shutdown behaviour:
 [`docs/runbooks/v2-server.md`](docs/runbooks/v2-server.md). Architecture and the evidence policy:
