@@ -12,6 +12,7 @@ import {
   buildCreateRoomAcceptPayload,
   buildKeepalivePayload,
   buildMemberJoinPayload,
+  MEMBER_STATS_BYTES,
   buildNameQueryReplyPayload,
   buildRoomLimitsPayload,
   buildRoomListPayload,
@@ -211,6 +212,23 @@ export const DEFAULT_IDLE_TIMEOUT_MS = 120_000;
  */
 const REFUSAL_LOG_INTERVAL = 100;
 
+/*
+ * ONLY sub-3 (start-reset) carries a redundant self-targeted duplicate. The host
+ * start SM (FUN_005c6500) loops seats for the START ping and sends sub-3 to each
+ * seat id INCLUDING its own seat0 - the self copy (word0 == the host's own token)
+ * is pure redundancy (sub-3 has no payload) and is the wire-confirmed cause of the
+ * joiner's accept-then-refuse. SNAP_OP10_DROP_SELF drops that one frame.
+ *
+ * sub-5 idx/total, sub-6 peer-info and sub-7 charstats are NOT seat-loop pings -
+ * they are the payload HANDOFF the host sends TO the joiner, and they carry
+ * word0 == the host's token because the host is the SUBJECT/sender (RS1-B word
+ * model: every op-0x10 word0 = the sender's own handle). The joiner NEEDS them:
+ * RIG rig3 (2026-08-26) confirmed that dropping sub-5/6/7 starved the joiner of
+ * peer-info + charstats -> wrong characters + a network error. So the drop is
+ * scoped to sub-3 ALONE; every handoff sub relays normally.
+ */
+const OP10_START_SEAT_LOOP_SUBS = new Set([0x03]);
+
 export class SnapLobbySession {
   #routingKey;
   #loginIdentity;
@@ -229,6 +247,8 @@ export class SnapLobbySession {
   #relayGameBeacon;
   #gameRelay;
   #relayGameChannel;
+  #relayProperty;
+  #propertyRelay;
   #gameBeaconEcho;
   #gameBeaconRelay;
   #exitCloseMirror;
@@ -237,6 +257,10 @@ export class SnapLobbySession {
   #channelBitEcho;
   #joinLadder;
   #op10Relay;
+  #op10DropSelf;
+  #charstatsSeed;
+  #charstatsBlob = null;
+  #resolveCharstats;
   #op0aCount0;
   #memberInfo;
   #roomFlagsPublish;
@@ -342,6 +366,9 @@ export class SnapLobbySession {
     gameRelay = false,
     /** The game-packet fan-out seam, like `relayChat`. */
     relayGameChannel = null,
+    /* SNAP_PROPERTY_RELAY (T24): relay op-0x0c CHANGE_USER_PROPERTY (charstats) to the room. */
+    relayProperty = null,
+    propertyRelay = false,
     /*
      * B3 FIX 1 (PORT-PLAN slice 3), default OFF: answer the client's op-0x02
      * close by mirroring it back and releasing this session. The exit-contract
@@ -395,6 +422,9 @@ export class SnapLobbySession {
      * SUPERSEDED, RS1-B §2: word1 is the sender's own handle.)
      */
     op10Relay = false,
+    op10DropSelf = false,
+    charstatsSeed = false,
+    resolveCharstats = null,
     /*
      * RS1-B fix 1, flag `SNAP_OP0A_COUNT0` (config default ON; class default
      * OFF like every seam here): answer the op-0x0a member-list with July
@@ -631,6 +661,8 @@ export class SnapLobbySession {
     this.#relayGameBeacon = relayGameBeacon;
     this.#gameRelay = gameRelay === true;
     this.#relayGameChannel = relayGameChannel;
+    this.#relayProperty = relayProperty;
+    this.#propertyRelay = propertyRelay === true;
     this.#gameBeaconEcho = gameBeaconEcho === true;
     this.#gameBeaconRelay = gameBeaconRelay === true;
     this.#exitCloseMirror = exitCloseMirror === true;
@@ -639,6 +671,9 @@ export class SnapLobbySession {
     this.#channelBitEcho = channelBitEcho === true;
     this.#joinLadder = joinLadder === true;
     this.#op10Relay = op10Relay === true;
+    this.#op10DropSelf = op10DropSelf === true;
+    this.#charstatsSeed = charstatsSeed === true;
+    this.#resolveCharstats = typeof resolveCharstats === 'function' ? resolveCharstats : null;
     this.#op0aCount0 = op0aCount0 === true;
     this.#memberInfo = memberInfo === true;
     this.#roomFlagsPublish = roomFlagsPublish === true;
@@ -695,6 +730,15 @@ export class SnapLobbySession {
 
   get attachment() {
     return this.#attachment;
+  }
+
+  /**
+   * The member's latest captured op-0x0c charstats (0xf0), or null. Readable so a
+   * peer's join follow-up can seed this member's real character into the op-06
+   * record it emits about them (SNAP_CHARSTATS_SEED).
+   */
+  get charstatsBlob() {
+    return this.#charstatsBlob;
   }
 
   /** The routing-hint token, readable so the op-0x10 relay can match it. */
@@ -1101,6 +1145,29 @@ export class SnapLobbySession {
    */
   #onRoomQuery(message) {
     const purpose = this.#classifyRoomQuery(message);
+    /*
+     * SNAP_CHARSTATS_SEED (analysis/charstats-to-sub7-source-RE): the char-select
+     * CHANGE_USER_PROPERTY op-0x0c carries a 0xf0 charstats body (distinct from
+     * the connect/create ROOM_QUERY, 0x104). CAPTURE the latest such blob so the
+     * peer's join follow-up seeds it into the op-06 rec+0x18 - the byte-map is
+     * 1:1 (rec+0x18[0..0xf0) = op0c_body[0..0xf0), char-id @+0xc8) so the host's
+     * seat -> sub-7 -> splash renders the real character instead of Jim. We only
+     * STORE here (never relay - the raw op-0c relay was the T25 regression).
+     */
+    if (this.#charstatsSeed && message.payload.length === MEMBER_STATS_BYTES) {
+      this.#charstatsBlob = Buffer.from(message.payload);
+    }
+    /*
+     * SNAP_PROPERTY_RELAY (T24): when the sender is IN A ROOM this op-0x0c is a
+     * CHANGE_USER_PROPERTY carrying the player's character (0xf0 charstats), not
+     * the connect/create query - relay it to the other room members so each
+     * learns the others' real characters. Pre-room op-0x0c (connect-screen /
+     * create-prepare) has no other members and is answered as before.
+     */
+    if (this.#propertyRelay && this.#relayProperty != null &&
+        this.#presenceRecord.location().roomHandle != null) {
+      this.#relayProperty(this, message.payload);
+    }
     const answered = this.#send({
       opcode: LOBBY_OPCODE.COMPLETION,
       subSelector: message.subSelector,
@@ -1418,7 +1485,10 @@ export class SnapLobbySession {
     const record = buildMemberJoinPayload({
       name: this.#loginIdentity.slice(0, 0x10),
       memberId: playernum,
-      characterId: playernum
+      characterId: playernum,
+      // SNAP_CHARSTATS_SEED: this session's own captured op-0c so its record (and
+      // the fanout that reuses it) carries the real character, not zeros = Jim.
+      charstats: this.#charstatsSeed ? this.#charstatsBlob : null
     });
     const limits = buildRoomLimitsPayload({ max: room.max, current: room.current });
     this.#send({
@@ -1449,7 +1519,13 @@ export class SnapLobbySession {
           payload: buildMemberJoinPayload({
             name: String(member.name).slice(0, 0x10),
             memberId: member.memberId,
-            characterId: seatId
+            characterId: seatId,
+            // SNAP_CHARSTATS_SEED: seed the EXISTING member's own captured op-0c so
+            // the joiner's seat -> sub-7 -> splash renders that member's real
+            // character (this direction = the joiner seeing the host correctly).
+            charstats: this.#charstatsSeed && this.#resolveCharstats != null
+              ? this.#resolveCharstats(member.accountSessionId)
+              : null
           }),
           flags: FLAG_SET,
           event: `join-existing-member:${index}`,
@@ -1496,7 +1572,11 @@ export class SnapLobbySession {
         ? buildMemberJoinPayload({
           name: this.#loginIdentity.slice(0, 0x10),
           memberId: peer.endpointToken,
-          characterId: playernum
+          characterId: playernum,
+          // SNAP_CHARSTATS_SEED: the joiner's own captured op-0c, so each existing
+          // member's seat -> sub-7 -> splash renders the joiner's real character
+          // (this direction = the host seeing the joiner correctly, not Jim).
+          charstats: this.#charstatsSeed ? this.#charstatsBlob : null
         })
         : record;
       return peer.deliverRoomPush(LOBBY_OPCODE.MEMBER_JOIN, perPeer, 'member-join-fanout');
@@ -1665,6 +1745,42 @@ export class SnapLobbySession {
         note: 'op-0x10 from a sender in no room; there is no scope to relay into'
       });
       return { opcode: message.opcode, answered: false, relayed: 0, sub: event.sub };
+    }
+    /*
+     * SNAP_OP10_DROP_SELF (solo-start-refuse RE 2026-08-26): the host's start
+     * SM sends one op-0x10 sub-3 per seated slot INCLUDING its own seat0. That
+     * self-targeted frame carries word0 == the sender's own endpointToken
+     * (wire: host token 0x028107d0 == the dropped frame's targetId; the
+     * joiner-targeted frame carried word0 = 0x02). Fanning the self-frame to
+     * the joiner makes it ACCEPT then, on the duplicate, REFUSE - the accept
+     * count never holds at 2 and the game starts solo. A member never needs a
+     * frame another member aimed at itself, so drop it from the peer fan-out.
+     * The whole seat-looping start family (sub-3/5/6/7/9) is covered: each
+     * self-frame is word0 == the sender token.
+     *
+     * Scoped to the start sub-family (nora 2026-08-26, gap 1): the codec's
+     * RS1-B word-model note is that EVERY op-0x10 frame carries word0 = the
+     * sender's own handle, and on the wire-confirmed host that handle == the
+     * token - so a bare `word0 == token` test would also drop a non-start
+     * op-0x10 (e.g. a host sub-1 member-info relay) from the joiner. Only the
+     * seat-looping START subs emit a self-targeted duplicate, so gate on them;
+     * every other op-0x10 relays unchanged.
+     */
+    if (
+      this.#op10DropSelf &&
+      OP10_START_SEAT_LOOP_SUBS.has(event.sub) &&
+      event.words[0] === this.#endpointToken
+    ) {
+      this.#logger?.debug?.('udp9090 lobby-room-event-self-dropped', {
+        routingKey: this.#routingKey,
+        loginIdentity: this.#loginIdentity,
+        roomHandle: `0x${at.roomHandle.toString(16)}`,
+        sub: `0x${event.sub.toString(16)}`,
+        targetId: `0x${event.words[0].toString(16)}`,
+        note: 'op-0x10 self-targeted start frame (word0 == sender endpointToken) not fanned ' +
+          'to peers - the second sub-3 that made the joiner refuse (SNAP_OP10_DROP_SELF)'
+      });
+      return { opcode: message.opcode, answered: false, relayed: 0, sub: event.sub, selfDropped: true };
     }
     const relayed = this.#relayRoomEvent(this, message.payload);
     this.#logger?.debug?.('udp9090 lobby-room-event-relayed', {
@@ -1964,6 +2080,29 @@ export class SnapLobbySession {
     });
   }
 
+  /**
+   * Push one relayed op-0x0c CHANGE_USER_PROPERTY to THIS session
+   * (SNAP_PROPERTY_RELAY, T24). The character selection travels as op-0x0c
+   * carrying the 0xf0 charstats (FUN_005b3790 -> FUN_005bd940 -> the op-0c send
+   * with completion slot 0x26). Each console announces its character this way;
+   * the server must broadcast it to the room so every member learns the others'
+   * real characters (openSNAP CMD_CHANGE_USER_PROPERTY broadcasts; bioserver
+   * dumb-relay). Byte-identical payload (it carries the sender's identity),
+   * op-0x0c on the room channel (FLAG_SET -> 0xa0xx reliable, as the client
+   * sent 0xa000). Without this the host only ever has the zeroed synthesized
+   * op-06 for a joiner and cannot render its character (the "Jim" root).
+   */
+  deliverProperty(payload) {
+    if (this.#closed) return false;
+    return this.#send({
+      opcode: LOBBY_OPCODE.ROOM_QUERY,
+      subSelector: 0,
+      payload,
+      flags: FLAG_SET,
+      event: 'property-relay'
+    });
+  }
+
   #sendGameBeacon(payload, subSelector, flags) {
     try {
       this.#channel.sendUnreliable({
@@ -2006,7 +2145,8 @@ export class SnapLobbySession {
     if (room == null) return [];
     return this.#presence.rosterOf(room.handle).map((entry, index) => ({
       name: entry.displayName || entry.userid || `P${index + 1}`,
-      memberId: entry.presenceId ?? index + 1
+      memberId: entry.presenceId ?? index + 1,
+      accountSessionId: entry.accountSessionId
     }));
   }
 
@@ -2432,7 +2572,11 @@ export class SnapLobbySession {
         memberId: room.handle,
         // Distinct from a joiner's, so the client's dedup (`FUN_005b5ac0`) admits
         // both rather than treating the second member as a repeat of the first.
-        characterId: 1
+        characterId: 1,
+        // SNAP_CHARSTATS_SEED: the host's own captured op-0c so its self-seat
+        // renders the real character (its real char-id @+0xc8 also keeps the
+        // member distinct from the joiner's for the dedup, as long as they differ).
+        charstats: this.#charstatsSeed ? this.#charstatsBlob : null
       }),
       /*
        * who = 0xA0: RELIABLE | SET with DATA deliberately CLEAR. `FUN_001d6988`
@@ -2473,7 +2617,12 @@ export class SnapLobbySession {
       payload: buildMemberJoinPayload({
         name: this.#loginIdentity.slice(0, 0x10),
         memberId: this.#createdRoom.handle,
-        characterId: 1
+        characterId: 1,
+        // SNAP_CHARSTATS_SEED: the host re-seats ITSELF, so seed the host's own
+        // captured op-0c - otherwise the reseat overwrites the host's seat with
+        // the synthetic characterId 1 (= Mark) and the host renders the wrong
+        // character on its own splash (RIG rig6: host showed Mark).
+        charstats: this.#charstatsSeed ? this.#charstatsBlob : null
       }),
       flags: FLAG_SET,
       event: 'host-reseat',

@@ -511,6 +511,8 @@ export const MEMBER_RECORD_BYTES = 0x108;
 export const MEMBER_NAME_BYTES = 0x10;
 const MEMBER_ID_OFFSET = 0x10;
 const MEMBER_STATS_OFFSET = 0x18;
+/** The charstats field is 0xf0 bytes: MEMBER_RECORD_BYTES (0x108) - MEMBER_STATS_OFFSET (0x18). */
+export const MEMBER_STATS_BYTES = 0xf0;
 /** `charstats + 0xc8`; a distinct value per member is what the dedup admits on. */
 const MEMBER_CHARACTER_ID_OFFSET = MEMBER_STATS_OFFSET + 0xc8;
 
@@ -528,7 +530,7 @@ const MEMBER_CHARACTER_ID_OFFSET = MEMBER_STATS_OFFSET + 0xc8;
  * shipped exactly that bug: it re-fired op-0x06 from inside the op-0x0a poll and
  * inflated the count on every poll (`game_udp_server.js:2117`, the T19 bug).
  */
-export function buildMemberJoinPayload({ name, memberId, characterId = 0 }) {
+export function buildMemberJoinPayload({ name, memberId, characterId = 0, charstats = null }) {
   const encoded = Buffer.isBuffer(name) ? name : Buffer.from(String(name ?? ''), 'latin1');
   if (encoded.length === 0) {
     fail('MEMBER_NAME_EMPTY', 'an empty member name is the client\'s free-row marker and draws ' +
@@ -544,7 +546,21 @@ export function buildMemberJoinPayload({ name, memberId, characterId = 0 }) {
   // a different consumer; only the self push is reproduced here, because only it
   // is rig-confirmed to have populated row 0.
   payload.writeUInt32BE(requireUint32(memberId, 'memberId'), MEMBER_ID_OFFSET);
-  if (characterId !== 0) {
+  /*
+   * SNAP_CHARSTATS_SEED (charstats-to-sub7-source RE): fill the 0xf0 charstats
+   * field @+0x18 with the member's real captured op-0x0c blob so the host's seat
+   * -> sub-7 -> splash render the true character instead of Jim. The blob carries
+   * its OWN char-id @+0xc8 and class @+0xca (the dedup keys), so when a blob is
+   * supplied it OVERRIDES the synthetic characterId - we do not also stamp
+   * characterId, which would clobber the real char-id inside the blob.
+   */
+  if (Buffer.isBuffer(charstats) && charstats.length > 0) {
+    if (charstats.length !== MEMBER_STATS_BYTES) {
+      fail('MEMBER_STATS_LENGTH', `charstats is ${charstats.length} bytes; the field holds ` +
+        `${MEMBER_STATS_BYTES}`);
+    }
+    charstats.copy(payload, MEMBER_STATS_OFFSET);
+  } else if (characterId !== 0) {
     payload.writeInt16LE(characterId, MEMBER_CHARACTER_ID_OFFSET);
   }
   return payload;

@@ -385,6 +385,8 @@ export function loadServerConfig(env = process.env) {
       roomStat: readBoolean(problems, env, 'SNAP_ROOM_STAT', false),
       /* max unacked reliable messages before the channel drops; raise for lossless in-game relay. */
       reliableWindow: readCount(problems, env, 'SNAP_RELIABLE_WINDOW', 32, { minimum: 32, maximum: 4096 }),
+      /* relay op-0x0c CHANGE_USER_PROPERTY (character/charstats) to the room. */
+      propertyRelay: readBoolean(problems, env, 'SNAP_PROPERTY_RELAY', false),
       /* op-06 memberId = the recipient's token, so the host's accept scan matches. */
       memberIdToken: readBoolean(problems, env, 'SNAP_MEMBER_ID_TOKEN', false),
       rosterToJoiner: readBoolean(problems, env, 'SNAP_ROSTER_TO_JOINER', false),
@@ -407,6 +409,33 @@ export function loadServerConfig(env = process.env) {
        * wire, so the first 2-player start is also its verification.
        */
       op10Relay: readBoolean(problems, env, 'SNAP_OP10_RELAY', true),
+      /*
+       * SNAP_OP10_DROP_SELF (solo-start-refuse RE 2026-08-26, wire-confirmed):
+       * on a 2-player start the host's roster SM (FUN_005c6500) loops EVERY
+       * seated slot INCLUDING its own seat0 and emits one op-0x10 sub-3 per
+       * seat, bundled in one 0x0800-multi datagram - a self-targeted frame
+       * (word0 == the host's own endpointToken) plus the joiner-targeted frame
+       * (word0 == the joiner's seat id, e.g. 0x02). The op10Relay fans BOTH to
+       * the joiner; the joiner ACCEPTs the first (screen 4/0xe), the accept
+       * path advances its screen off 4/0xe, and the SECOND sub-3 then falls to
+       * the REFUSE branch (FUN_005bbf20 else) - 0x6ff2b5 goes 1->2, the host's
+       * accept count never holds at 2, and the game starts solo. Dropping the
+       * self-targeted frame (word0 == the sender's own endpointToken) from the
+       * peer fan-out delivers exactly one sub-3 to the joiner -> it ACCEPTs and
+       * never refuses. The host pre-sets its own accept (FUN_005c6500:144), so
+       * it never needs its self-frame echoed. Default OFF until rig-confirmed.
+       */
+      op10DropSelf: readBoolean(problems, env, 'SNAP_OP10_DROP_SELF', false),
+      /*
+       * SNAP_CHARSTATS_SEED (analysis/charstats-to-sub7-source-RE, byte-map
+       * Confirmed 1:1): capture each session's char-select op-0x0c 0xf0 charstats
+       * blob and seed it into the op-06 member record's rec+0x18 (currently
+       * zeros=Jim) so each console's seat -> sub-7 -> splash renders the real
+       * character. Both directions (joiner->host fanout + host->joiner roster).
+       * We STORE and translate into op-06 - never relay the raw op-0c (the T25
+       * regression). Default OFF until rig-confirmed.
+       */
+      charstatsSeed: readBoolean(problems, env, 'SNAP_CHARSTATS_SEED', false),
       /*
        * RS1-B fix 1: answer the op-0x0a member-list with July V1's exact
        * 12-byte count-0 body (who 0xA0, twelve zero bytes) instead of the
@@ -565,6 +594,8 @@ export const CONFIGURATION_KEYS = Object.freeze({
      */
     'SNAP_JOIN_LADDER',           // the op-0x06 room-ENTER join ladder + sub-0x0C confirm (default TRUE; rollback = set false)
     'SNAP_OP10_RELAY',            // the op-0x10 room-scoped except-sender relay (default TRUE; rollback = set false)
+    'SNAP_OP10_DROP_SELF',        // drop the host's self-targeted op-0x10 start frame (word0==sender token) from the peer fan-out - the solo-start refuse fix (default false)
+    'SNAP_CHARSTATS_SEED',        // seed captured op-0c charstats into op-06 rec+0x18 so the splash renders the real character, not Jim (default false)
     'SNAP_OP0A_COUNT0',           // answer op-0x0a with July V1's 12-byte count-0 body (default TRUE; rollback = set false restores the count-1 reply)
     'SNAP_MEMBER_INFO',           // the V1 member-info supply channel: sel-0x0a roster records + op-0x10 sub-1 pushes (default TRUE; rollback = set false)
     'SNAP_COUNT_PUSH',            // re-broadcast the op-0x09 USER area count on every area enter/leave (default TRUE; rollback = set false stops every unsolicited op-0x09)

@@ -99,11 +99,14 @@ export class SnapLobbySessions {
   #channelBitEcho;
   #joinLadder;
   #op10Relay;
+  #op10DropSelf;
+  #charstatsSeed;
   #op0aCount0;
   #memberInfo;
   #roomFlagsPublish;
   #roomStat;
   #reliableWindow;
+  #propertyRelay;
   #memberIdToken;
   #rosterToJoiner;
   #hostReseat;
@@ -182,6 +185,7 @@ export class SnapLobbySessions {
     /* SNAP_ROOM_STAT: op-0x49 +0x1c carries the create optionsWord. */
     roomStat = false,
     reliableWindow = 32,
+    propertyRelay = false,
     /* SNAP_MEMBER_ID_TOKEN: per-recipient memberId for the accept scan. */
     memberIdToken = false,
     rosterToJoiner = false,
@@ -194,6 +198,8 @@ export class SnapLobbySessions {
      */
     joinLadder = false,
     op10Relay = false,
+    op10DropSelf = false,
+    charstatsSeed = false,
     /*
      * RS1-B fix 1 (`SNAP_OP0A_COUNT0`, config default ON): the op-0x0a
      * member-list answers with July V1's 12-byte count-0 body. The count-1
@@ -335,6 +341,7 @@ export class SnapLobbySessions {
     this.#gameRelay = gameRelay === true;
     this.#roomStat = roomStat === true;
     this.#reliableWindow = Number.isSafeInteger(reliableWindow) && reliableWindow >= 32 ? reliableWindow : 32;
+    this.#propertyRelay = propertyRelay === true;
     this.#memberIdToken = memberIdToken === true;
     this.#rosterToJoiner = rosterToJoiner === true;
     this.#hostReseat = hostReseat === true;
@@ -343,6 +350,8 @@ export class SnapLobbySessions {
     this.#channelBitEcho = channelBitEcho === true;
     this.#joinLadder = joinLadder === true;
     this.#op10Relay = op10Relay === true;
+    this.#op10DropSelf = op10DropSelf === true;
+    this.#charstatsSeed = charstatsSeed === true;
     this.#op0aCount0 = op0aCount0 === true;
     this.#memberInfo = memberInfo === true;
     this.#roomFlagsPublish = roomFlagsPublish === true;
@@ -543,6 +552,20 @@ export class SnapLobbySessions {
     return this.broadcast(
       { roomHandle: at.roomHandle, except: from },
       (session) => session.deliverGamePacket(payload)
+    );
+  }
+
+  /**
+   * Relay an op-0x0c CHANGE_USER_PROPERTY (the character selection / charstats)
+   * to the sender's room, except the sender - so every member learns the
+   * others' real characters (SNAP_PROPERTY_RELAY, T24). Byte-identical payload.
+   */
+  #relayProperty(from, payload) {
+    const at = from.presence?.location?.();
+    if (at?.roomHandle == null) return 0;
+    return this.broadcast(
+      { roomHandle: at.roomHandle, except: from },
+      (session) => session.deliverProperty(payload)
     );
   }
 
@@ -854,6 +877,8 @@ export class SnapLobbySessions {
         rosterToJoiner: this.#rosterToJoiner,
         hostReseat: this.#hostReseat,
         relayGameChannel: (from, payload) => this.#relayGameChannel(from, payload),
+        relayProperty: (from, payload) => this.#relayProperty(from, payload),
+        propertyRelay: this.#propertyRelay,
         gameBeaconEcho: this.#gameBeaconEcho,
         gameBeaconRelay: this.#gameBeaconRelay,
         relayGameBeacon: (from, payload, subSelector, flags) =>
@@ -868,6 +893,13 @@ export class SnapLobbySessions {
          */
         joinLadder: this.#joinLadder,
         op10Relay: this.#op10Relay,
+        op10DropSelf: this.#op10DropSelf,
+        charstatsSeed: this.#charstatsSeed,
+        resolveCharstats: (accountSessionId) => {
+          const rk = this.#routingKeyByIdentity.get(accountSessionId);
+          const peer = rk != null ? this.#sessions.get(rk) : null;
+          return peer?.charstatsBlob ?? null;
+        },
         op0aCount0: this.#op0aCount0,
         memberInfo: this.#memberInfo,
         roomFlagsPublish: this.#roomFlagsPublish,

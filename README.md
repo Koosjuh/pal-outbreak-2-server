@@ -23,10 +23,11 @@ patching, no modchip, no homebrew client. The client is retail; only the server 
 
 ## Current status
 
-**Two players can start a game together.** As of the 2026-08-25 session, both a real PS2 and a
-PCSX2 client sign in, select server and area, create/join a room, pick scenario and characters, and
-**both load into the same game with player movement syncing between consoles** — the core milestone
-the project was built to reach.
+**Two players can play together, as the right characters.** As of the 2026-08-26 session, a real
+PS2 and a PCSX2 client sign in, select server and area, create/join a room, pick characters, and
+**both start the same game together — each rendering the correct chosen character** — and stay in
+sync through cutscenes and zone changes. The multiplayer *core* the project was built to reach is
+working and owner-confirmed on the rig.
 
 What works, rig-confirmed:
 
@@ -38,15 +39,10 @@ What works, rig-confirmed:
 - Backing out of a room (the long-standing "Exit" freeze is fixed).
 - In-game player-movement relay between consoles.
 
-Active frontier (the "fully playable" work):
-
-- **In-game entity sync** — the netcode is peer-indexed *lockstep-deterministic*; enemies are
-  client-local, so both consoles must run identical simulations. Making that robust means a
-  **lossless game-packet relay** (a higher-latency console currently drops packets) and completing
-  the **character (charstats) hand-off in both directions**. See
-  [`analysis/ingame-receive-stack-RE-2026-08-25.md`](analysis/ingame-receive-stack-RE-2026-08-25.md)
-  and [`docs/design/v2-port/INGAME-PACKET-GAPLIST-2026-08-25.md`](docs/design/v2-port/INGAME-PACKET-GAPLIST-2026-08-25.md).
-- Lobby polish: player counts, in-room member list, room chat rendering, end-screen character.
+Active frontier (the "fully playable" work) — see **Known bugs** below and
+[`docs/findings/protocol/SESSION-CLOSEOFF-2026-08-26.md`](docs/findings/protocol/SESSION-CLOSEOFF-2026-08-26.md).
+The remaining gaps are the in-game **entity (enemy) sync**, difficulty selection, the end-screen
+character, and the joiner's member list.
 
 Development centres on [`server-v2/`](server-v2/), a corpus-driven port of the Japanese Bioserver's
 session/room architecture onto the PAL SN@P transport, with a large deterministic test suite.
@@ -58,6 +54,44 @@ SN@P was shared by other games of the period and is barely documented publicly, 
 notes and decoded client code here may help work on other SN@P-era titles too.
 
 ---
+
+## Changelog
+
+### 2026-08-26 — multiplayer core: solo-start + characters fixed
+- **Solo start fixed** (`SNAP_OP10_DROP_SELF`). The host's game-start SM sends a start ping to every
+  seat *including its own*; the relay fanned the host's self-targeted copy to the joiner, which
+  accepted the first and then *refused* the duplicate, so the game started solo. The server now drops
+  only that self-targeted `sub-3` from the peer fan-out. Wire-confirmed both consoles start together.
+- **Correct characters on the splash** (`SNAP_CHARSTATS_SEED`). Character-select (`op-0x0c`) is
+  ack-only, so a peer never learned another's pick and the splash drew a default ("Jim"/"Mark"). The
+  server now captures each player's 0xf0 charstats blob and seeds it into the member record
+  (`rec+0x18`) in both directions and for the host's own seat — the byte map is decompile-confirmed
+  1:1. Owner-confirmed: the splash renders the real chosen character on both consoles.
+- **Peer-vanish resolved.** The host previously dropped the joiner peer after a cutscene; savestates
+  now show the peer staying active with a live, advancing state buffer — both characters survive
+  cutscenes and zone changes, and enemies load on both consoles.
+- RE write-ups: `analysis/solo-start-refuse-RE-2026-08-26.md`,
+  `analysis/charstats-to-sub7-source-RE-2026-08-26.md`,
+  `analysis/ingame-peer-vanish-RE-2026-08-26.md`.
+
+### 2026-08-25 — first game start together
+Two consoles load into the same game with player movement syncing; openSNAP cross-referenced;
+in-game receive stack reverse-engineered. (See the prior close-off and RE docs.)
+
+## Known bugs
+
+Open items after the 2026-08-26 milestone (tracked as G13–G17 in the private goal list):
+
+| # | Bug | Notes |
+|---|-----|-------|
+| G13 | **Enemies don't move on the joiner** | Enemies load on both consoles but animate only on the host; frozen on the joiner. Player/peer position *does* sync — this is the enemy-state layer (host-authoritative vs deterministic sim). The biggest remaining gameplay gap. |
+| G14 | **Difficulty not applied** | Setting EASY still runs the game on VERY HARD (the JP default). The host's on-screen difficulty override doesn't reach game-start. |
+| G15 | **End-screen character wrong** | The results screen shows "Kevin" regardless of the picked character, on *both* consoles — a different render path from the (now-correct) lobby splash. |
+| G16 | **Joiner's member list empty** | In the lobby, the host's Start▸Member shows the roster; the joiner's is empty. The seat path works (the splash renders), so this is the member-*list* query/display path. |
+| G17 | **Cutscene-skip asymmetry** | One console can skip a cutscene, the other can't. Minor in-game action-sync detail. |
+
+> Operational note for contributors running the rig: deploying restarts the server, which drops the
+> in-game relay and **freezes an active game**. Deploy only between runs.
 
 ## The project in three layers
 
