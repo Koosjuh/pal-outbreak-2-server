@@ -113,7 +113,7 @@ function opcode0fIn(sent) {
 
 test('the flags-0x2012 beacon routes to its own handler, not the chat path', () => {
   const rig = harness();
-  const alice = rig.open('192.0.2.248:2000', 'alice');
+  const alice = rig.open('192.168.2.248:2000', 'alice');
   const { handled } = alice.session.accept(beaconDatagram({ sequence: 1 }));
 
   assert.equal(handled.length, 1);
@@ -126,7 +126,7 @@ test('the flags-0x2012 beacon routes to its own handler, not the chat path', () 
 
 test('the beacon is consumed at debug and never warns', () => {
   const rig = harness();
-  const alice = rig.open('192.0.2.248:2000', 'alice');
+  const alice = rig.open('192.168.2.248:2000', 'alice');
   for (let sequence = 1; sequence <= 3; sequence += 1) {
     alice.session.accept(beaconDatagram({ sequence }));
   }
@@ -143,8 +143,8 @@ test('the beacon is consumed at debug and never warns', () => {
 
 test('a real reliable chat line still takes the chat path after the reroute', () => {
   const rig = harness();
-  const alice = rig.open('192.0.2.248:2000', 'alice');
-  const bob = rig.open('192.0.2.129:2000', 'bob');
+  const alice = rig.open('192.168.2.248:2000', 'alice');
+  const bob = rig.open('192.168.2.129:2000', 'bob');
   enter(alice.session, 5);
   enter(bob.session, 5);
   const before = bob.sent.length;
@@ -175,7 +175,7 @@ const RS1A_RELIABLE_0F_BODY = Buffer.from(
 
 test('RS1-A replay: the reliable 0x0400-clear op-0x0F is game-channel, never chat', () => {
   const rig = harness();
-  const alice = rig.open('192.0.2.248:2000', 'alice');
+  const alice = rig.open('192.168.2.248:2000', 'alice');
   const before = alice.sent.length;
 
   assert.equal(RS1A_RELIABLE_0F_BODY.length, 42, 'the captured body is 42 bytes');
@@ -205,7 +205,7 @@ test('a 0x0400-clear DATA-set op-0x0F also routes to the game channel, not the c
   // The client's table tests ONLY 0x0400; DATA merely picks slot 0x0B vs 0x0D
   // WITHIN chat. A DATA-set frame without 0x0400 has no chat branch at all.
   const rig = harness();
-  const alice = rig.open('192.0.2.248:2000', 'alice');
+  const alice = rig.open('192.168.2.248:2000', 'alice');
   const [outcome] = alice.session.accept(reliableDatagram({
     opcode: LOBBY_OPCODE.CHAT, sequence: 0, payload: ARCHIVE_CHAT_BODY, who: 0xb000
   })).handled;
@@ -218,7 +218,7 @@ test('a 0x0400-clear DATA-set op-0x0F also routes to the game channel, not the c
 
 test('with the echo flag OFF (the default) the beacon is not answered at all', () => {
   const rig = harness();
-  const alice = rig.open('192.0.2.248:2000', 'alice');
+  const alice = rig.open('192.168.2.248:2000', 'alice');
   const before = alice.sent.length;
   alice.session.accept(beaconDatagram({ sequence: 1 }));
   assert.equal(opcode0fIn(alice.sent.slice(before)).length, 0,
@@ -227,7 +227,7 @@ test('with the echo flag OFF (the default) the beacon is not answered at all', (
 
 test('with SNAP_GAME_BEACON_ECHO the beacon comes back verbatim to the sender', () => {
   const rig = harness({ gameBeaconEcho: true });
-  const alice = rig.open('192.0.2.248:2000', 'alice');
+  const alice = rig.open('192.168.2.248:2000', 'alice');
   const before = alice.sent.length;
 
   const { handled } = alice.session.accept(beaconDatagram({ sequence: 7 }));
@@ -248,8 +248,8 @@ test('with SNAP_GAME_BEACON_ECHO the beacon comes back verbatim to the sender', 
 
 /** Alice creates a room in box 5 and bob is moved into it. Returns both ends. */
 function roomPair(rig) {
-  const alice = rig.open('192.0.2.248:2000', 'alice');
-  const bob = rig.open('192.0.2.129:2000', 'bob');
+  const alice = rig.open('192.168.2.248:2000', 'alice');
+  const bob = rig.open('192.168.2.129:2000', 'bob');
   enter(alice.session, 5, 0);
   alice.session.accept(reliableDatagram({
     opcode: LOBBY_OPCODE.CREATE_ROOM, sequence: 1, payload: Buffer.alloc(0x2c)
@@ -288,10 +288,59 @@ test('with SNAP_GAME_BEACON_RELAY the beacon reaches room members, never the sen
     'the sender does not get its own beacon back through the RELAY flag');
 });
 
+/**
+ * A REAL unreliable ENTITY-RECORD frame, byte for byte from ingame2.pcap
+ * (2026-08-25 2-console run, sender .248): wire word `0x2054` (SET | length
+ * 0x54), op 0x0F, 68-byte body = the game engine's (slot<<12)|len message
+ * stream carrying id-0x0008 entity records — the class the G13 trace
+ * identified as the peer keepalive + enemy/entity state
+ * (analysis/g13-enemy-sync-RE-2026-08-26.md). The relay must carry it
+ * byte-identically: this class is NOT just the 2-byte beacon.
+ */
+const INGAME2_ENTITY_RECORD_BODY = Buffer.from(
+  '2c100800022a911b000008002801281e0106010a030096000a855a300000407c03000000' +
+  '00000000000000006927141008000212921b0000080038013806010606030300', 'hex');
+
+test('a long entity-record frame relays byte-identically with the relay flag ON, and is consumed OFF', () => {
+  assert.equal(INGAME2_ENTITY_RECORD_BODY.length, 0x44, 'the captured body is 68 bytes');
+
+  // OFF (the default): consumed exactly like the beacon — nothing leaves.
+  const off = harness();
+  const offPair = roomPair(off);
+  const offBefore = offPair.bob.sent.length;
+  const offOutcome = offPair.alice.session.accept(
+    beaconDatagram({ sequence: 1, body: INGAME2_ENTITY_RECORD_BODY })).handled[0];
+  assert.equal(offOutcome.gameBeacon, true);
+  assert.equal(offOutcome.relayed, 0);
+  assert.equal(opcode0fIn(offPair.bob.sent.slice(offBefore)).length, 0);
+
+  // ON: the room peer gets the exact bytes, on its own unreliable stream.
+  const rig = harness({ gameBeaconRelay: true });
+  const { alice, bob } = roomPair(rig);
+  const beforeBob = bob.sent.length;
+  const beforeAlice = alice.sent.length;
+
+  const { handled } = alice.session.accept(
+    beaconDatagram({ sequence: 2, body: INGAME2_ENTITY_RECORD_BODY }));
+  assert.equal(handled[0].relayed, 1);
+
+  const [relayed] = opcode0fIn(bob.sent.slice(beforeBob));
+  assert.ok(relayed != null);
+  assert.equal(relayed.kind, 'unreliable');
+  assert.equal(relayed.datagram.readUInt16BE(0), 0x2000 | (0x10 + INGAME2_ENTITY_RECORD_BODY.length),
+    'the length bits are restamped for the 68-byte body');
+  assert.deepEqual(
+    relayed.datagram.subarray(0x10, 0x10 + INGAME2_ENTITY_RECORD_BODY.length),
+    INGAME2_ENTITY_RECORD_BODY,
+    'the entity records arrive byte-identical');
+
+  assert.equal(opcode0fIn(alice.sent.slice(beforeAlice)).length, 0, 'never back to the sender');
+});
+
 test('the relay is room-scoped: a player merely in the same AREA hears nothing', () => {
   const rig = harness({ gameBeaconRelay: true });
-  const alice = rig.open('192.0.2.248:2000', 'alice');
-  const bob = rig.open('192.0.2.129:2000', 'bob');
+  const alice = rig.open('192.168.2.248:2000', 'alice');
+  const bob = rig.open('192.168.2.129:2000', 'bob');
   enter(alice.session, 5, 0);
   alice.session.accept(reliableDatagram({
     opcode: LOBBY_OPCODE.CREATE_ROOM, sequence: 1, payload: Buffer.alloc(0x2c)

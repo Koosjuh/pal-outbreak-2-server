@@ -1,0 +1,38 @@
+# G13 wire anchors — in-game 0xa0xx/op-0f game-packet payloads (ingame2.pcap, 2026-08-25 run)
+# Extracted 2026-08-26 with tshark from captures/v2-live/ingame2.pcap (preserved from the prior
+# session scratchpad). Roles in this capture: 192.168.2.129 = HOST (peer0, PCSX2),
+# 192.168.2.248 = JOINER (peer1, real PS2), 192.168.2.121 = Pi (relay; bodies byte-identical).
+
+## Message-stream framing (Observation, from these bytes + the 08-25 receive-stack RE)
+After the SN@P wrapper (a0<len> 000f <token> 07d0 00000000 <seq> 00000000), the payload is a
+CONCATENATION of length-framed messages, each: u16 LE header = (slot << 12) | body_len,
+then body_len bytes of body. Examples: 1400 -> slot0 len 0x14; 3000 -> slot0 len 0x30;
+2400 -> slot0 len 0x24; 2410 (LE 0x1024) -> slot1 len 0x24.
+
+## Sample frames (full udp.payload hex)
+
+HOST .129 (sends ONLY this shape; zero slot-1 messages in the whole capture):
+a036000f028107d00000006e53000000240001000424c807000001000000001800000214000000000200882e652bb826882700150000ba476611
+a036000f028107d000000084000000702400010004240309000001000000001800000214000000000200882e652bb826882700150000ba476611
+
+JOINER .248 slot-1 player message (370 of these; the Pi relays all 370):
+a036000f02f807d00000034a00000000241002000424dd05000002000001001801000214010000000200b92e052bccbf8e27001a0000ba476611
+
+JOINER .248 multi-message frame (slot-0 tagged id-08 records + its slot-0?? see note):
+a07e000f02f807d00000005000000000140008000414d4050000080001000108ff0001010201300008000415d505000008000000000980000103000000ffff0008000415d505000008000000000980000203000000000000240001000424da05000001000000001800000214000000000200882e652bb826882700150000ba476611
+
+## Body-format observations (Observation/Inference — decompile must confirm)
+- Body starts: u16 id (01 00 host-player / 02 00 joiner-player / 08 00 extra), then 0x04,
+  then a byte equal to the TOTAL msg len (0x24/0x14/0x15?), then u32 LE counter that
+  increments across frames (05da, 05dd, 07c8, 0903 = frame counter?).
+- The 0x24-byte player bodies differ per console mid-body (882e652bb8268827 host vs
+  b92e052bccbf8e27 joiner = position/transform?), identical tail ba476611.
+- The joiner's slot-0 id-08 messages contain per-object records with marker
+  09 80 00 01 03 / 09 80 00 02 03 (object #1, #2 ...) — candidate object/enemy/event layer.
+- Counts (ingame2.pcap): slot-1-tagged (241002xx) frames: 370 from .248, 370 relayed by .121,
+  ZERO from .129. Total udp/9090 frames: .129=1888, .248=2713, .121=4740.
+- NOTE the last sample: the joiner frame ALSO carries a "2400 0100" (slot0 id-01) message
+  byte-identical to the host's own player message (same counter family 'da05', same
+  882e652b... transform) — i.e. the joiner appears to RE-EMIT/echo the host's slot-0 player
+  state it received. Whether this is an echo/ack or the joiner emitting slot-0 data of its
+  own is a question for the decompile (Q3).

@@ -2004,22 +2004,30 @@ export class SnapLobbySession {
   }
 
   /**
-   * The in-game beacon: unreliable op-0x0F, flags `0x2012`, body `00 00`, 1 Hz.
+   * The UNRELIABLE op-0x0F game class - NOT just a beacon.
    *
-   * T37: after the game-module handoff the client sends this on its own sequence
-   * counter for ~119 s, then aborts the scenario into the post-game meeting room.
-   * Every one of the 115 was refused as `CHAT_RUNT` - a misfile, because it is
-   * not chat: no reliable bit, no DATA flag, and the client's own dispatcher
-   * sends this flag shape to slot 0x14, not the chat slots (B1 doc §4).
+   * SUPERSEDED 2026-08-26 (G13 trace, analysis/g13-enemy-sync-RE-2026-08-26.md):
+   * the "semantics Unknown 1 Hz beacon" model below is resolved. This class is
+   * the game engine's low-rate peer stream, sent via FUN_001caad0 (wire byte0
+   * 0x20 = flags 0x8000 clear), carrying the same (slot<<12)|len message framing
+   * as the reliable class: (a) the 1 Hz PEER KEEPALIVE `(peerIdx<<12)|0` (the
+   * `00 00` body T37 saw - a solo host beacons too) whose delivery to the OTHER
+   * consoles refreshes peer.lastActivity (stamp confirmed in the delay slot of
+   * the len==0 branch, FUN_001beb90 @001bede0) and prevents the 31 s peer-timeout
+   * sweep that caused the 08-26 peer-vanish; and (b) id-0x0008 ENTITY records
+   * (16.16 coords, owner-peer byte, sparse ~5 s corrections) - remote-owned
+   * enemy/object state. Consuming it (both flags off) starves both; the relay
+   * branch is the G13 fix, rig-validated 2026-08-26 (enemies move on both
+   * consoles, peer[1] survives cutscenes). The relay must forward the payload
+   * BYTE-IDENTICAL - the slot nibble in the message header routes the peer
+   * apply on the receiver and must never be rewritten.
    *
-   * WHAT IT EXPECTS IS UNKNOWN - the sender lives in the game module, outside
-   * the 2549-function lobby corpus, and REOF2 stubs its network layer. Consuming
-   * it here claims nothing about its semantics; it only stops classifying known
-   * non-chat traffic as malformed chat. The echo and relay branches below are
-   * the flag-gated EXPERIMENT of PORT-PLAN slice 2c(ii): the JP game server was
-   * a dumb same-gamenumber relay, but solo JP relays nothing and PAL solo still
-   * beacons - so a server echo is the live hypothesis, testable on the rig by
-   * flipping one flag.
+   * Historical model (kept for context): T37 called this the in-game beacon -
+   * unreliable op-0x0F, flags `0x2012`, body `00 00`, 1 Hz; every one was
+   * refused as `CHAT_RUNT` (a misfile - no reliable bit, no DATA flag; the
+   * client's dispatcher sends this shape to slot 0x14, not the chat slots).
+   * The ECHO branch was that era's hypothesis - it is REFUTED and proven fatal
+   * on the rig (RS1-A); keep SNAP_GAME_BEACON_ECHO off.
    */
   #onGameBeacon(message) {
     this.#gameBeacons += 1;

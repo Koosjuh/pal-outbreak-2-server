@@ -138,7 +138,18 @@ byte-for-byte and must be the only variable of the run that turns it on),
 `SNAP_ROOMFLAGS_PUBLISH` (false — publish the engine's authored room status in
 the op-0x49 record flags word `+0x1c`), `SNAP_GAME_BEACON_ECHO` (false —
 proven fatal on the rig, RS1-A; leave off for owner-facing runs),
-`SNAP_GAME_BEACON_RELAY` (false), `SNAP_EXIT_CLOSE_MIRROR` (false),
+`SNAP_GAME_BEACON_RELAY` (false — fans the UNRELIABLE op-0x0F game class out to the
+sender's room, except the sender. The G13 trace (analysis/g13-enemy-sync-RE-2026-08-26.md)
+identified this class as the in-game 1 Hz peer keepalive `(peerIdx<<12)|0` plus the
+id-0x0008 entity records — NOT an opaque beacon; with the flag off the server drops 100%
+of it (wire-proven 431/364/86 sent vs 0 forwarded across three captures), which starves
+the client's 31 s peer-timeout sweep and withholds the entity stream. The G13 fix
+candidate = flip this true. Known hazard H1 (nora 2026-08-26): relayed frames share the
+one unreliable sequence counter with the op-0x40 keepalive and the client keeps
+non-reliable traffic only if `conn+0x10 <= seq` — a reordered keepalive behind a relayed
+frame is silently discarded, so watch for error-840 on runs with the flag on. Rollback =
+unset the flag + restart. Unlike ECHO this sends nothing back to the sender),
+`SNAP_EXIT_CLOSE_MIRROR` (false),
 `SNAP_COMPLETION_SEQ_ECHO` (false), `SNAP_CHANNEL_BIT_ECHO` (false — the C3
 exit-stall fix: the sel-7 leave completion echoes the request's DATA/0x1000 bit
 so a room-channel Exit gets a room-channel completion; scoped to sel-7 only per

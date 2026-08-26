@@ -574,8 +574,8 @@ export const CONFIGURATION_KEYS = Object.freeze({
     'PAL_V2_WELCOME_MESSAGE',
     'PAL_V2_MAXIMUM_PLAYERS',
     'PAL_V2_UDP_ATTACHMENT_NONCE',
-    'SNAP_GAME_BEACON_ECHO',      // echo the flags-0x2012 in-game beacon to its sender (default false)
-    'SNAP_GAME_BEACON_RELAY',     // fan the in-game beacon out to the sender's room (default false)
+    'SNAP_GAME_BEACON_ECHO',      // echo an unreliable op-0f back to its sender (default false; proven fatal on the rig, RS1-A - leave off)
+    'SNAP_GAME_BEACON_RELAY',     // relay the UNRELIABLE op-0f game class (peer keepalive + entity records, G13) to the sender's room (default false)
     'SNAP_EXIT_CLOSE_MIRROR',     // mirror the op-0x02 close and release the session (default false)
     'SNAP_COMPLETION_SEQ_ECHO',   // echo the request send-seq at completion +0xc (default false)
     'SNAP_CHANNEL_BIT_ECHO',      // sel-7 leave completion echoes the request's DATA bit (default false)

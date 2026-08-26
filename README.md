@@ -23,11 +23,12 @@ patching, no modchip, no homebrew client. The client is retail; only the server 
 
 ## Current status
 
-**Two players can play together, as the right characters.** As of the 2026-08-26 session, a real
-PS2 and a PCSX2 client sign in, select server and area, create/join a room, pick characters, and
-**both start the same game together — each rendering the correct chosen character** — and stay in
-sync through cutscenes and zone changes. The multiplayer *core* the project was built to reach is
-working and owner-confirmed on the rig.
+**Two players can play together — same characters, same enemies.** As of the 2026-08-26 sessions,
+a real PS2 and a PCSX2 client sign in, select server and area, create/join a room, pick characters,
+**both start the same game together rendering the correct chosen characters**, stay in sync through
+cutscenes and zone changes, and — since the evening session — **fight the same enemies: they move
+and attack on both consoles**. The multiplayer core the project was built to reach is working and
+owner-confirmed on the rig.
 
 What works, rig-confirmed:
 
@@ -37,12 +38,15 @@ What works, rig-confirmed:
 - Rules, cast, and scenario selectable on the create screen; the joiner sees the room's real
   scenario.
 - Backing out of a room (the long-standing "Exit" freeze is fixed).
-- In-game player-movement relay between consoles.
+- In-game sync: the player-movement relay AND the once-dropped unreliable game class — the
+  in-game peer keepalive plus the per-entity (enemy/object) state records — now relayed, so
+  enemies animate and attack on both consoles.
 
-Active frontier (the "fully playable" work) — see **Known bugs** below and
-[`docs/findings/protocol/SESSION-CLOSEOFF-2026-08-26.md`](docs/findings/protocol/SESSION-CLOSEOFF-2026-08-26.md).
-The remaining gaps are the in-game **entity (enemy) sync**, difficulty selection, the end-screen
-character, and the joiner's member list.
+Active frontier (the "fully playable" work) — see **Known bugs** below and the close-offs
+[`SESSION-CLOSEOFF-2026-08-26.md`](docs/findings/protocol/SESSION-CLOSEOFF-2026-08-26.md) (core) and
+[`SESSION-CLOSEOFF-2026-08-26-G13.md`](docs/findings/protocol/SESSION-CLOSEOFF-2026-08-26-G13.md)
+(enemy sync). The remaining gaps are difficulty selection, the friend/user-search surface, the
+end-screen character, and the joiner's member list.
 
 Development centres on [`server-v2/`](server-v2/), a corpus-driven port of the Japanese Bioserver's
 session/room architecture onto the PAL SN@P transport, with a large deterministic test suite.
@@ -56,6 +60,30 @@ notes and decoded client code here may help work on other SN@P-era titles too.
 ---
 
 ## Changelog
+
+### 2026-08-26 (evening) — enemy sync fixed: enemies move on both consoles
+- **Root cause:** the game engine sends its in-game state on op-0x0F in **two transport classes**.
+  The reliable class (the per-peer player stream) was already relayed — that's why player movement
+  synced. The **unreliable class was 100% consumed by the server** (routed to a "1 Hz beacon"
+  handler whose semantics were unknown at the time): wire-proven 431/364/86 frames sent by the
+  consoles across three captures, **zero** forwarded. That class carries (1) the in-game **peer
+  keepalive**, whose loss can silently time out a peer after 31 s with no re-activation path, and
+  (2) the **per-entity state records** — enemy/object positions, replicated by whichever console
+  *owns* each entity (per-entity ownership, not host-authoritative, not seeded lockstep). The
+  joiner never received the host-owned enemies' records, so its enemies stood frozen.
+- **Fix (config-only):** `SNAP_GAME_BEACON_RELAY=true` — the existing room-scoped byte-identical
+  fan-out now carries the class; no code change. Rig-validated: relay ≈100% both directions
+  (~1.3 ms through the Pi), and enemies **move and attack on both consoles** (owner-confirmed —
+  they downed the player). The validated environment is now tracked at
+  `deploy/pal-server-v2.env.conf`. `SNAP_GAME_BEACON_ECHO` must stay **0** (proven fatal earlier).
+- **Corrections the review pass caught before sign-off:** the IP↔console role labels in the 08-25
+  notes were inverted (ground-truthed by ARP MACs + the wire's peer-index nibbles — check per
+  capture before trusting old labels); residual enemy-movement "flakiness" is the client's own
+  ~5.5 s correction cadence over local simulation (the relay loses nothing), so smoothing would
+  need client-side RE, not a server change.
+- RE write-ups: `analysis/g13-enemy-sync-RE-2026-08-26.md` (receive stack → per-peer accumulator →
+  the delay-slot keepalive proof), `analysis/g13-wire-samples-2026-08-26.txt`, and the full session
+  record `docs/findings/protocol/SESSION-LOG-2026-08-26-G13.md`.
 
 ### 2026-08-26 — multiplayer core: solo-start + characters fixed
 - **Solo start fixed** (`SNAP_OP10_DROP_SELF`). The host's game-start SM sends a start ping to every
@@ -80,15 +108,20 @@ in-game receive stack reverse-engineered. (See the prior close-off and RE docs.)
 
 ## Known bugs
 
-Open items after the 2026-08-26 milestone (tracked as G13–G17 in the private goal list):
+Open items after the 2026-08-26 milestones (numbering follows the private goal list;
+G13 enemy sync is **fixed** — see the changelog above):
 
 | # | Bug | Notes |
 |---|-----|-------|
-| G13 | **Enemies don't move on the joiner** | Enemies load on both consoles but animate only on the host; frozen on the joiner. Player/peer position *does* sync — this is the enemy-state layer (host-authoritative vs deterministic sim). The biggest remaining gameplay gap. |
-| G14 | **Difficulty not applied** | Setting EASY still runs the game on VERY HARD (the JP default). The host's on-screen difficulty override doesn't reach game-start. |
+| G14 | **Difficulty not applied** | Setting EASY still runs the game on VERY HARD (the JP default) — one zombie downed both players on the G13 validation run. The host's on-screen difficulty override doesn't reach game-start; same carrier family as the create optionsWord the scenario fix already reads. ⭐ next up. |
+| G6 | **Friend list / Find users wedge the lobby** | Adding a friend appears to work, but the screen then loses all functionality (no back, no delete), and "Find users" sticks at "Searching". Wire-pinned: both consoles send a reliable `op-0x25` (40 B) the server has no handler for — plus an unanswered `op-0x49` buddy lookup — and an unanswered reliable query holds the client's send slot, wedging the screen. Evidence archived, replies not yet implemented. |
 | G15 | **End-screen character wrong** | The results screen shows "Kevin" regardless of the picked character, on *both* consoles — a different render path from the (now-correct) lobby splash. |
 | G16 | **Joiner's member list empty** | In the lobby, the host's Start▸Member shows the roster; the joiner's is empty. The seat path works (the splash renders), so this is the member-*list* query/display path. |
-| G17 | **Cutscene-skip asymmetry** | One console can skip a cutscene, the other can't. Minor in-game action-sync detail. |
+| G17 | **Cutscene-skip asymmetry** | One console can skip a cutscene, the other can't (on the G13 run: the joiner could, the host couldn't). Minor in-game action-sync detail. |
+
+G13 follow-ups that don't re-open it: enemy movement is a little coarse between the client's own
+~5.5 s corrections (client-side cadence, not relay loss); the reverse ownership direction
+(joiner-owned enemies animating on the host) has only n=1 wire evidence so far.
 
 > Operational note for contributors running the rig: deploying restarts the server, which drops the
 > in-game relay and **freezes an active game**. Deploy only between runs.
