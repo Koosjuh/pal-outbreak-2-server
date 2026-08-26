@@ -327,13 +327,19 @@ Point the console's DNS at your server so the game resolves its service hostname
 
 ---
 
-## Acknowledgements
+## Credits & Acknowledgements
 
-Built with heavy AI assistance from Claude (Anthropic) and Codex (OpenAI) for Ghidra analysis, PINE
-and packet tooling, protocol review, implementation, and test loops. The project owner directs the
-work and validates milestones on hardware. The AI-session workflow is documented in `CLAUDE.md` and
-`AGENTS.md` for the curious; contributors are **not** expected to use AI or follow those
-session-specific documents.
+This project builds on research and preservation work from the wider PS2 online and Resident Evil Outbreak communities, including **openSNAP**, **BioServer**, and **DNASrep**.
+
+See the full [Credits & Acknowledgements](https://github.com/Koosjuh/pal-outbreak-2-server/blob/main/CREDITS.md) page for project references, attribution, and licensing information.
+
+Built with heavy AI assistance from Claude (Anthropic) and Codex (OpenAI) for Ghidra analysis, PINE and packet tooling, protocol review, implementation, documentation, and test loops. The project owner directs the work and validates milestones on real hardware.
+
+Contributors are **not** expected to use AI or follow those session-specific documents.
+
+Because a significant amount of documentation and analysis was AI-assisted, some notes may contain incorrect assumptions, overconfident conclusions, awkward wording, or occasional AI-generated nonsense. Treat AI-generated analysis as working material, not authoritative protocol documentation, unless it is backed by packet captures, decompiled client behaviour, tests, or hardware validation.
+
+AI is used here as an enabler for learning and experimentation. I am not a professional developer or reverse engineer, and this project is deliberately a way for me to learn those skills, explore areas outside my normal expertise, and build something I would not have been capable of creating alone. AI assists with that process, but the findings that matter are ultimately validated against the game, the wire, the code, and real hardware.
 
 ## Provenance
 
